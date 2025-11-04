@@ -1,0 +1,14 @@
+# Dependencias
+/node_modules
+/package-lock.json
+
+# Builds de producción
+/dist
+
+# Entornos de desarrollo locales
+.DS_Store
+*.local
+
+# Variables de entorno
+.env
+.env.local
