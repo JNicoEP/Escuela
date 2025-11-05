@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia - Escuela Mariano Ariza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/login.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
+            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            Quienes somos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
+                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
+                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
+                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#authModal">Aula Virtual</a></li>
+                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
+                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
+                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal de autenticación -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label for="userType" class="form-label">Tipo de Usuario </label>
+                            <select id="userType" class="form-select">
+                                <option value="guest">Invitado</option>
+                                <option value="register">Registrarse</option>
+                                <option value="login">Iniciar sesión</option>
+                            </select>
+                        </div>
+                        <!-- Campos para iniciar sesión -->
+                        <div id="loginFields" class="form-group" style="display:none;">
+                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo Electrónico">
+                            <label for="loginPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña">
+                        </div>
+                        <!-- Campos para registrarse -->
+                        <div id="registerFields" class="form-group" style="display:none;">
+                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="registerEmail" placeholder="Correo Electrónico">
+                            <label for="registerPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Acceder</button><br>
+                            <p>Si es alumno acceder como "Invitado"</p>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <header class="text-center py-4 bg-dark text-white">
+            <h1>Historia de la Escuela Mariano Ariza</h1>
+
+        </header>
+
+        <p>
+            La institución educativa “Escuela Mariano Ariza” es un establecimiento educativo rural de gestión pública
+            ubicado en el Departamento de Monteros de la Provincia de Tucumán. La institución educativa “Escuela Mariano
+            Ariza” brinda servicios educativos de gestión estatal en la modalidad de educación común en los niveles
+            inicial de jardín de infantes y primario.
+
+            El nivel inicial brinda servicio educativo a la población infantil comprendida entre los 45 días de vida y
+            los 5 años de edad, promoviendo ámbitos propicios para cubrir las necesidades afectivas, educativas y de
+            contención social de los niños de Capitan Caceres y estimulando mecanismos de participación y trabajo
+            conjunto entre las familias y la escuela. La institución Escuela Mariano Ariza brinda servicios educativos
+            de jardín de infantes, iniciando en sala de 3 años hasta los 5 años de edad inclusive y dispone de un equipo
+            pedagógico específico. Esta institución no cuenta con jardín maternal.
+
+            La institución Escuela Mariano Ariza de Capitan Caceres brinda servicios educativos en el nivel primario. El
+            mismo tiene por objeto la adquisición de competencias básicas, conocimientos, habilidades y valores comunes
+            imprescindibles para toda la población. Para la modalidad común constituye una unidad pedagógica obligatoria
+            a partir de los 6 años de edad cumplidos al día 30 de junio y tiene una duración típica de 7 años que, una
+            vez egresado el alumno, lo habilita a cursar el nivel secundario.
+        </p>
+
+    </div>
+    <section id="mediacion-escolar" class="proyecto text-center">
+        <h2 class="titulo-seccion text-center">Volvamos al pasado</h2>
+        <img src="css/img/historia_page-0001.jpg"
+            alt="historia" class="imagen-historia" >
+            <img src="css/img/historia2_page-0001.jpg"
+            alt="historia" class="imagen-historia" >
+            <img src="css/img/historia3_page-0001.jpg"
+            alt="historia" class="imagen-historia" >
+            <img src="css/img/historia4_page-0001.jpg"
+            alt="historia" class="imagen-historia" >
+            <img src="css/img/historia5_page-0001.jpg"
+            alt="historia" class="imagen-historia" >
+    </section>
+    <header class="text-center ">
+        <h1>Ubicación</h1>
+
+    </header>
+
+    <style>
+        .Slider-box {
+            display: flex;
+            justify-content: center;
+            /* Centra horizontalmente */
+            align-items: center;
+            /* Centra verticalmente */
+            width: 100%;
+            /* Asegura que ocupe todo el ancho disponible */
+            margin: 0 auto;
+            /* Centra el contenedor en la página */
+        }
+    </style>
+    
+    <div class="Slider-box" style="width: 100%; height: 100%; margin: 0; padding: 0; border: none; overflow: hidden;">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1774.4531108442093!2d-65.6057839036636!3d-27.190684074507768!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9423ccce30186037%3A0x82c90480b493cd2b!2sEsc.%20Mariano%20Ariza!5e0!3m2!1ses-419!2sar!4v1739040836795!5m2!1ses-419!2sar"
+            width="2700" height="600" style="border: none;"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+</div>
+
+
+    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
+                    <p>
+                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y
+                        aprendizaje.
+                    </p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
+                        <li><a href="materias.html" class="text-white text-decoration-none">Materias</a></li>
+                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
+                        <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-uppercase">Síguenos</h5>
+                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i
+                            class="fab fa-facebook fa-2x"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-3 bg-dark">
+            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

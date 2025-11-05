@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios - Escuela Mariano Ariza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/login.js"></script>
+</head>
+
+<body>
+    <!-- Navbar  -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
+            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            Quienes somos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
+                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
+                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
+                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#authModal">Aula Virtual</a></li>
+                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
+                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
+                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal de autenticación -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label for="userType" class="form-label">Tipo de Usuario </label>
+                            <select id="userType" class="form-select">
+                                <option value="guest">Invitado</option>
+                                <option value="register">Registrarse</option>
+                                <option value="login">Iniciar sesión</option>
+                            </select>
+                        </div>
+                        <!-- Campos para iniciar sesión -->
+                        <div id="loginFields" class="form-group" style="display:none;">
+                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo Electrónico">
+                            <label for="loginPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña">
+                        </div>
+                        <!-- Campos para registrarse -->
+                        <div id="registerFields" class="form-group" style="display:none;">
+                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="registerEmail"
+                                placeholder="Correo Electrónico">
+                            <label for="registerPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Acceder</button><br>
+                            <p>Si es alumno acceder como "Invitado"</p>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-dark text-white text-center py-5">
+        <div class="container">
+            <h1 class="display-4">Horarios Escolares</h1>
+            <p class="lead">Consulta los horarios de clases para los turnos mañana y tarde.</p>
+        </div>
+    </header>
+
+    <!-- Sección de Horarios -->
+    <main class="container my-5">
+        <section>
+            <h2 class="mb-4">Horarios de Clases</h2>
+
+            <!-- Botones para filtrar por turno -->
+            <div class="mb-4">
+                <button class="btn btn-primary btn-filter" onclick="mostrarTabla('mañana')">Turno Mañana</button>
+                <button class="btn btn-primary btn-filter" onclick="mostrarTabla('tarde')">Turno Tarde</button>
+                <button class="btn btn-primary btn-filter" onclick="mostrarTabla('todos')">Mostrar Todos</button>
+            </div>
+
+            <!-- Tabla de Horarios - Turno Mañana -->
+            <div class="table-responsive tabla-turno" id="tablaManana">
+                <table class="horarios-table">
+                    <thead>
+                        <tr>
+                            <th>Turno Mañana</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ENTRADA - IZAMIENTO</td>
+                            <td>8:00 A 8:15</td>
+                        </tr>
+                        <tr>
+                            <td>1° Hora</td>
+                            <td>8:15 A 9:00</td>
+                        </tr>
+                        <tr>
+                            <td>2° Hora</td>
+                            <td>9:00 A 9:40</td>
+                        </tr>
+                        <tr>
+                            <td>RECREO</td>
+                            <td>9:40 A 9:50</td>
+                        </tr>
+                        <tr>
+                            <td>3° Hora</td>
+                            <td>9:50 A 10:30</td>
+                        </tr>
+                        <tr>
+                            <td>4° Hora</td>
+                            <td>10:30 A 11:10</td>
+                        </tr>
+                        <tr>
+                            <td>RECREO</td>
+                            <td>11:10 A 11:20</td>
+                        </tr>
+                        <tr>
+                            <td>5° Hora</td>
+                            <td>11:20 A 12:00</td>
+                        </tr>
+                        <tr>
+                            <td>RECREACIÓN</td>
+                            <td>12:00 A 13:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tabla de Horarios - Turno Tarde -->
+            <div class="table-responsive tabla-turno" id="tablaTarde">
+                <table class="horarios-table">
+                    <thead>
+                        <tr>
+                            <th>Turno Tarde</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ENTRADA - IZAMIENTO</td>
+                            <td>13:00 A 13:40</td>
+                        </tr>
+                        <tr>
+                            <td>6° Hora</td>
+                            <td>13:40 A 14:20</td>
+                        </tr>
+                        <tr>
+                            <td>RECREO</td>
+                            <td>14:20 A 14:30</td>
+                        </tr>
+                        <tr>
+                            <td>7° Hora</td>
+                            <td>14:30 A 15:10</td>
+                        </tr>
+                        <tr>
+                            <td>8° Hora</td>
+                            <td>15:10 A 15:50</td>
+                        </tr>
+                        <tr>
+                            <td>9° Hora</td>
+                            <td>15:10 A 15:50</td>
+                        </tr>
+                        <tr>
+                            <td>ARRIMIENTO Y DESCONCENTRACIÓN</td>
+                            <td>15:50 A 16:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Botón para exportar a PDF -->
+            <button class="btn btn-success btn-export" onclick="exportarAPDF()">
+                <i class="fas fa-download"></i> Exportar a PDF
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer (igual que en otras páginas) -->
+    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
+                    <p>
+                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y
+                        aprendizaje.
+                    </p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
+                        <li><a href="materias.html" class="text-white text-decoration-none">Materias</a></li>
+                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
+                        <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-uppercase">Síguenos</h5>
+                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i
+                            class="fab fa-facebook fa-2x"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-3 bg-dark">
+            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Función para mostrar u ocultar las tablas según el turno seleccionado
+        function mostrarTabla(turno) {
+            const tablaManana = document.getElementById("tablaManana");
+            const tablaTarde = document.getElementById("tablaTarde");
+
+            if (turno === 'mañana') {
+                tablaManana.style.display = "block";
+                tablaTarde.style.display = "none";
+            } else if (turno === 'tarde') {
+                tablaManana.style.display = "none";
+                tablaTarde.style.display = "block";
+            } else if (turno === 'todos') {
+                tablaManana.style.display = "block";
+                tablaTarde.style.display = "block";
+            }
+        }
+
+        // Mostrar ambas tablas al cargar la página
+        mostrarTabla('todos');
+
+        // Función para exportar a PDF
+        function exportarAPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título del PDF
+            doc.setFontSize(18);
+            doc.text("Horarios Escolares - Escuela Mariano Ariza", 10, 10);
+
+            // Obtener las tablas
+            const tablaManana = document.getElementById("tablaManana").querySelector("table");
+            const tablaTarde = document.getElementById("tablaTarde").querySelector("table");
+
+            // Convertir las tablas a arrays de datos
+            const datosManana = [];
+            const filasManana = tablaManana.querySelectorAll("tr");
+            filasManana.forEach(fila => {
+                const celdas = fila.querySelectorAll("th, td");
+                const filaDatos = [];
+                celdas.forEach(celda => {
+                    filaDatos.push(celda.textContent.trim());
+                });
+                datosManana.push(filaDatos);
+            });
+
+            const datosTarde = [];
+            const filasTarde = tablaTarde.querySelectorAll("tr");
+            filasTarde.forEach(fila => {
+                const celdas = fila.querySelectorAll("th, td");
+                const filaDatos = [];
+                celdas.forEach(celda => {
+                    filaDatos.push(celda.textContent.trim());
+                });
+                datosTarde.push(filaDatos);
+            });
+
+            // Generar el PDF
+            doc.autoTable({
+                head: [datosManana[0]], // Encabezados de la mañana
+                body: datosManana.slice(1), // Datos de la mañana
+                startY: 20, // Posición inicial
+            });
+
+            doc.autoTable({
+                head: [datosTarde[0]], // Encabezados de la tarde
+                body: datosTarde.slice(1), // Datos de la tarde
+                startY: doc.lastAutoTable.finalY + 10, // Posición después de la primera tabla
+            });
+
+            // Guardar el PDF
+            doc.save("horarios_escolares.pdf");
+
+
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</body>
+
+</html>

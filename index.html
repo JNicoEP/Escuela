@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Inicio - Escuela Mariano Ariza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/login.js"></script>
+</head>
+
+<body>
+    <div id="loader-container">
+        <img src="css/img/logo loader.png" alt="Logo de carga" class="loader-image">
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
+            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            Quienes somos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
+                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
+                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
+                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#roleChooserModal">Autogestión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <header class="text-center py-5 text-white bg-dark">
+        <div class="container">
+            <h1 class="display-4">Bienvenido a Escuela Mariano Ariza</h1>
+            <p class="lead">Accede a materiales, novedades y mucho más.</p>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <section class="container my-5">
+            <h2 class="text-center mb-4">Galería Destacada</h2>
+            <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="css/img/fto esc.jpg" class="d-block w-100 carousel-img" alt="Imagen 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="css/img/escuela2.jpeg" class="d-block w-100 carousel-img" alt="Imagen 2">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="css/img/profes.jpeg" class="d-block w-100 carousel-img" alt="Imagen 3">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="css/img/escuela3.jpeg" class="d-block w-100 carousel-img" alt="Imagen 3">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Sección de cursos -->
+        <section class="text-center">
+
+            <div class="row g-4">
+                <h1 class="my-4">Proyectos Estudiantiles</h1>
+                <h3>Nos identificamos por nuestros acciones</h3>
+                <div class="col-md-4">
+                    <div class="card card-hover h-100">
+                        <div class="card-body">
+                            <i class="fas fa-road-barrier card-icon"></i>
+                            <h5 class="card-title">Educacion Vial</h5>
+                            <p class="card-text">Acceder a la informacion.</p>
+                            <!-- Redirige a la sección de Educacion Vial en proyecto_E.html -->
+                            <a href="proyecto_E.html#educacion-vial" class="btn btn-custom text-white">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-hover h-100">
+                        <div class="card-body">
+                            <i class="fas fa-landmark card-icon"></i>
+                            <h5 class="card-title">ESI</h5>
+                            <p class="card-text">Acceder a la informacion.</p>
+                            <!-- Redirige a la sección de ESI -->
+                            <a href="proyecto_E.html#esi" class="btn btn-custom text-white">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-hover h-100">
+                        <div class="card-body">
+                            <i class="fas fa-brain card-icon"></i>
+                            <h5 class="card-title">Educacion Emocional</h5>
+                            <p class="card-text">Acceder a la informacion.</p>
+                            <!-- Redirige a la sección de Educacion Emocional -->
+                            <a href="proyecto_E.html#educacion-emocional" class="btn btn-custom text-white">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-hover h-100">
+                        <div class="card-body">
+                            <i class="fas fa-leaf card-icon"></i>
+                            <h5 class="card-title">Medio Ambiente</h5>
+                            <p class="card-text">Acceder a la informacion.</p>
+                            <!-- Redirige a la sección de Medio Ambiente -->
+                            <a href="proyecto_E.html#medio-ambiente" class="btn btn-custom text-white">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-hover h-100">
+                        <div class="card-body">
+                            <i class="fas fa-users card-icon"></i>
+                            <h5 class="card-title">Centro de estudiantes</h5>
+                            <p class="card-text">Acceder a la informacion.</p>
+                            <!-- Redirige a la sección de Centro de Estudiantes -->
+                            <a href="proyecto_E.html#centro-estudiantes" class="btn btn-custom text-white">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-hover h-100">
+                        <div class="card-body">
+                            <i class="fas fa-user-check card-icon"></i>
+                            <h5 class="card-title">Mediacion escolar</h5>
+                            <p class="card-text">Acceder a la informacion.</p>
+                            <!-- Redirige a la sección de Mediación Escolar -->
+                            <a href="proyecto_E.html#mediacion-escolar" class="btn btn-custom text-white">Entrar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de acuerdos de convivencia -->
+        <section class="text-center">
+            <h1 class="py-5">Acuerdos de Convivencia</h1>
+            <div class="card">
+                <div class="card-body">
+                    <p>Descubre artículos y consejos útiles para tu educación.</p>
+                    <a href="docs/A.E.C. ESC  Mariano Ariza.pdf" download class="btn btn-custom text-white">
+                        Descargar
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de proyectos estudiantiles -->
+        <section class="text-center">
+            <h1 class="py-5"> Talleres interdiciplinarios</h1>
+            <div class="card">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card card-hover h-100">
+                            <div class="card-body">
+                                <i class="fa-solid fa-mug-hot card-icon" style="color: #74C0FC;"></i>
+                                <h5 class="card-title">Cocina</h5>
+                                <p class="card-text">Descubre eventos históricos y material de estudio.</p>
+                                <a href="talleres.html#cocina" class="btn btn-custom text-white">Más Información</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-hover h-100">
+                            <div class="card-body">
+                                <i class="fas fa-theater-masks card-icon" style="color: #74C0FC;"></i>
+                                <h5 class="card-title">Teatro y Arte</h5>
+                                <p class="card-text">Descubre eventos históricos y material de estudio.</p>
+                                <!-- Redirige a la sección de Medio Ambiente -->
+                                <a href="talleres.html#TeatroyArte" class="btn btn-custom text-white">Más
+                                    Información</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-hover h-100">
+                            <div class="card-body">
+                                <i class="fas fa-calculator card-icon" style="color: #74C0FC;"></i>
+                                <h5 class="card-title">Matematicas</h5>
+                                <p class="card-text">Descubre eventos históricos y material de estudio.</p>
+                                <a href="talleres.html#Matematicas" class="btn btn-custom text-white">Más
+                                    Información</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-hover h-100">
+                            <div class="card-body">
+                                <i class="fa-solid fa-futbol card-icon" style="color: #74C0FC;"></i>
+                                <i class="fa-solid fa-heart card-icon" style="color: #74C0FC;"></i>
+                                <h5 class="card-title">Deporte y Salud</h5>
+                                <p class="card-text">Descubre eventos históricos y material de estudio.</p>
+                                <a href="talleres.html#DeporteySalud" class="btn btn-custom text-white">Más
+                                    Información</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-hover h-100">
+                            <div class="card-body">
+                                <i class="fa-solid fa-seedling card-icon" style="color: #74C0FC;"></i>
+                                <h5 class="card-title">Reciclado</h5>
+                                <p class="card-text">JUGUETERIA ECOLOGICA <BR>Descubre eventos históricos y material de
+                                    estudio. <br></p>
+                                <a href="talleres.html#Reciclado" class="btn btn-custom text-white">Más Información</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-hover h-100">
+                            <div class="card-body">
+                                <i class="fa-solid fa-music card-icon" style="color: #74C0FC;"></i>
+                                <h5 class="card-title">folklore</h5>
+                                <p class="card-text">Accede a experimentos y teorías científicas.</p>
+                                <a href="talleres.html#folklore" class="btn btn-custom text-white">Más Información</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de tutorías y ayuda -->
+        <section class="text-center">
+            <h2 class="py-5">Documentación para docentes</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>Encuentra información aqui.</p>
+                    <a href="archivos.html" class="btn btn-custom text-white">Más Información</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
+                    <p>
+                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y
+                        aprendizaje.
+                    </p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
+                        <li><a href="novedades.html" class="text-white text-decoration-none">Novedades</a></li>
+                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
+                        <li><a href="horarios.html" class="text-white text-decoration-none">Horarios</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-uppercase">Síguenos</h5>
+                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i
+                            class="fab fa-facebook fa-2x"></i></a>
+                    <h5 class="text-uppercase">CONTACTO</h5>
+                    <P>Telefono: +54386369088 <br> Calle Soldado Vazques S/N - Capitan Caceres</P>
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-3 bg-dark">
+            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
+        </div>
+    </footer>
+    <!-- modal aula -->
+     <div class="modal fade" id="roleChooserModal" tabindex="-1" aria-labelledby="roleChooserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered"> <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleChooserModalLabel">Sistema de Autogestión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Selecciona el panel al que deseas dirigirte:</p>
+                    <div class="row g-3">
+
+                        <div class="col-6 col-md-3">
+                            <a href="#" class="card text-center text-decoration-none h-100 role-select-btn" 
+                               data-bs-toggle="modal" data-bs-target="#authModal" data-role="Alumno">
+                                <div class="card-body">
+                                    <i class="fas fa-user-graduate fa-3x text-primary mb-3"></i>
+                                    <h6 class="card-title fw-bold">Panel de Alumnos</h6>
+                                    <small class="text-muted">Acceso a calificaciones, tareas y horarios.</small>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <a href="#" class="card text-center text-decoration-none h-100 role-select-btn" 
+                               data-bs-toggle="modal" data-bs-target="#authModal" data-role="Padres">
+                                <div class="card-body">
+                                    <i class="fas fa-users fa-3x text-success mb-3"></i>
+                                    <h6 class="card-title fw-bold">Portal de Padres</h6>
+                                    <small class="text-muted">Seguimiento del progreso de sus hijos.</small>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <a href="#" class="card text-center text-decoration-none h-100 role-select-btn" 
+                               data-bs-toggle="modal" data-bs-target="#authModal" data-role="Docente">
+                                <div class="card-body">
+                                    <i class="fas fa-chalkboard-teacher fa-3x text-info mb-3"></i>
+                                    <h6 class="card-title fw-bold">Panel de Docentes</h6>
+                                    <small class="text-muted">Gestión de cursos, calificaciones y asistencias.</small>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <a href="#" class="card text-center text-decoration-none h-100" 
+                               data-bs-toggle="modal" data-bs-target="#adminModal">
+                                <div class="card-body">
+                                    <i class="fas fa-shield-alt fa-3x text-danger mb-3"></i>
+                                    <h6 class="card-title fw-bold">Panel de Dirección</h6>
+                                    <small class="text-muted">Administración y gestión escolar completa.</small>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                    <ul class="nav nav-tabs nav-fill mb-3" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#login-tab-pane" type="button" role="tab" 
+                                    aria-controls="login-tab-pane" aria-selected="true">
+                                Iniciar Sesión
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#register-tab-pane" type="button" role="tab" 
+                                    aria-controls="register-tab-pane" aria-selected="false">
+                                Registrarse
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="authTabsContent">
+                        
+                        <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel" aria-labelledby="login-tab" tabindex="0">
+                            <form id="loginForm">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="loginEmail" placeholder="tu@email.com" required>
+                                    <label for="loginEmail">Correo Electrónico</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña" required>
+                                    <label for="loginPassword">Contraseña</label>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="register-tab-pane" role="tabpanel" aria-labelledby="register-tab" tabindex="0">
+                            <form id="registerForm">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="registerName" placeholder="Nombre Apellido" required>
+                                    <label for="registerName">Nombre Completo</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="registerEmail" placeholder="tu@email.com" required>
+                                    <label for="registerEmail">Correo Electrónico</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña" required>
+                                    <label for="registerPassword">Contraseña (mín. 6 caracteres)</label>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-outline-primary btn-lg">Crear Cuenta</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal admin -->
+    <div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminModalLabel">Inicio de sesión de administrador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminForm">
+                        <input type="hidden" name="adminLogin" value="true">
+                        <div class="mb-3">
+                            <label for="adminEmail" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="adminEmail" name="email"
+                                placeholder="Correo electrónico">
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="adminPassword" name="password"
+                                placeholder="Contraseña">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="js/index.js"></script>
+</body>
+
+</html>
