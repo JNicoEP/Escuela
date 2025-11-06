@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia - Escuela Mariano Ariza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script type="module" src="/js/login.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
+            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            Quienes somos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
+                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
+                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
+                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#authModal">Aula Virtual</a></li>
+                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
+                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
+                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal de autenticación -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label for="userType" class="form-label">Tipo de Usuario </label>
+                            <select id="userType" class="form-select">
+                                <option value="guest">Invitado</option>
+                                <option value="register">Registrarse</option>
+                                <option value="login">Iniciar sesión</option>
+                            </select>
+                        </div>
+                        <!-- Campos para iniciar sesión -->
+                        <div id="loginFields" class="form-group" style="display:none;">
+                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo Electrónico">
+                            <label for="loginPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña">
+                        </div>
+                        <!-- Campos para registrarse -->
+                        <div id="registerFields" class="form-group" style="display:none;">
+                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="registerEmail"
+                                placeholder="Correo Electrónico">
+                            <label for="registerPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Acceder</button><br>
+                            <p>Si es alumno acceder como "Invitado"</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- header.html -->
+    <header class="header text-center py-5 text-white bg-dark">
+        <div class="container">
+            <h1 class="display-4"> TALLERES INTERDICIPLINARIOS</h1>
+        </div>
+    </header>
+
+    <div class="floating-sidebar ">
+        <h4 class="text-center">Talleres</h4>
+        <ul class="list-group">
+            <li class="list-group-item"><a href="#cocina" class="text-decoration-none">Cocina</a></li>
+            <li class="list-group-item"><a href="#TeatroyArte" class="text-decoration-none">Teatro y Arte</a></li>
+            <li class="list-group-item"><a href="#Matematicas" class="text-decoration-none">Matemáticas</a></li>
+            <li class="list-group-item"><a href="#DeporteySalud" class="text-decoration-none">Deporte y Salud</a></li>
+            <li class="list-group-item"><a href="#Reciclado" class="text-decoration-none">Reciclado</a></li>
+            <li class="list-group-item"><a href="#folklore" class="text-decoration-none">Folklore</a></li>
+        </ul>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="col-md-9 text-center">
+        <section class="container my-6">
+            <section id="cocina" class="talleres">
+                <h1 class="titulo-seccion text-center">COCINA</h1>
+            
+                <section class="container my-5">
+                    <div id="carousel-talleres" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="css/img/talleres/cocina1.jpeg" class="d-block w-100 carousel-img" alt="Imagen 1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="css/img/talleres/cocina2.jpeg" class="d-block w-100 carousel-img" alt="Imagen 2">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="css/img/talleres/cocina3.jpeg" class="d-block w-100 carousel-img" alt="Imagen 3">
+                            </div>
+                        </div>
+                        <button id="btn-taller-prev" class="carousel-control-prev" type="button" data-bs-target="#carousel-talleres" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button id="btn-taller-next" class="carousel-control-next" type="button" data-bs-target="#carousel-talleres" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Sección de Cocina -->
+
+                <h3 class="fundamentos">Fundamentos</h3>
+                <p class="descripcion"> Cocinar es una actividad tan completa, atractiva y divertida para los niños que
+                    se
+                    nos brinda como valioso recurso educativo. <br> Se trata de una deliciosa manera de favorecer la
+                    incorporacion de habitos y conocimientos acerca de la nutricion, salud y alimentacion. La tematica
+                    de un
+                    taller de cocina para niños y niñas favorece la interdisiplnariedad permitiendo asi transpasar a la
+                    practica contenidos curriculares de casi todas las materias. Se puede conocer mucho acerca del mundo
+                    y
+                    de los hombres a traves de la comida y las constumbres alimenticias. Otro aspecto de enorme interes,
+                    es
+                    la posibilidad de ofrecer una actividad recreativa, favoreciendo el dialogo, la participacion y la
+                    ayuda
+                    mutua. </p>
+                <ul class="listado">Objetivos Generales:
+                    <li> Identificar los textos instructivos recetas de cocina.</li>
+                    <li> Relalizar algunas recetas sencillas.</li>
+                    <li> Clasificar las frutas y verduras.</li>
+                    <li> Realizar medidas de peso y capacidad con instrumentos de medicion acorde a cada magnitud.</li>
+                    <li> Diferenciar entre utensillos y electrodomesticos.</li>
+                    <li> Conocer las normas de higiene y seguridad necesarias para el trabajo de la cocina.</li>
+                    <li> Trabajar en equipo y de forma colaborativa.</li>
+                </ul>
+            </section>
+
+            <!-- Sección de Teatro y Arte -->
+            <section id="TeatroyArte" class="talleres">
+                <h2 class="titulo-seccion text-center">Teatro y Arte</h2>
+                <h3 class="fundamentos">Fundamentos</h3>
+                <p class="descripcion"> Se intenta que por medio del trabajo de inclusion en el arte y la educacion vial
+                    aprender sobre el uso de la educacion vial en la vida diaria, implementando tecnicas de pintura,
+                    promover la destreza manual, imaginacion y desenvolvimiento artistico, mediante la compresion y el
+                    respeto por las señales viales. <br> el placer y el encanto que tiene para un niño pequeño por
+                    explorar
+                    diferentes materiales y herramientas para dibujar y pintar, estan cargadas de significado, el niño
+                    se
+                    siente feliz al ver plasmadas sus ideas y sentimientos. La practica repetida en el uso de
+                    determinadas
+                    herramientas e independencia en sus producciones. A través del abordaje del área de expresión
+                    plástica
+                    se amplía su imaginacion y fantasia y se desarrolla la motricidad de su cuerpo. <br>
+                    Pero su funcionamiento en este proyecto se focalizara las diferentes emociones, sentimientos y
+                    vivencias
+                    que despierten en los chicos el abordaje del arte plastico como vehículo de comunicación en el
+                    grupo.
+                </p>
+                <ul class="listado">OBJETIVOS QUE EL NIÑO LOGRE:
+                    <li> Aprender sobre el uso de la educacion vial en la vida diaria.</li>
+                    <li> Reconocer y distrufar de las representaciones plasticas.</li>
+                    <li> Explorar variedad de herramientas y materiales.</li>
+                    <li> Conocer y apreciar las obras de diferentes artistas plasticos y reconocer la multiplicidad de
+                        resoluciones plasticas posibles.</li>
+                    <li> Valorar sus producciones y la de sus pares *Trabajar en pequeños grupos.</li>
+                    <li> Explorar texturas táctiles y visuales.</li>
+                </ul>
+            </section>
+            <!-- Sección de Matematicas -->
+            <section id="Matematicas" class="talleres">
+                <h2 class="titulo-seccion text-center">Matematicas</h2>
+                <img src="https://www.sancristobalsl.com/archivos/blog/2345/20180515075712.como_ayudar_a_aprender_matematicas_en_casa_colegio_san_cristobal_castellon-1370.jpg"
+                    alt="matematicas" class="imagen-talleres" style="height: 600px; width: 100%; ">
+                <h3 class="fundamentos">Fundamentos</h3>
+                <p class="descripcion">
+                    La resolucion de problemas es la parte mas esencial de las matematicas a nivel escolar puesto que da
+                    a
+                    los alumnos/as los fundamentos básicos de aplicacion de las operaciones estudiadas en esta etapa,
+                    ayuda
+                    a comprender el entorno que los rodea, da herramientas para conversirse en unso ciudadanos
+                    competentes...
+                </p>
+                <ul class="listado">Objetivos Generales:
+                    <li> Resolver situaciones de la vida cotidiana cuyo tratamiento requiera de una sola de las
+                        operaciones
+                        (o más en caso sencillos), seleccionando las adecuadas y aplicando los algoritmos
+                        correspondientes,
+                        mediante su expresión gráfica. Interpretando el resultado.
+                    </li>
+                    <li> Utilizar instrumentos de cálculo(Herramientas informaticas, calculadora), Haciendo buen uso de
+                        ellos y comprobando los resultados.
+                    </li>
+                    <li>Manifestar orden, claridad, atencion, reflexion, interes, creatividad, perseverancia y tendencia
+                        a
+                        explorar distintas alternativas en la busqueda de soluciones
+                    </li>
+                    <li>Disfrutar con el uso de las matematicas y descubrir el aspecto lúcido de las mismas.
+                    </li>
+                    <li>Adquirir autonomía en el que hacer matemático, solicitando ayuda en el caso de haber explorado,
+                        sin
+                        resultados positivos, distintas alternativas de solucion.
+                    </li>
+                </ul>
+            </section>
+
+
+            <!-- Sección de Deporte y Salud -->
+            <section id="DeporteySalud" class="talleres">
+                <h2 class="titulo-seccion text-center">Deporte y Salud</h2>
+                <img src="https://scontent.ftuc1-1.fna.fbcdn.net/v/t39.30808-6/457496344_2864816793667464_8463174065001391275_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGcby0Ygx0Y2byyISuO-HaouSwIQbsWHYW5LAhBuxYdhR6VHq-xEGDJoBo4dbryKe6Nzp1iKW5ByqTPmv9fLdBV&_nc_ohc=5gXEL2v4fWcQ7kNvgGjQKan&_nc_zt=23&_nc_ht=scontent.ftuc1-1.fna&_nc_gid=AVn-ih31v0EC2hrWGa6HMWa&oh=00_AYByihB-QIPyDHoXfVGxhAP3SDXz3YzBrAktbIWROS5U0w&oe=67B88A2B"
+                    alt="deporte" class="imagen-proyecto" style="height: 500px; width: 100%;">
+                <h5 class="subtitulo">Son importantes para la salud de los niños, ya que les ayudan a desarrollar su
+                    cuerpo
+                    y su mente</h5>
+                <h3 class="fundamentos">Fundamentos</h3>
+                <p class="descripcion">El taller de Deporte y Salud surge coimo respuesta a la necesidad de promover
+                    hábitos de vida saludables y fomentar la práctica deportiva entre la comunidad. <br>Reconociendo la
+                    importancia del ejercicio fisico en la prevención de enfermedades y el bienestar general, este
+                    taller
+                    busca proporcionar herramientas y conocimientos para adoptar un estilo de vida activo y equilibrado.
+                    <br>El deporte es un medio educativo, rico en experiencias, que facilita el desarrollo integral de
+                    la
+                    persona. El VOLEIVOL es en la actualidad un deporte de alta complejidad, sin embargo es uno de los
+                    deportes ocn una buena aceptacion en los distintos niveles de la educacion formal. El mismo se
+                    define
+                    como un deporte de situacion porque es en el juego donde se presentan continuamente situaciones
+                    diversas
+                    que el alumno debe resolver en forma acorde a su capacidad utilizando los fundamentos y estrategias
+                    mas
+                    apropiadas. Esta caracteristica obliga al alumno a adaptarse a diferentes situaciones en tiempo y
+                    espacio reducidos.
+                </p>
+                <ul class="listado">Objetivos Generales:
+                    <li>Promover la consiencia sobre la importancia del deporte y la actividad fisica en la salud
+                        integral.
+                    </li>
+                    <li>Facilitar el acceso a informacion y recursos para la practica deportiva segura y efectiva.</li>
+                    <li>Educar a los estudiantes sobre su papel como agentes de cambio en la protección del medio
+                        ambiente,
+                        enfatizando la importancia de asumir responsabilidad por sus acciones y decisiones.</li>
+                    <li>Fomentar la adopcion de habitos de vida saludables en la comunidad</li>
+                    <li>Educar sobre los beneficios del ejercicio fisico en la prevencion de enfermedades crónicas.</li>
+                    <li>Proporcionar orientacion sobre la planificacion y ejecucion de programas de entrenamiento
+                        personalizados.</li>
+                    <li>Promover la importancia de la alimentacion equilibrada y la hidratacion en el rendimiento
+                        deportivo.
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Sección de Reciclado -->
+            <section id="Reciclado" class="talleres">
+                <h1 class="titulo-seccion text-center">Reciclado</h1>
+                <h3 class="titulo-seccion text-center">JUGUETERIA ECOLOGICA</h3>
+                <img src="https://scontent.ftuc1-1.fna.fbcdn.net/v/t39.30808-6/447616332_2793848050764339_6324092463033664397_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFDbBOwDEAyT7caGeoE-U-neNkYKdL9bJ142Rgp0v1snUzCqg0W3BXH7h0iseP-Fq7bMEdN27Nz0buN37o-TRuc&_nc_ohc=KHeJnPPZ0YcQ7kNvgGRYhNS&_nc_zt=23&_nc_ht=scontent.ftuc1-1.fna&_nc_gid=Ati4tTzgbQKr8oeXASNlkSo&oh=00_AYAlLzPtR5UuuD1Z1Bia3P1lY0XajZkM8x6LoFqoPcvERw&oe=67B89AF2"
+                    alt="medio-ambiente" class="imagen-proyecto" style="height: auto; width: 100%; max-height: 500px;">
+
+                <h3 class="fundamentos">Fundamentos</h3>
+                <p class="descripcion"> La reutilización de materiales es una decisión importante como método para
+                    cuidar el
+                    ambiente, dar un nuevo uso a los productos disminuye la cantidad de desechos que se pueden generar.
+                    Es
+                    relevante que se promueva desde edades tempranas en las escuelas, la importancia del reciclaje no
+                    solo
+                    como una practica amigable con el ambiente sino como una forma de emprendimiento innovadora, para lo
+                    cual es prioritario la motivacion y acompañamiento docente. <br> Por medio de este proyecto
+                    analizaremos
+                    con los niños mas en profundidad la importancia que tiene para el medio ambiente la reutilizacion de
+                    materiales, elaborando juntos juguetes que contribuyen al desarrollo infantil.
+                </p>
+                <ul class="listado">Propósitos:
+                    <li> Diseñar situaciones de enseñanza que posibiliten que los alumnos organicen, amplien y
+                        enriquezcan
+                        sus conocimientos acerca del ambiente social y natural.
+                    </li>
+                    <li> Favorecer la autonomia de los alumnos en cuanto a la resolucion de situaciones problematicas,
+                        la
+                        busqueda de informacion a través de variadas fuentes y la posibilida de arribar a conclusiones
+                        provisorias.
+                    </li>
+                    <li> Ofrecer el uso de materiales, tiempo y espacios diversos, para promover la creatividad, la
+                        expresión y la combinacion creativa de los mismos.
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Sección de Folklore -->
+            <section id="folklore" class="talleres">
+                <h2 class="titulo-seccion text-center">Nuestras Danzas Folkloricas</h2>
+                <img src="https://scontent.ftuc1-2.fna.fbcdn.net/v/t39.30808-6/448542451_2803870583095419_6778023428201768370_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFU1UT1doJRudQ08thCV6OQznZZVi2zOa_OdllWLbM5ryU2nZoow95yGCLj7tc3s_cv2fKDM6oMRGLfg680Ofmk&_nc_ohc=0EaQ5h4mLZcQ7kNvgF4h6p3&_nc_zt=23&_nc_ht=scontent.ftuc1-2.fna&_nc_gid=A_ooYCQFz0CmEOvXeUEiSZt&oh=00_AYAD03ihvIwOY1loSZIj0UlEi8D6jDh85FHZ2mDrWc0EKA&oe=67B8BDDF"
+                    alt="medio-ambiente" class="imagen-proyecto" style="height: auto; width: 100%; max-height: 500px;">
+                <h3 class="fundamentos">Fundamentos</h3>
+                <p class="descripcion"> "Que es el folklore sino el nutriente de la raiz-pueblo que se percibe aun sin
+                    verlo, como el olor del pan de la madera o el cantar de un pájaro que escuchamos y no vemos. Una
+                    mirada
+                    que no nos abandona y recorre las distancias con la cercania que da la pertenencia" (Amado Olmos.
+                    Letras
+                    de Folklore, Pág. XI) <br> Nuestras danzas folkloricas llenas de gracia y colorido, alegraron la
+                    vida de
+                    nuestros paisanos desde los albores de la patria. <br> Gran parte de nuestra musica folklorica se
+                    origina como musica para bailar surgida de la simbiosis entre la geografia, sus habitantes,
+                    conquistadores, y sus culturas. <br> "Somos portadores de un nombre, de una herencia de una historia
+                    ubicada en la Historia de un pais, de una región, una civilizacion. Somos sus depositarios y sus
+                    trasmisores. Somos sus pasadores" (Jacques Hassoun. Los contrabandistas de la memoria. Ed. LaFior.
+                    Bs.
+                    As. 1996,) <br> este proyecto surge de las necesidades de transmitir y profundizar, en los alumnos
+                    el
+                    conocimiento de nuestro folklore a través de nuestras danzas.</p>
+                <ul class="listado">Objetivos:
+                    <li> Conformar un grupo de baile integrado por alumnos deseosos de disfrutar y vivenciar.</li>
+                    <li> Nuestro patrimonio cultural en forma grupal respetando reglas de convivencia e
+                        individualidades.</li>
+                    <li> Valorar el lenguaje artistico no verbal como canal especifico y alternativo de comunicacion.
+                    </li>
+                    <li> Expresión y significación de sus sentimientos, emociones y pensamiento.</li>
+                    <li> Organizar coreograficas para las danzas folkloricas.</li>
+                    <li> Expresarse musicalmente a través del cuerpo de forma grupal.</li>
+                </ul>
+            </section>
+        </section>
+
+
+        <section>
+        </section>
+        </section>
+        <footer class="footer bg-primary text-white text-center text-lg-start mt-5 ">
+            <div class="container p-4">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <h5 class="text-uppercase">Escuela Mariano Ariza </h5>
+                        <p>
+                            Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y
+                            aprendizaje.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <h5 class="text-uppercase">Enlaces Rápidos</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
+                            <li><a href="novedades.html" class="text-white text-decoration-none">Novedades</a></li>
+                            <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
+                            <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-12">
+                        <h5 class="text-uppercase">Síguenos</h5>
+                        <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i
+                                class="fab fa-facebook fa-2x"></i></a>
+                        <h5 class="text-uppercase">CONTACTO</h5>
+                        <P>Telefono: +54386369088</P>
+                        <p>Domicilio: Calle Soldado Vazques S/N - Capitan Caceres</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center p-3 bg-dark">
+                © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
+            </div>
+        </footer>
+
+        <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script type="module" src="js/script.js"></script>
+</body>
+
+</html>

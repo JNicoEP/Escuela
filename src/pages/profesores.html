@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Documentación - Escuela Mariano Ariza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/login.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
+            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            Quienes somos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
+                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
+                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
+                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#authModal">Aula Virtual</a></li>
+                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
+                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
+                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MODAL DE REGISTRO -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm" method="POST" action="php/procesar_registro.php">
+                        <div class="mb-3">
+                            <label for="userType" class="form-label">Tipo de Usuario</label>
+                            <select id="userType" class="form-select">
+                                <option value="guest">Acceder aqui</option>
+                                <option value="register">Registrarse</option>
+                                <option value="login">Iniciar sesión</option>
+                            </select>
+                        </div>
+                        <div id="loginFields" class="form-group" style="display:none;">
+                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="loginEmail" name="email"
+                                placeholder="Correo Electrónico">
+                            <label for="loginPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="loginPassword" name="password"
+                                placeholder="Contraseña">
+                            <button type="submit" class="btn btn-primary mt-2" formaction="php/login.php">Iniciar
+                                sesión</button>
+                        </div>
+                        <div id="registerFields" class="form-group" style="display:none;">
+                            <label for="registerName" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="registerName" name="nombre"
+                                placeholder="Nombre Completo">
+                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="registerEmail" name="email"
+                                placeholder="Correo Electrónico">
+                            <label for="registerPassword" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="registerPassword" name="password"
+                                placeholder="Contraseña">
+                            <label for="rol_id" class="form-label">Registrarse como:</label>
+                            <select id="rol_id" name="rol_id" class="form-select">
+                                <option value="2">Docente</option>
+                                <option value="3" selected>Estudiante</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary mt-2">Registrarse</button>
+                        </div>
+                        <div id="registroMensaje" class="mt-2" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <header class="text-center py-4 bg-dark text-white">
+        <h1>PANEL DOCENTE</h1>
+        <p>Gestiona la documentación de esta zona</p>
+    </header>
+
+    <main class="container my-5">
+        <section class="container mb-5">
+            <h2 class="section-title text-primary mb-4">Subir Documentación</h2>
+            <form id="uploadForm" action="php/subir_material.php" method="post" enctype="multipart/form-data"
+                class="bg-light p-4 rounded shadow">
+                <div class="mb-3">
+                    <label for="curso" class="form-label">Selecciona el aula:</label>
+                    <select class="form-select" id="curso" name="curso" required>
+                        <option value="1_GRADO">1° Grado</option>
+                        <option value="2_GRADO">2° Grado</option>
+                        <option value="3_GRADO">3° Grado</option>
+                        <option value="4_GRADO">4° Grado</option>
+                        <option value="4_JARDIN">Jardín 4</option>
+                        <option value="5_GRADO">5° Grado</option>
+                        <option value="6_GRADO">6° Grado</option>
+                        <option value="5_JARDIN">Jardín 5</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="file" class="form-label">Selecciona un archivo:</label>
+                    <input type="file" class="form-control" id="file" name="material" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Subir Archivo</button>
+            </form>
+        </section>
+
+        <section class="container mb-4">
+            <h2 class="section-title text-success mb-4">Buscar Documentos</h2>
+            <form action="php/filtrar_documentos.php" method="post" enctype="multipart/form-data">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="filterCurso" class="form-label">Aula:</label>
+                        <select class="form-select" id="filterCurso" name="curso">
+                            <option value="all">Todas</option>
+                            <option value="1_GRADO">1° Grado</option>
+                            <option value="2_GRADO">2° Grado</option>
+                            <option value="3_GRADO">3° Grado</option>
+                            <option value="4_GRADO">4° Grado</option>
+                            <option value="5_GRADO">5° Grado</option>
+                            <option value="6_GRADO">6° Grado</option>
+                            <option value="4_JARDIN">4° jardín</option>
+                            <option value="5_JARDIN">5° Jardín </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="filterType" class="form-label">Tipo de archivo:</label>
+                        <select class="form-select" id="filterType" name="filterType">
+                            <option value="all">Todos</option>
+                            <option value="pdf">PDF</option>
+                            <option value="docx">Word</option>
+                            <option value="xlsx">Excel</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-success w-100">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section class="container mb-5 mt-4">
+            <h2 class="section-title text-success mb-4">Documentación Subida</h2>
+            <div class="mb-3">
+                <input type="text" id="documentacionSubidaSearchInput" class="form-control"
+                    placeholder="Buscar archivo..." onkeyup="filtrarArchivos()">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" id="documentacionSubidaFileList">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Archivo</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="section-title text-success mb-4 mt-4">Seleccionar Archivo</h2>
+            <select id="archivoSelector" class="form-select mb-3">
+                <option value="">Presionar aquí.</option>
+            </select>
+            <div class="btn-group" role="group">
+                <button id="descargarBtn" class="btn btn-success" disabled><i class="bi bi-download"></i>
+                    Descargar</button>
+                <button id="borrarBtn" class="btn btn-danger" disabled><i class="bi bi-trash"></i> Borrar</button>
+                <button id="editarBtn" class="btn btn-primary" disabled><i class="bi bi-pencil"></i> Editar</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
+                    <p>
+                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y
+                        aprendizaje.
+                    </p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
+                        <li><a href="materias.html" class="text-white text-decoration-none">Materias</a></li>
+                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
+                        <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-uppercase">Síguenos</h5>
+                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i
+                            class="fab fa-facebook fa-2x"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-3 bg-dark">
+            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script>
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo) {
+            const notificacion = document.createElement('div');
+            notificacion.classList.add('notificacion', tipo); // Sin espacio entre 'notificacion' y 'success'
+            notificacion.textContent = mensaje;
+            document.body.appendChild(notificacion);
+    
+            // Ocultar la notificación después de 3 segundos
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+    
+        // Mostrar notificación de bienvenida
+        mostrarNotificacion('¡Bienvenido al panel de Docentes! .', 'success');
+        // Mostrar/Ocultar sección de buscar documentos
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggleBuscarDocumentos');
+            const buscarSection = document.getElementById('buscarDocumentosSection');
+
+            toggleButton.addEventListener('click', function() {
+                if (buscarSection.style.display === 'none') {
+                    buscarSection.style.display = 'block';
+                } else {
+                    buscarSection.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
