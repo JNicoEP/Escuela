@@ -346,7 +346,7 @@ form .btn-primary {
     transition: all 0.2s ease;
 }
 
-/* Pestaña activa (más profesional) */
+/* Pestaña activa  */
 #authModal .nav-tabs .nav-link.active {
     color: #0d6efd; /* Color primario de Bootstrap */
     font-weight: 700;
@@ -874,35 +874,54 @@ form .btn-primary {
     font-weight: 500;
 }
 
-/*Pantalla de carga */
+/* ==============================================
+  Estilos del Loader
+  ==============================================
+*/
 
 #loader-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
+  /* Configuración del contenedor */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff; /* Fondo blanco sólido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* Esta es la capa que main.js ocultará seteando display: none; */
+}
+
+.loader-image {
+  width: 300px; /* Tamaño final del logo */
+  height: auto;
   
-  .loader-image {
-    width: 300px;
-    height: auto;
+  /* Aquí aplicamos la animación:
+    - fadeInScaleUp: El nombre de la animación (la definimos abajo)
+    - 1s: Duración (1 segundo)
+    - ease-out: Que termine suavemente
+    - forwards: Que se QUEDE en el estado final (grande y opaco)
+  */
+  animation: fadeInScaleUp 1s ease-out forwards;
+}
+
+/* Definición de la animación (@keyframes)
+  "Crecer y aparecer"
+*/
+@keyframes fadeInScaleUp {
+  from {
+    /* Estado inicial: pequeño y transparente */
+    transform: scale(0.5);
     opacity: 0;
-    transform: scale(0);
-    animation: fadeInScaleUp 1s forwards;
   }
-  
-  @keyframes fadeInScaleUp {
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  to {
+    /* Estado final: tamaño normal y visible */
+    transform: scale(1);
+    opacity: 1;
   }
+}
 
   /*modal notificacion*/
 .notificacion {

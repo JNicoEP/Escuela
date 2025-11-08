@@ -99,6 +99,7 @@
     <main id="adminPanelMain">
         <button id="verDocentes">Ver Docentes</button>
         <button id="verAlumnos">Ver Alumnos</button>
+        <button id="verPadres">Ver Padres</button>
 
         <div id="docentesSeccion" style="display: block;">
             <h2>Docentes</h2>
@@ -134,6 +135,25 @@
                     </tr>
                 </thead>
                 <tbody id="tablaBodyAlumnos">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="padresSeccion" style="display: none;">
+            <h2>Padres</h2>
+            <button class="padreFiltro" data-estado="pendiente">Pendientes</button>
+            <button class="padreFiltro" data-estado="aprobado">Aprobados</button>
+            <button class="padreFiltro" data-estado="rechazado">Rechazados</button>
+            <table id="tablaPadres">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo Electrónico</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBodyPadres">
                 </tbody>
             </table>
         </div>
@@ -178,13 +198,17 @@
         // --- LÓGICA DEL PANEL (MIGRADA DE PHP) ---
         const tablaDocentes = document.getElementById('tablaBodyDocentes');
         const tablaAlumnos = document.getElementById('tablaBodyAlumnos');
+        const tablaPadres = document.getElementById('tablaBodyPadres');
         const docentesSeccion = document.getElementById('docentesSeccion');
         const alumnosSeccion = document.getElementById('alumnosSeccion');
+        const padresSeccion = document.getElementById('padresSeccion');
         const verDocentesBtn = document.getElementById('verDocentes');
         const verAlumnosBtn = document.getElementById('verAlumnos');
+        const verPadresBtn = document.getElementById('verPadres');
 
         let docentesEstado = 'pendiente';
         let alumnosEstado = 'pendiente';
+        let padresEstado = 'pendiente';
 
         // Función para cargar usuarios desde Supabase
         async function cargarUsuarios(rolNombre, estado, tablaBody) {
@@ -254,13 +278,22 @@
         verDocentesBtn.addEventListener('click', () => {
             docentesSeccion.style.display = 'block';
             alumnosSeccion.style.display = 'none';
+            padresSeccion.style.display = 'none';
             cargarUsuarios('Docente', docentesEstado, tablaDocentes);
         });
 
         verAlumnosBtn.addEventListener('click', () => {
             alumnosSeccion.style.display = 'block';
             docentesSeccion.style.display = 'none';
+            padresSeccion.style.display = 'none';
             cargarUsuarios('Alumno', alumnosEstado, tablaAlumnos);
+        });
+
+        verPadresBtn.addEventListener('click', () => {
+            padresSeccion.style.display = 'block';
+            docentesSeccion.style.display = 'none';
+            alumnosSeccion.style.display = 'none';
+            cargarUsuarios('Padre', padresEstado, tablaPadres);
         });
 
         document.querySelectorAll('.docenteFiltro').forEach(button => {
@@ -274,6 +307,13 @@
             button.addEventListener('click', () => {
                 alumnosEstado = button.dataset.estado;
                 cargarUsuarios('Alumno', alumnosEstado, tablaAlumnos);
+            });
+        });
+
+        document.querySelectorAll('.padreFiltro').forEach(button => {
+            button.addEventListener('click', () => {
+                padresEstado = button.dataset.estado;
+                cargarUsuarios('Padre', padresEstado, tablaPadres);
             });
         });
 

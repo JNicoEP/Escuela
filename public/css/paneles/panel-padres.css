@@ -1,0 +1,320 @@
+/* ----------------------------------
+   Estilos para Panel de Padres
+   (panel-padres.css)
+---------------------------------- */
+
+body {
+    background-color: #f4f7fa; /* Fondo gris-azulado claro */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Estilo general de tarjetas (Soft UI) */
+.card {
+    border: none;
+    border-radius: 1rem; /* Esquinas redondeadas grandes */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra suave */
+}
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+}
+
+/* Navbar */
+.profile-avatar-nav {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ff9800; /* Naranja */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+/* --- VISTA 1: Selector --- */
+.selector-container {
+    min-height: calc(100vh - 70px); /* Resta altura del navbar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#selector-view .card {
+    border-radius: 1.5rem;
+}
+
+/* --- NUEVO: Estilos para Búsqueda en Vivo --- */
+
+/* Contenedor de resultados */
+#search-results-list {
+    /* Posicionado absolutamente dentro del .position-relative del HTML */
+    top: 100%; /* Justo debajo del input */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    border-top: none;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo de cada item */
+#search-results-list .list-group-item-action {
+    padding: 0.75rem 1.25rem;
+}
+
+#search-results-list .list-group-item-action:hover,
+#search-results-list .list-group-item-action:focus {
+    background-color: #f8f9fa; /* Gris claro al pasar el mouse */
+}
+
+/* Ocultar por defecto */
+#search-results-list:empty {
+    display: none;
+}
+/* Fin estilos búsqueda */
+
+/* --- VISTA 2: Dashboard --- */
+
+/* Tarjetas de Estadísticas */
+.stat-card {
+    border-radius: 1.25rem;
+    color: #ffffff;
+}
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+.stat-card h6 {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+.stat-card h3 {
+    font-size: 2.25rem;
+}
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Colores de Tarjetas de Estadísticas */
+.stat-card-blue { background-color: #2979ff; }
+.stat-card-green { background-color: #4caf50; }
+.stat-card-purple { background-color: #7b1fa2; }
+.stat-card-orange { background-color: #f57c00; }
+.stat-card-red { background-color: #d32f2f; }
+.stat-card-yellow { background-color: #ffc107; color: #333; }
+.stat-card-yellow h6 { color: rgba(0, 0, 0, 0.6); }
+
+/* Pestañas (Tabs) */
+.nav-tabs-card {
+    border-bottom: 0;
+    padding: 0 0.5rem;
+}
+.nav-tabs-card .nav-link {
+    border: 0;
+    color: #6c757d; /* Gris (inactivo) */
+    font-weight: 500;
+    padding: 1rem 1.25rem;
+}
+.nav-tabs-card .nav-link.active {
+    color: #0d6efd; /* Azul (activo) */
+    background-color: transparent;
+    border-bottom: 3px solid #0d6efd;
+}
+.nav-tabs-card .nav-link:hover {
+    color: #000;
+}
+.nav-tabs-card .nav-link .badge {
+    font-size: 0.65rem;
+    vertical-align: top;
+    margin-left: 4px;
+}
+
+/* Tarjeta ID Alumno (Fila 2) */
+.student-id-card .card-body {
+    padding: 1.25rem 1.5rem;
+}
+.profile-avatar-main {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #e9ecef; /* Gris claro */
+    color: #adb5bd; /* Icono gris */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    background-color: #e8dff5; /* Púrpura pastel */
+    color: #7b1fa2;
+}
+#student-name {
+    font-weight: 600;
+}
+
+/* Resumen Académico (Fila 3) */
+.summary-badge {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+.summary-badge-blue { background-color: #e7f0ff; color: #0d6efd; }
+.summary-badge-green { background-color: #e8f5e9; color: #198754; }
+.summary-badge-purple { background-color: #f3e5f5; color: #6f42c1; }
+
+/* Alertas Recientes (Fila 4) */
+.alerta-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.alerta-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+.alerta-item .alerta-icon {
+    font-size: 1.25rem;
+    color: #d32f2f; /* Rojo */
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Pestaña Asistencia */
+#asistencia-detallada-lista .list-group-item {
+    padding: 1rem 0.5rem;
+}
+#asistencia-detallada-lista .badge {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4em 0.75em;
+}
+
+/* Pestaña Tareas */
+.tarea-item-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.tarea-item-card .materia {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6f42c1; /* Púrpura */
+    text-transform: uppercase;
+}
+.tarea-item-card .titulo {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+.tarea-item-card .fecha {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+.tarea-item-card .puntos {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #0d6efd; /* Azul */
+}
+
+/* Pestaña Horario */
+.horario-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+}
+.horario-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.horario-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-right: 1rem;
+    background-color: #e7f0ff;
+    color: #0d6efd;
+}
+.horario-card .materia {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+.horario-card .profesor {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+.horario-card .info-item {
+    font-size: 0.9rem;
+    color: #495057;
+}
+.horario-card .info-item i {
+    width: 15px;
+    margin-right: 8px;
+    color: #6c757d;
+}
+
+/* Pestaña Mensajes */
+.mensaje-item {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+.mensaje-item:last-child {
+    border-bottom: 0;
+}
+.mensaje-item:hover {
+    background-color: #f8f9fa;
+}
+.mensaje-item .remitente {
+    font-weight: 500;
+}
+.mensaje-item .extracto {
+    font-size: 0.9rem;
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+.mensaje-tag {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25em 0.6em;
+}
+.mensaje-tag-nuevo {
+    background-color: #e7f0ff;
+    color: #0d6efd;
+}
+.mensaje-tag-urgente {
+    background-color: #fdeaea;
+    color: #d32f2f;
+}

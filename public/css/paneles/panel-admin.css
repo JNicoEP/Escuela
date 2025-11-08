@@ -1,0 +1,152 @@
+/* ----------------------------------
+   Estilos para Panel de Admin
+   (panel-admin.css)
+---------------------------------- */
+
+body {
+    background-color: #f4f7fa; /* Gris claro de fondo de página */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 1. Cabecera (Navbar/Header) */
+.admin-header {
+    background-color: #0d6efd; /* Azul primario de Bootstrap */
+    padding: 1rem 1.5rem;
+    color: white;
+}
+
+/* Botón verde personalizado (soft) */
+.btn-success-soft {
+    background-color: rgba(25, 135, 84, 0.1); /* Verde (success) con 10% opacidad */
+    border-color: rgba(25, 135, 84, 0.2);
+    color: #0a5837; /* Verde oscuro para el texto */
+    font-weight: 500;
+}
+.btn-success-soft:hover,
+.btn-success-soft.active { /* Estilo activo para filtros */
+    background-color: rgba(25, 135, 84, 0.2);
+    color: #0a5837;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
+}
+
+/* Estilo general de tarjetas (Soft UI) */
+.card {
+    border: none;
+    border-radius: 1rem; /* Esquinas redondeadas grandes */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra suave */
+}
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Pestañas (Tabs) */
+.nav-tabs-card {
+    border-bottom: 0;
+    padding: 0 0.5rem;
+}
+.nav-tabs-card .nav-link {
+    border: 0;
+    color: #6c757d; /* Gris (inactivo) */
+    font-weight: 500;
+    padding: 1rem 1.25rem;
+}
+.nav-tabs-card .nav-link.active {
+    color: #0d6efd; /* Azul (activo) */
+    background-color: transparent;
+    border-bottom: 3px solid #0d6efd;
+}
+.nav-tabs-card .nav-link:hover {
+    color: #000;
+}
+
+/* Estilos de Tablas */
+.table {
+    border-color: #e9ecef;
+}
+.table thead {
+    background-color: #f8f9fa; /* Fondo cabecera tabla */
+}
+.table th {
+    font-weight: 500;
+    color: #495057;
+}
+.table td {
+    vertical-align: middle;
+}
+
+/* NUEVO: Estilo para fila seleccionada */
+.table-row-selected {
+    background-color: #e7f0ff !important; /* Azul pastel */
+}
+.table-row-selected td {
+    font-weight: 500;
+}
+
+/* Badges de Estado (para Gestión Docentes) */
+.badge.bg-warning-soft {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #664d03;
+}
+.badge.bg-success-soft {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #0a5837;
+}
+.badge.bg-danger-soft {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #842029;
+}
+
+/* Lista de Documentación */
+.document-item .icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background-color: #e7f0ff;
+    color: #0d6efd;
+}
+.document-item .info .profesor {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+.document-item .info .grado {
+    font-size: 0.8rem;
+    color: #6f42c1; /* Púrpura */
+    font-weight: 500;
+}
+
+/* Lista de Mensajería */
+.mensaje-item .remitente {
+    font-weight: 500;
+}
+.mensaje-item .extracto {
+    font-size: 0.9rem;
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+.mensaje-tag {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25em 0.6em;
+}
+
+/* --- NUEVO: Estilos para el fade out del saludo --- */
+#welcome-alert {
+    /* Define la transición: 0.5s de duración para la opacidad */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#welcome-alert.fade-out {
+    /* Estado final: totalmente transparente y movido un poco hacia arriba */
+    opacity: 0;
+    transform: translateY(-10px);
+}

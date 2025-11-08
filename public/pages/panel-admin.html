@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Font Awesome (para íconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="/src/css/paneles/panel-admin.css">
+</head>
+<body class="bg-light-subtle">
+
+    <!-- 1. Cabecera (Navbar/Header) -->
+    <header class="admin-header shadow-sm">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 text-white">
+                <i class="fas fa-shield-alt me-2"></i>
+                Panel de Administración
+            </h4>
+            <a href="/index.html" class="btn btn-success-soft" id="ir-inicio-btn">
+                <i class="fas fa-home me-2"></i> Ir al Inicio
+            </a>
+        </div>
+    </header>
+
+    <!-- Contenedor principal -->
+    <div class="container-fluid p-4">
+
+        <!-- Mensaje de Bienvenida (Se desvanece) -->
+        <div class="alert alert-primary border-0 shadow-sm" role="alert" id="welcome-alert">
+            <h5 class="alert-heading mb-0">¡Bienvenida, Directora de la Institución!</h5>
+        </div>
+
+        <!-- 2. Navegación Principal (Tabs) -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 pt-3">
+                <ul class="nav nav-tabs-card" id="adminTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="auditoria-tab" data-bs-toggle="tab" data-bs-target="#auditoria-tab-pane" type="button" role="tab">
+                            <i class="fas fa-history me-2"></i> Auditoría
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="gestion-docentes-tab" data-bs-toggle="tab" data-bs-target="#gestion-docentes-tab-pane" type="button" role="tab">
+                            <i class="fas fa-chalkboard-teacher me-2"></i> Gestión Docentes
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="documentacion-tab" data-bs-toggle="tab" data-bs-target="#documentacion-tab-pane" type="button" role="tab">
+                            <i class="fas fa-file-alt me-2"></i> Documentación
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mensajeria-tab" data-bs-toggle="tab" data-bs-target="#mensajeria-tab-pane" type="button" role="tab">
+                            <i class="fas fa-envelope me-2"></i> Mensajería
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contenido de las Pestañas -->
+            <div class="tab-content" id="adminTabContent">
+                
+                <!-- Pestaña 1: Auditoría -->
+                <div class="tab-pane fade show active" id="auditoria-tab-pane" role="tabpanel">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Auditoría de Accesos</h5>
+                        <!-- Filtros -->
+                        <div class="mb-3">
+                            <button class="btn btn-success-soft" id="ver-docentes-btn" data-rol="docente"><i class="fas fa-user-tie me-1"></i> Ver Docentes</button>
+                            <button class="btn btn-success-soft" id="ver-alumnos-btn" data-rol="alumno"><i class="fas fa-user-graduate me-1"></i> Ver Alumnos</button>
+                            <button class="btn btn-success-soft" id="ver-padres-btn" data-rol="padre"><i class="fas fa-users me-1"></i> Ver Padres</button>
+                            <button class="btn btn-success-soft" id="ver-todos-btn" data-rol="todos"><i class="fas fa-globe me-1"></i> Ver Todos</button>
+                        </div>
+                        <!-- Tabla -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Usuario (ID)</th>
+                                        <th scope="col">Rol</th>
+                                        <th scope="col">Fecha/Hora</th>
+                                        <th scope="col">Acción</th>
+                                        <th scope="col">IP</th>
+                                    </tr>
+                                <thead>
+                                <tbody id="auditoria-table-body">
+                                    <!-- JS insertará el historial aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 2: Gestión Docentes -->
+                <div class="tab-pane fade" id="gestion-docentes-tab-pane" role="tabpanel">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Gestión de Docentes</h5>
+                        <!-- Filtros -->
+                        <div class="mb-3">
+                            <button class="btn btn-success-soft" id="pendientes-btn" data-estado="pendiente"><i class="fas fa-clock me-1"></i> Pendientes</button>
+                            <button class="btn btn-success-soft" id="aprobados-btn" data-estado="aprobado"><i class="fas fa-check-circle me-1"></i> Aprobados</button>
+                            <button class="btn btn-success-soft" id="rechazados-btn" data-estado="rechazado"><i class="fas fa-times-circle me-1"></i> Rechazados</button>
+                        </div>
+                        
+                        <!-- NUEVO: Acciones en Lote -->
+                        <div id="bulk-actions-container" class="card bg-light p-3 mb-3" style="display: none;">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-auto">
+                                    <span id="bulk-count" class="fw-bold">0 seleccionados</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="bulk-action-select">
+                                        <option value="">Aplicar acción...</option>
+                                        <option value="aprobado">Aprobar</option>
+                                        <option value="rechazado">Rechazar</option>
+                                        <option value="pendiente">Poner en Pendiente</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-primary" id="bulk-apply-btn">Aplicar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">
+                                            <input class="form-check-input" type="checkbox" id="select-all-checkbox">
+                                        </th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Correo Electrónico</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                <thead>
+                                <tbody id="docentes-table-body">
+                                    <!-- JS insertará los docentes aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 3: Documentación -->
+                <div class="tab-pane fade" id="documentacion-tab-pane" role="tabpanel">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Documentación Subida por Profesores</h5>
+                        <!-- Filtros -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select" id="filtro-grado">
+                                    <option value="">Filtrar por Grado...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="filtro-profesor" placeholder="Filtrar por Profesor...">
+                            </div>
+                        </div>
+                        <!-- Lista de Documentos -->
+                        <div class="list-group" id="documentacion-list">
+                            <!-- JS insertará documentos aquí -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 4: Mensajería -->
+                <div class="tab-pane fade" id="mensajeria-tab-pane" role="tabpanel">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Mensajería Interna</h5>
+                            <button class="btn btn-success-soft" id="nuevo-mensaje-admin-btn" data-bs-toggle="modal" data-bs-target="#adminNuevoMensajeModal">
+                                <i class="fas fa-plus me-2"></i> Nuevo Mensaje
+                            </button>
+                        </div>
+                        <div class="row g-4">
+                            <!-- Recibidos -->
+                            <div class="col-lg-6">
+                                <h6 class="mb-3"><i class="fas fa-inbox me-2"></i> Recibidos</h6>
+                                <div class="list-group" id="admin-recibidos-lista">
+                                    <!-- JS insertará mensajes recibidos -->
+                                </div>
+                            </div>
+                            <!-- Enviados -->
+                            <div class="col-lg-6">
+                                <h6 class="mb-3"><i class="fas fa-paper-plane me-2"></i> Enviados</h6>
+                                <div class="list-group" id="admin-enviados-lista">
+                                    <!-- JS insertará mensajes enviados -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- .tab-content -->
+        </div> <!-- .card -->
+    </div> <!-- .container-fluid -->
+
+
+    <!-- Modal: Nuevo Mensaje (Admin) -->
+    <div class="modal fade" id="adminNuevoMensajeModal" tabindex="-1" aria-labelledby="adminNuevoMensajeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="adminNuevoMensajeModalLabel">Redactar Nuevo Mensaje</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-admin-nuevo-mensaje">
+                        <div class="mb-3">
+                            <label for="admin-mensaje-para" class="form-label">Para:</label>
+                            <select class="form-select" id="admin-mensaje-para">
+                                <option value="">Seleccionar destinatario...</option>
+                                <!-- JS llenará esto -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin-mensaje-asunto" class="form-label">Asunto:</label>
+                            <input type="text" class="form-control" id="admin-mensaje-asunto" placeholder="Ej: Anuncio importante">
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin-mensaje-cuerpo" class="form-label">Mensaje:</label>
+                            <textarea class="form-control" id="admin-mensaje-cuerpo" rows="6" placeholder="Escriba su mensaje aquí..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="admin-enviar-mensaje-btn">
+                        <i class="fas fa-paper-plane me-2"></i> Enviar Mensaje
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Script modular personalizado -->
+    <!-- Ajusta la ruta si 'panel-admin.html' está en 'src/pages/' -->
+    <script type="module" src="/src/js/panel-admin.js"></script>
+</body>
+</html>

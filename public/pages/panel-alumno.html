@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Estudiante</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Font Awesome (para íconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="/src/css/paneles/panel-alumno.css">
+</head>
+<body>
+
+    <!-- 1. Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap text-primary me-2"></i>
+                <strong>Panel Alumno</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/index.html"><i class="fas fa-home me-1"></i> Inicio</a>
+                    </li>
+                    </ul>
+                <div class="d-flex align-items-center">
+                    <div class="text-end me-3">
+                        <small class="text-muted d-block">Matrícula</small>
+                        <strong id="nav-matricula">2044</strong>
+                    </div>
+                    <div class="profile-avatar-nav">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor principal -->
+    <div class="container-fluid px-4 py-4">
+
+        <!-- Fila 1: Tarjetas de Estadísticas -->
+        <div class="row g-4 mb-4">
+            <!-- Tarjeta 1: Promedio General -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card stat-card-blue shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Promedio General</h6>
+                            <h3 class="fw-bold mb-0" id="stat-promedio-valor">--</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tarjeta 2: Asistencia -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card stat-card-green shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Asistencia</h6>
+                            <h3 class="fw-bold mb-0" id="stat-asistencia-valor">--</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tarjeta 3: Cursos Activos -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card stat-card-purple shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Cursos Activos</h6>
+                            <h3 class="fw-bold mb-0" id="stat-cursos-valor">--</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Tarjeta 4: Tareas Pendientes -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card stat-card-orange shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Tareas Pendientes</h6>
+                            <h3 class="fw-bold mb-0" id="stat-tareas-valor">--</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fila 2: Barra de Pestañas (Tabs) -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-0 pt-3">
+                <ul class="nav nav-tabs-card" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="perfil-tab" data-bs-toggle="tab" data-bs-target="#perfil-tab-pane" type="button" role="tab">
+                            <i class="fas fa-user me-2"></i> Perfil
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="calificaciones-tab" data-bs-toggle="tab" data-bs-target="#calificaciones-tab-pane" type="button" role="tab">
+                            <i class="fas fa-clipboard-check me-2"></i> Calificaciones
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="horario-tab" data-bs-toggle="tab" data-bs-target="#horario-tab-pane" type="button" role="tab">
+                            <i class="fas fa-calendar-alt me-2"></i> Horario
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="asistencia-tab" data-bs-toggle="tab" data-bs-target="#asistencia-tab-pane" type="button" role="tab">
+                            <i class="fas fa-user-check me-2"></i> Asistencia
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tareas-tab" data-bs-toggle="tab" data-bs-target="#tareas-tab-pane" type="button" role="tab">
+                            <i class="fas fa-tasks me-2"></i> Tareas
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Fila 3: Contenido de las Pestañas -->
+        <div class="tab-content" id="myTabContent">
+            
+            <!-- Contenido Pestaña 1: Perfil -->
+            <div class="tab-pane fade show active" id="perfil-tab-pane" role="tabpanel">
+                <div class="row g-4">
+                    <!-- Columna Izquierda: Perfil de Usuario -->
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body text-center p-4">
+                                <div class="profile-avatar-main mx-auto mb-3">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h4 class="mb-1" id="profile-name">Cargando...</h4>
+                                <p class="text-muted" id="profile-matricula">Matrícula: ...</p>
+                                
+                                <div class="d-flex justify-content-around mt-4 pt-4 border-top">
+                                    <div class="text-center">
+                                        <h4 class="fw-bold mb-0" id="profile-grado">--</h4>
+                                        <small class="text-muted">Grado</small>
+                                    </div>
+                                    <div class="text-center">
+                                        <h4 class="fw-bold mb-0" id="profile-seccion">--</h4>
+                                        <small class="text-muted">Sección</small>
+                                    </div>
+                                    <div class="text-center">
+                                        <h4 class="fw-bold mb-0" id="profile-promedio-card">--</h4>
+                                        <small class="text-muted">Promedio</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Columna Derecha: Información Personal -->
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body p-4">
+                                <h5 class="mb-4">Información Personal</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-user"></i>
+                                            <div>
+                                                <small class="text-muted">Nombre Completo</small>
+                                                <p class="fw-medium" id="info-nombre">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-calendar"></i>
+                                            <div>
+                                                <small class="text-muted">Fecha de Nacimiento</small>
+                                                <p class="fw-medium" id="info-fecha-nacimiento">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-envelope"></i>
+                                            <div>
+                                                <small class="text-muted">Email</small>
+                                                <p class="fw-medium" id="info-email">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-phone"></i>
+                                            <div>
+                                                <small class="text-muted">Teléfono</small>
+                                                <p class="fw-medium" id="info-telefono">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="info-field">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <div>
+                                                <small class="text-muted">Dirección</small>
+                                                <p class="fw-medium" id="info-direccion">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-user-shield"></i>
+                                            <div>
+                                                <small class="text-muted">Tutor</small>
+                                                <p class="fw-medium" id="info-tutor">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido Pestaña 2: Calificaciones -->
+            <div class="tab-pane fade" id="calificaciones-tab-pane" role="tabpanel">
+                <div class="card shadow-sm border-0"><div class="card-body p-4">Contenido de Calificaciones aquí...</div></div>
+            </div>
+            <!-- Contenido Pestaña 3: Horario -->
+            <div class="tab-pane fade" id="horario-tab-pane" role="tabpanel">
+                <div class="card shadow-sm border-0"><div class="card-body p-4">Contenido de Horario aquí...</div></div>
+            </div>
+            <!-- Contenido Pestaña 4: Asistencia -->
+            <div class="tab-pane fade" id="asistencia-tab-pane" role="tabpanel">
+                <div class="card shadow-sm border-0"><div class="card-body p-4">Contenido de Asistencia aquí...</div></div>
+            </div>
+            <!-- Contenido Pestaña 5: Tareas -->
+            <div class="tab-pane fade" id="tareas-tab-pane" role="tabpanel">
+                <div class="card shadow-sm border-0"><div class="card-body p-4">Contenido de Tareas aquí...</div></div>
+            </div>
+
+        </div>
+
+        <!-- Fila 4: Resumen Académico -->
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-body p-4">
+                <h5 class="mb-4">Resumen Académico</h5>
+                <div class="row g-4 text-center">
+                    <div class="col-md-4">
+                        <div class="summary-badge summary-badge-blue mx-auto">
+                            <span id="summary-promedio">--</span>
+                        </div>
+                        <p class="mb-0 mt-2 fw-medium">Promedio General</p>
+                        <small class="text-muted">Acumulado del año</small>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-badge summary-badge-green mx-auto">
+                            <span id="summary-mejor-materia-val">--</span>
+                        </div>
+                        <p class="mb-0 mt-2 fw-medium">Mejor Materia</p>
+                        <small class="text-muted" id="summary-mejor-materia-label">...</small>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-badge summary-badge-purple mx-auto">
+                            <span id="summary-materias">--</span>
+                        </div>
+                        <p class="mb-0 mt-2 fw-medium">Materias</p>
+                        <small class="text-muted">Este periodo</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <!-- Script modular personalizado -->
+    <script type="module" src="panel-alumno.js"></script>
+</body>
+</html>

@@ -1,65 +1,94 @@
-// src/js/main.js
+// PASO 1: Importar el HTML como texto plano (¡La forma Vite!)
+// Usamos rutas relativas (..) para "subir" de /js a /src
+import navbarHtml from '../components/navbar/navbar.html?raw';
+import modalsHtml from '../components/modal/modals.html?raw';
+
+/**
+ * Función para cargar la barra de navegación
+ */
+function loadNavbar() {
+    try {
+        const navbarContainer = document.getElementById('navbar-container');
+        if (navbarContainer) {
+            navbarContainer.innerHTML = navbarHtml; 
+        } else {
+            console.error('No se encontró el contenedor del navbar (#navbar-container).');
+        }
+    } catch (error) {
+        console.error('Error al INYECTAR el navbar:', error);
+    }
+}
 
 /**
  * Función para cargar los modals
- * Usa async/await para que podamos esperar a que termine.
  */
-async function loadModals() {
-    const modalsPath = '/src/components/modal/modals.html';
+function loadModals() {
     try {
-        const response = await fetch(modalsPath);
-        if (!response.ok) {
-            throw new Error('No se pudo cargar el archivo de modals.');
-        }
-        const html = await response.text();
-        
-        // Crear un contenedor temporal para manipular el DOM
         const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = html;
+        tempContainer.innerHTML = modalsHtml;
 
-        // Extraer la barra de navegación
-        const navbar = tempContainer.querySelector('nav');
-        const navbarContainer = document.getElementById('navbar-container');
-        
-        if (navbar && navbarContainer) {
-            navbarContainer.appendChild(navbar);
-        } else {
-            console.error('No se encontró la barra de navegación o el contenedor.');
-        }
-
-        // Extraer y adjuntar los modales directamente al body
         const modals = tempContainer.querySelectorAll('.modal');
         modals.forEach(modal => {
             document.body.appendChild(modal);
         });
-        console.log('Modals cargados e inyectados.');
-
+        console.log('Modals inyectados (desde import ?raw).');
     } catch (error) {
-        console.error('Error al cargar los modals:', error);
+        console.error('Error al INYECTAR los modals:', error);
     }
 }
 
+/**
+ * Función para ocultar la pantalla de carga
+ */
+function hideLoader() {
+    const loaderContainer = document.getElementById('loader-container');
+    if (loaderContainer) {
+        loaderContainer.style.display = 'none';
+    }
+}
 /**
  * Función principal que arranca la aplicación
  */
 async function bootstrapApp() {
     
-    // 1. Cargamos los modals y ESPERAMOS a que estén listos
-    await loadModals();
+    // PASO 1: Inyectar el esqueleto HTML.
+    loadNavbar();
+    loadModals();
 
-    // 2. AHORA que los modals ESTÁN en el DOM, importamos los scripts
-    //    que los necesitan (como login.js e index.js)
-    try {
-        // Importamos el script de login (que ahora sí encontrará los modals)
-        await import('/src/js/login.js');
-        
-        // Importamos el script de la página de inicio
-        await import('/src/js/pages/index.js');
+    // PASO 2: Iniciar la carga de scripts DE FORMA ASÍNCRONA
+    const loadScripts = async () => {
+        try {
+            console.log("Intentando cargar modal.js...");
+            await import('./modal.js');
+            console.log("OK: modal.js cargado.");
 
-    } catch (error) {
-        console.error('Error al cargar los scripts de la página:', error);
-    }
+            console.log("Intentando cargar login.js...");
+            await import('./login.js');
+            console.log("OK: login.js cargado.");
+
+            console.log("Intentando cargar pages/index.js...");
+            await import('./pages/index.js');
+            console.log("OK: pages/index.js cargado.");
+        } catch (error) {
+            console.error('Error al cargar los scripts de la página:', error);
+        }
+    };
+
+    // PASO 3: Crear una promesa de tiempo mínimo (1000ms = 1 segundo)
+    // Esto debe coincidir con la duración de tu animación CSS
+    const minimumDisplayTime = new Promise(resolve => setTimeout(resolve, 1000));
+
+    // PASO 4: Esperar a que AMBAS promesas se cumplan
+    // La app carga Y el temporizador de 1s termina.
+    await Promise.all([
+        loadScripts(),
+        minimumDisplayTime
+    ]);
+
+    // PASO 5: Ocultar el loader
+    // Esto ahora solo se ejecuta DESPUÉS de 1 segundo Y cuando la app está lista.
+    hideLoader();
 }
 
-// 3. Iniciar todo
+// Iniciar todo
 bootstrapApp();

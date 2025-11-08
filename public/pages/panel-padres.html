@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Padres</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="/src/css/paneles/panel-padres.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-school text-primary me-2"></i>
+                <strong>Panel Padres</strong> 
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> Inicio</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="text-end me-3">
+                        <small class="text-muted d-block">Padre de Familia</small>
+                    </div>
+                    <div class="profile-avatar-nav">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="selector-view" class="selector-container container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-user-graduate fa-3x text-primary mb-3"></i>
+                            <h4 class="fw-bold">Consultar Estudiante</h4>
+                            <p class="text-muted">Ingrese el nombre completo de su hijo para ver su progreso.</p>
+                        </div>
+                        
+                        <div class="position-relative">
+                            <div class="mb-3">
+                                <label for="nombre-input" class="form-label">Nombre y Apellido del Alumno</label>
+                                <input type="text" class="form-control form-control-lg" id="nombre-input" placeholder="Ej: Juan Carlos Pérez García" autocomplete="off">
+                            </div>
+                            <div id="search-results-list" class="list-group position-absolute w-100">
+                                </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button class="btn btn-primary btn-lg" id="buscar-btn">
+                                <i class="fas fa-search me-2"></i> Buscar Alumno
+                            </button>
+                        </div>
+                        <div id="error-mensaje" class="text-danger text-center mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-content" style="display: none;">
+        
+        <div class="container-fluid px-4 py-4">
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-0 pt-3">
+                    <ul class="nav nav-tabs-card" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="inicio-tab" data-bs-toggle="tab" data-bs-target="#inicio-tab-pane" type="button" role="tab">
+                                <i class="fas fa-home me-2"></i> Inicio
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="calificaciones-tab" data-bs-toggle="tab" data-bs-target="#calificaciones-tab-pane" type="button" role="tab">
+                                <i class="fas fa-clipboard-check me-2"></i> Calificaciones
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="asistencia-tab" data-bs-toggle="tab" data-bs-target="#asistencia-tab-pane" type="button" role="tab">
+                                <i class="fas fa-user-check me-2"></i> Asistencia
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tareas-tab" data-bs-toggle="tab" data-bs-target="#tareas-tab-pane" type="button" role="tab">
+                                <i class="fas fa-tasks me-2"></i> Tareas
+                            </button>
+                        </li>
+                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="horario-tab" data-bs-toggle="tab" data-bs-target="#horario-tab-pane" type="button" role="tab">
+                                <i class="fas fa-calendar-alt me-2"></i> Horario
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="mensajes-tab" data-bs-toggle="tab" data-bs-target="#mensajes-tab-pane" type="button" role="tab">
+                                <i class="fas fa-envelope me-2"></i> Mensajes
+                                <span class="badge rounded-pill bg-danger" id="nav-mensajes-badge">?</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="myTabContent">
+                
+                <div class="tab-pane fade show active" id="inicio-tab-pane" role="tabpanel">
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card stat-card stat-card-purple shadow-sm">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Hijos Registrados</h6>
+                                        <h3 class="fw-bold mb-0" id="stat-hijos">--</h3>
+                                    </div>
+                                    <div class="stat-icon"><i class="fas fa-book-reader"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card stat-card stat-card-blue shadow-sm">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Mensajes Nuevos</h6>
+                                        <h3 class="fw-bold mb-0" id="stat-mensajes">--</h3>
+                                    </div>
+                                    <div class="stat-icon"><i class="fas fa-comment-alt"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card stat-card stat-card-orange shadow-sm">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Tareas Pendientes</h6>
+                                        <h3 class="fw-bold mb-0" id="stat-tareas">--</h3>
+                                    </div>
+                                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card stat-card stat-card-green shadow-sm">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Progreso General</h6>
+                                        <h3 class="fw-bold mb-0" id="stat-progreso">--</h3>
+                                    </div>
+                                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm border-0 mb-4 student-id-card">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="profile-avatar-main me-3">
+                                <span id="student-avatar-letter">?</span>
+                            </div>
+                            <div>
+                                <h4 class="mb-0" id="student-name">Cargando...</h4>
+                                <span class="text-muted" id="student-grado-seccion">...</span> | 
+                                <span class="text-muted" id="student-matricula">Matrícula: ...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="summary-badge summary-badge-blue mx-auto">
+                                        <span id="summary-promedio">--</span>
+                                    </div>
+                                    <p class="mb-1 mt-3 fw-medium">Promedio General</p>
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill" id="summary-promedio-alerta" style="display: none;"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="summary-badge summary-badge-green mx-auto">
+                                        <span id="summary-asistencia">--</span>
+                                    </div>
+                                    <p class="mb-1 mt-3 fw-medium">Asistencia</p>
+                                    <small class="text-muted" id="summary-asistencia-label">...</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="summary-badge summary-badge-purple mx-auto">
+                                        <span id="summary-cursos">--</span>
+                                    </div>
+                                    <p class="mb-1 mt-3 fw-medium">Cursos Activos</p>
+                                    <small class="text-muted">Este periodo</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <h5 class="mb-3">Alertas Recientes</h5>
+                            <div id="alertas-recientes-lista">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="calificaciones-tab-pane" role="tabpanel">
+                    <div class="card shadow-sm border-0"><div class="card-body p-4">Contenido de Calificaciones aquí...</div></div>
+                </div>
+
+                <div class="tab-pane fade" id="asistencia-tab-pane" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="mb-3">Resumen de Asistencia</h5>
+                                    <div class="card stat-card stat-card-green mb-3">
+                                        <div class="card-body"><h6 class="mb-0">Presente</h6><h3 class="fw-bold mb-0" id="asistencia-presente">--</h3></div>
+                                    </div>
+                                    <div class="card stat-card stat-card-red mb-3">
+                                        <div class="card-body"><h6 class="mb-0">Ausente</h6><h3 class="fw-bold mb-0" id="asistencia-ausente">--</h3></div>
+                                    </div>
+                                    <div class="card stat-card stat-card-orange mb-3">
+                                        <div class="card-body"><h6 class="mb-0">Tardanzas</h6><h3 class="fw-bold mb-0" id="asistencia-tardanza">--</h3></div>
+                                    </div>
+                                    <div class="card stat-card stat-card-blue mb-0">
+                                        <div class="card-body"><h6 class="mb-0">Justificado</h6><h3 class="fw-bold mb-0" id="asistencia-justificado">--</h3></div>
+                                    </div>
+                                    <hr>
+                                    <h5 class="text-center" id="asistencia-total-porcentaje">--%</h5>
+                                    <p class="text-center text-muted mb-0">Asistencia Total</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm border-0 h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="mb-3">Registro Detallado</h5>
+                                    <ul class="list-group list-group-flush" id="asistencia-detallada-lista">
+                                        </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tareas-tab-pane" role="tabpanel">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="card stat-card stat-card-red shadow-sm">
+                                <div class="card-body"><h6 class="mb-0">Pendientes</h6><h3 class="fw-bold mb-0" id="tareas-pendientes">--</h3></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stat-card stat-card-yellow shadow-sm">
+                                <div class="card-body"><h6 class="mb-0">En Progreso</h6><h3 class="fw-bold mb-0" id="tareas-progreso">--</h3></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stat-card stat-card-blue shadow-sm">
+                                <div class="card-body"><h6 class="mb-0">Entregadas</h6><h3 class="fw-bold mb-0" id="tareas-entregadas">--</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <h5 class="mb-3">Próximas Tareas</h5>
+                            <div class="d-flex flex-column gap-3" id="tareas-proximas-lista">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="horario-tab-pane" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <h5 class="mb-4">Cursos y Horarios</h5>
+                            <div class="row g-3" id="horario-grid-container">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="mensajes-tab-pane" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Mensajería</h5>
+                        <button class="btn btn-primary" id="nuevo-mensaje-btn" data-bs-toggle="modal" data-bs-target="#nuevoMensajeModal">
+                            <i class="fas fa-plus me-2"></i> Nuevo Mensaje
+                        </button>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header">
+                                    <i class="fas fa-inbox me-2"></i> Recibidos
+                                </div>
+                                <div class="list-group list-group-flush" id="mensajes-recibidos-lista">
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header">
+                                    <i class="fas fa-paper-plane me-2"></i> Enviados
+                                </div>
+                                <div class="list-group list-group-flush" id="mensajes-enviados-lista">
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> </div> </div> <div class="modal fade" id="nuevoMensajeModal" tabindex="-1" aria-labelledby="nuevoMensajeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="nuevoMensajeModalLabel">Redactar Nuevo Mensaje</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-nuevo-mensaje">
+                        <div class="mb-3">
+                            <label for="mensaje-para" class="form-label">Para:</label>
+                            <select class="form-select" id="mensaje-para">
+                                <option value="prof_mat">Prof. R. Gonzales (Matemáticas)</option>
+                                <option value="prof_hist">Prof. L. Campos (Historia)</option>
+                                <option value="admin">Administración</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mensaje-asunto" class="form-label">Asunto:</label>
+                            <input type="text" class="form-control" id="mensaje-asunto" placeholder="Ej: Consulta sobre calificaciones">
+                        </div>
+                        <div class="mb-3">
+                            <label for="mensaje-cuerpo" class="form-label">Mensaje:</label>
+                            <textarea class="form-control" id="mensaje-cuerpo" rows="6" placeholder="Escriba su mensaje aquí..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="enviar-mensaje-btn">
+                        <i class="fas fa-paper-plane me-2"></i> Enviar Mensaje
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <script type="module" src="panel-padres.js"></script>
+</body>
+</html>

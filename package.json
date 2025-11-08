@@ -2,7 +2,7 @@
   "name": "nueva-carpeta",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build"
@@ -10,12 +10,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "glob": "^11.0.3",
     "vite": "^7.1.12"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.78.0"
+    "@supabase/supabase-js": "^2.80.0"
   }
 }
