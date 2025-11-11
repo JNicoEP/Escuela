@@ -10,7 +10,7 @@ function loadNavbar() {
     try {
         const navbarContainer = document.getElementById('navbar-container');
         if (navbarContainer) {
-            navbarContainer.innerHTML = navbarHtml; 
+            navbarContainer.innerHTML = navbarHtml;
         } else {
             console.error('No se encontró el contenedor del navbar (#navbar-container).');
         }
@@ -50,7 +50,7 @@ function hideLoader() {
  * Función principal que arranca la aplicación
  */
 async function bootstrapApp() {
-    
+
     // PASO 1: Inyectar el esqueleto HTML.
     loadNavbar();
     loadModals();
@@ -62,13 +62,9 @@ async function bootstrapApp() {
             await import('./modal.js');
             console.log("OK: modal.js cargado.");
 
-            console.log("Intentando cargar login.js...");
-            await import('./login.js');
-            console.log("OK: login.js cargado.");
-
-            console.log("Intentando cargar pages/index.js...");
-            await import('./pages/index.js');
-            console.log("OK: pages/index.js cargado.");
+            /*console.log("Intentando cargar auth.js...");
+            await import('./auth.js'); // <-- AÑADE ESTA LÍNEA
+            console.log("OK: auth.js cargado.");*/
         } catch (error) {
             console.error('Error al cargar los scripts de la página:', error);
         }

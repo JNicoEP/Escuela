@@ -1,11 +1,3 @@
-/**
- * -------------------------------------------------------------------------
- * CONFIGURACIÓN DE SUPABASE PARA VITE
- * -------------------------------------------------------------------------
- * Este archivo inicializa el cliente de Supabase usando módulos ES6
- * y las variables de entorno de Vite.
- */
-
 // 1. Importar el cliente desde el paquete NPM
 import { createClient } from '@supabase/supabase-js';
 
