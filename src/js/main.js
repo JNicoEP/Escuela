@@ -1,7 +1,8 @@
-// PASO 1: Importar el HTML como texto plano (¡La forma Vite!)
+// Importar el HTML como texto plano (¡La forma Vite!)
 // Usamos rutas relativas (..) para "subir" de /js a /src
 import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
+import footerHtml from '../components/footer/footer.html?raw';
 
 /**
  * Función para cargar la barra de navegación
@@ -36,6 +37,18 @@ function loadModals() {
         console.error('Error al INYECTAR los modals:', error);
     }
 }
+  function loadFooter() { 
+    try {
+        const footerContainer = document.getElementById('footer-container');
+        if (footerContainer) {
+            footerContainer.innerHTML = footerHtml;
+        } else {
+            console.error('No se encontró el contenedor del footer (#footer-container).');
+        }
+    } catch (error) {
+        console.error('Error al INYECTAR el footer:', error);
+    }
+}
 
 /**
  * Función para ocultar la pantalla de carga
@@ -51,11 +64,12 @@ function hideLoader() {
  */
 async function bootstrapApp() {
 
-    // PASO 1: Inyectar el esqueleto HTML.
+    //  Inyectar el esqueleto HTML.
     loadNavbar();
     loadModals();
+    loadFooter();
 
-    // PASO 2: Iniciar la carga de scripts DE FORMA ASÍNCRONA
+    //  Iniciar la carga de scripts DE FORMA ASÍNCRONA
     const loadScripts = async () => {
         try {
             console.log("Intentando cargar modal.js...");
@@ -70,18 +84,18 @@ async function bootstrapApp() {
         }
     };
 
-    // PASO 3: Crear una promesa de tiempo mínimo (1000ms = 1 segundo)
+    //  Crear una promesa de tiempo mínimo (1000ms = 1 segundo)
     // Esto debe coincidir con la duración de tu animación CSS
     const minimumDisplayTime = new Promise(resolve => setTimeout(resolve, 1000));
 
-    // PASO 4: Esperar a que AMBAS promesas se cumplan
+    //  Esperar a que AMBAS promesas se cumplan
     // La app carga Y el temporizador de 1s termina.
     await Promise.all([
         loadScripts(),
         minimumDisplayTime
     ]);
 
-    // PASO 5: Ocultar el loader
+    //  Ocultar el loader
     // Esto ahora solo se ejecuta DESPUÉS de 1 segundo Y cuando la app está lista.
     hideLoader();
 }
