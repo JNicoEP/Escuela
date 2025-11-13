@@ -6,7 +6,7 @@
 
 // ¡NUEVO! Importamos el cliente de Supabase
 // Ajusta esta ruta si es necesario (ej: '../js/supabaseClient.js')
-import { supabaseClient, showMessage } from '../js/supabaseClient.js';
+import { supabase, showMessage } from '../js/supabaseClient.js';
 
 // --- Referencias al DOM ---
 const welcomeAlert = document.getElementById('welcome-alert');
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Verifica la sesión, el rol del usuario y carga los datos iniciales.
  */
 async function loadPanelData() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         window.location.href = "/index.html";
         return;
@@ -72,7 +72,7 @@ async function loadPanelData() {
     currentUser = user;
 
     // Verificar que el usuario sea un admin
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
         .from('usuarios')
         .select('rol:rol(nombre_rol)')
         .eq('id', user.id)
@@ -80,7 +80,7 @@ async function loadPanelData() {
     
     if (error || !data || data.rol.nombre_rol !== 'admin') {
         showMessage('Acceso no autorizado.', 'Error');
-        await supabaseClient.auth.signOut();
+        await supabase.auth.signOut();
         window.location.href = "/index.html";
         return;
     }
@@ -148,7 +148,7 @@ function setupTabsAndFilters() {
 async function renderAuditoria(filtroRol = 'todos') {
     auditoriaTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Cargando...</td></tr>';
 
-    let query = supabaseClient
+    let query = supabase
         .from('historial_accesos')
         .select(`
             user_id,
@@ -211,7 +211,7 @@ async function renderDocentes(filtroEstado) {
     selectAllCheckbox.checked = false; // Desmarcar al recargar
     updateBulkActionsUI(); // Ocultar menú bulk
 
-    const { data: docentes, error } = await supabaseClient
+    const { data: docentes, error } = await supabase
         .from('docentes')
         .select(`
             id_docente,
@@ -357,7 +357,7 @@ async function handleBulkUpdate() {
  * @param {string} estado - 'aprobado', 'rechazado', o 'pendiente'.
  */
 async function updateDocenteEstado(ids, estado) {
-    const { error } = await supabaseClient
+    const { error } = await supabase
         .from('docentes')
         .update({ estado: estado })
         .in('id_docente', ids);
@@ -383,7 +383,7 @@ async function renderDocumentos() {
     const gradoFiltro = filtroGrado.value;
     const profesorFiltro = filtroProfesor.value;
 
-    let query = supabaseClient
+    let query = supabase
         .from('materiales')
         .select(`
             nombre_archivo,
@@ -451,7 +451,7 @@ async function renderDocumentos() {
  * Llena el <select> de filtro de grados.
  */
 async function populateGradoFilter() {
-    const { data, error } = await supabaseClient.from('grado').select('id_grado, nombre_grado');
+    const { data, error } = await supabase.from('grado').select('id_grado, nombre_grado');
     if (error) {
         console.error("Error cargando grados:", error);
         return;
@@ -474,7 +474,7 @@ async function renderMensajesAdmin() {
     adminEnviadosLista.innerHTML = '<p class="text-center text-muted p-3">Cargando...</p>';
 
     // Mensajes Recibidos
-    const { data: recibidos, error: errRecibidos } = await supabaseClient
+    const { data: recibidos, error: errRecibidos } = await supabase
         .from('mensajes')
         .select(`
             id, asunto, contenido, created_at, is_read,
@@ -504,7 +504,7 @@ async function renderMensajesAdmin() {
     }
 
     // Mensajes Enviados
-    const { data: enviados, error: errEnviados } = await supabaseClient
+    const { data: enviados, error: errEnviados } = await supabase
         .from('mensajes')
         .select(`
             id, asunto, contenido, created_at,
@@ -540,7 +540,7 @@ async function populateMensajeSelect() {
     let html = '<option value="">Seleccionar destinatario...</option>';
     
     // Cargar Docentes
-    const { data: docentes, error: errDocentes } = await supabaseClient
+    const { data: docentes, error: errDocentes } = await supabase
         .from('usuarios')
         .select('id, nombre, apellido, rol:rol(nombre_rol)')
         .eq('rol.nombre_rol', 'docente');
@@ -575,7 +575,7 @@ async function handleSendMensaje() {
         return;
     }
 
-    const { error } = await supabaseClient
+    const { error } = await supabase
         .from('mensajes')
         .insert({
             sender_id: currentUser.id,

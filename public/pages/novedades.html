@@ -2,197 +2,102 @@
 <html lang="es">
 
 <head>
+       
     <meta charset="UTF-8">
+       
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novedades - Aula Virtual</title>
+        <title>Novedades - Escuela Mariano Ariza</title>
+       
+           
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+       
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="/js/login.js"></script>
+       
+           
+    <link rel="stylesheet" href="/css/style.css">
+
+            <style>
+        /* ============================================== */
+        /*          ESTILOS PÁGINA NOVEDADES (FACEBOOK)     */
+        /* ============================================== */
+
+        /* 1. Contenedor de cada publicación */
+        .publicacion {
+            /* Espaciado entre las publicaciones */
+            margin-bottom: 1.5rem;
+        }
+
+        /* 2. El iframe de Facebook */
+        .publicacion iframe {
+            /* ¡Hacemos que sea responsivo! */
+            width: 100% !important;
+
+            /* Damos una altura estándar (ajusta si es necesario) */
+            height: 500px;
+
+            /* Aplicamos el estilo de vidrio */
+            border-radius: 16px !important;
+            /* Esquinas redondeadas */
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+
+            /* Fondo de "vidrio" mientras carga el post */
+            background: rgba(255, 255, 255, 0.5);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
-            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
-                            data-bs-toggle="dropdown">
-                            Quienes somos
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
-                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
-                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
-                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
-                            data-bs-target="#authModal">Aula Virtual</a></li>
-                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
-                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
-                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Modal de autenticación -->
-    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="authForm">
-                        <div class="mb-3">
-                            <label for="userType" class="form-label">Tipo de Usuario </label>
-                            <select id="userType" class="form-select">
-                                <option value="guest">Invitado</option>
-                                <option value="register">Registrarse</option>
-                                <option value="login">Iniciar sesión</option>
-                            </select>
-                        </div>
-                        <!-- Campos para iniciar sesión -->
-                        <div id="loginFields" class="form-group" style="display:none;">
-                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo Electrónico">
-                            <label for="loginPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña">
-                        </div>
-                        <!-- Campos para registrarse -->
-                        <div id="registerFields" class="form-group" style="display:none;">
-                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="registerEmail" placeholder="Correo Electrónico">
-                            <label for="registerPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña">
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Acceder</button><br>
-                            <p>Si es alumno acceder como "Invitado"</p>
+    <div id="navbar-container"></div>
+    <div id="modal-container"></div>
 
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Header -->
-    <header class="bg-dark text-white text-center py-5">
-        <div class="container">
-            <h1 class="display-4">Últimas Novedades</h1>
-            <p class="lead">Mantente al día con los eventos y noticias más recientes.</p>
-        </div>
-    </header>
-
-    <!-- Sección de Novedades -->
     <main class="container my-5">
         <h2 class="text-center mb-4">Publicaciones de Facebook</h2>
+
         <div class="row">
-            <!-- Publicación 1 -->
             <div class="col-md-6 publicacion">
                 <iframe
-                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid0277ncrkJqJ4vNodc5wG7uEhKStnyZwxtNX25bEqsnb6a41ba1Ja2p6SiPhPWzprUsl&show_text=true&width=500"
-                    style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true"
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                </iframe>
+                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid02uH1V4XQEkEU96GtJ5iDJMrzcYLumFtR2tfPvSVPnyimB18M5g6GYbBoMQg82oKC3l&show_text=true&width=500"
+                    width="500" height="710" style="border:none;overflow:hidden" scrolling="no" frameborder="0"
+                    allowfullscreen="true"
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
             </div>
 
-            <!-- Publicación 2 -->
             <div class="col-md-6 publicacion">
                 <iframe
-                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Farteciruja%2Fposts%2Fpfbid02rxXTGEANgnbneb2yjiHfEeAXUmKJfPeFFpUp8HVAR5dbJuvY8YXBBwCyHnDttF8yl&show_text=true&width=500"
-                    style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true"
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                </iframe>
-            </div>
-
-            <!-- Publicación 3 -->
-            <div class="col-md-6 publicacion">
-                <iframe
-                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid02mSRyhSg3UT1QpYPT6bwTY7hXXPzn2x9sFm1zY3kAtZbayG2169wewzQeFmshFnZbl&show_text=true&width=500"
+                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid02C9KBhFDWWpoH9xsXdiHk51znN5N9VSFsUmL1axhHMGQZ95cNDL4wk5UzFZwbVMQnl&show_text=true&width=500"
                     width="500" height="250" style="border:none;overflow:hidden" scrolling="no" frameborder="0"
                     allowfullscreen="true"
                     allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
             </div>
 
-            <!-- Publicación 4 -->
             <div class="col-md-6 publicacion">
                 <iframe
-                    src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fvideos%2F1229340704795829%2F&show_text=false&width=435&t=0"
-                    style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true"
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                </iframe>
-            </div>
-
-            <div class="col-md-6 publicacion">
-                <iframe
-                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid0McGYxU1Rd6imzDyyHoTEJoVh3bFxiaXQSVV7GuEqZzfcht2F8vTvDcGXzhP7rjmql&show_text=true&width=500"
+                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid0nazBRfj9gQrJ96SUBKMDn39HygThqSJY1FQQJ6t4rXvWeDC5FZRgm2xSV8sqUh3Nl&show_text=true&width=500"
                     width="500" height="250" style="border:none;overflow:hidden" scrolling="no" frameborder="0"
                     allowfullscreen="true"
                     allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
             </div>
+
+            <div class="col-md-6 publicacion">
+                  <iframe
+                    src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fescuela.m.ariza%2Fposts%2Fpfbid02udeeQq3eD3mLZmW5etw9hHqT4GDZCJx8wypCTy1xZgPTpdKDYGXRYdfoeoEzg23Fl&show_text=true&width=500"
+                    width="500" height="819" style="border:none;overflow:hidden" scrolling="no" frameborder="0"
+                    allowfullscreen="true"
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+            </div> 
         </div>
+           
     </main>
 
-    <!-- Footer -->
-    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
-        <div class="container p-4">
-            <div class="row">
-                <!-- Sección de Información -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
-                    <p>
-                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y
-                        aprendizaje.
-                    </p>
-                </div>
+    <div id="footer-container"></div>
 
-                <!-- Sección de Enlaces -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
-                        <li><a href="novedades.html" class="text-white text-decoration-none">Novedades</a></li>
-                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
-                        <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
-                    </ul>
-                </div>
 
-                <!-- Sección de Redes Sociales -->
-                <div class="col-lg-4 col-md-12">
-                    <h5 class="text-uppercase">Síguenos</h5>
-                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i
-                            class="fab fa-facebook fa-2x"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
-                </div>
-            </div>
-        </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <div class="text-center p-3 bg-dark">
-            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
-        </div>
-    </footer>
-
-    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/src/js/main.js"></script>
 </body>
 
 </html>
