@@ -1,173 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autoridades - Escuela Mariano Ariza</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="/js/login.js"></script>
-</head>
+    </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
-            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
-                            data-bs-toggle="dropdown">
-                            Quienes somos
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
-                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
-                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
-                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
-                            data-bs-target="#authModal">Aula Virtual</a></li>
-                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
-                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
-                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
-                        </a>
-                    </li>
-                </ul>
+    <div id="navbar-container"></div>
+    <div id="modal-container"></div>
+    <!-- Carrusel de imágenes -->
+    <main class="container my-5">
+        <section class="text-center">
+            <h2 class="text-center mb-4">Nuestras Autoridades</h2>
+            <div id="carruselAutoridades" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+
+                    <div class="carousel-item active">
+                        <img src="https://www.educaciontuc.gov.ar/wp-content/uploads/2024/02/susana-montaldo1-scaled.webp"
+                            class="d-block w-100 carousel-img" alt="Ministra de Educacion">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>Ester Susana Montaldo</h5>
+                            <p>Ministra de Educación</p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src="https://www.educaciontuc.gov.ar/wp-content/uploads/2024/02/carlos-d195173az-scaled.webp"
+                            class="d-block w-100 carousel-img" alt="Director de Nivel">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>Carlos Antonio Diaz</h5>
+                            <p>Director de Nivel</p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src="/css/img/docentes/autoridad supervisora de zona n° 31 prof. beatriz sayago.jpeg"
+                            class="d-block w-100 carousel-img" alt="Supervisora Beatriz Sayago">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>Prof. Beatriz Sayago</h5>
+                            <p>Supervisora de Zona N°31</p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src="/css/img/docentes/autoridad roxana perillo.jpeg"
+                            class="d-block w-20 carousel-img" alt="Directora Marcela Roxana Perillo">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>Marcela Roxana Perillo</h5>
+                            <p>Directora de la Institución</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carruselAutoridades"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-target="#carruselAutoridades"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
             </div>
-        </div>
-    </nav>
+        </section>
+    </main>
 
-    <!-- Modal de autenticación -->
-    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="authForm">
-                        <div class="mb-3">
-                            <label for="userType" class="form-label">Tipo de Usuario </label>
-                            <select id="userType" class="form-select">
-                                <option value="guest">Invitado</option>
-                                <option value="register">Registrarse</option>
-                                <option value="login">Iniciar sesión</option>
-                            </select>
-                        </div>
-                        <!-- Campos para iniciar sesión -->
-                        <div id="loginFields" class="form-group" style="display:none;">
-                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo Electrónico">
-                            <label for="loginPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña">
-                        </div>
-                        <!-- Campos para registrarse -->
-                        <div id="registerFields" class="form-group" style="display:none;">
-                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="registerEmail" placeholder="Correo Electrónico">
-                            <label for="registerPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña">
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Acceder</button><br>
-                            <p>Si es alumno acceder como "Invitado"</p>
-
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-     <!-- Carrusel de imágenes -->
-     <section class=" text-center container my-5">
-        <h2 class="text-center mb-4">Galería Destacada</h2>
-        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner" >
-                <div class="carousel-item active">
-                    <P>MINISTRA DE EDUCACION - ESTER SUSANA MONTALDO</P>
-                    <img src="https://www.educaciontuc.gov.ar/wp-content/uploads/2024/02/susana-montaldo1-scaled.webp" class="d-block w-100 carousel-img" alt="Imagen 1" >
-                </div>
-                <div class="carousel-item">
-                    <P>DIRECTOR DE NIVEL - CARLOS ANTONIO DIAZ</P>
-                    <img src="https://www.educaciontuc.gov.ar/wp-content/uploads/2024/02/carlos-d195173az-scaled.webp" class="d-block w-100 carousel-img" alt="Imagen 2">
-                </div>
-                <div class="carousel-item">
-                    <p>SUPERVISORA DE ZONA N°31 - PROF. BEATRIZ SAYAGO</p>
-                    <img src="css/img/docentes/autoridad supervisora de zona N° 31 PROF. BEATRIZ SAYAGO.jpeg" class="d-block w-100 carousel-img" alt="Imagen 3">
-                </div>
-                <div class="carousel-item">
-                    <p>DIRECTORA DE LA INSTITUCION - MARCELA ROXANA PERILLO</p>
-                    <img src="css/img/docentes/autoridad roxana perillo.jpeg" class="d-block w-100 carousel-img" alt="Imagen 3">
-                </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
-        </div>
-    </section>
+    <!-- Sección de autoridades -->
     <div class="container my-5">
-        <header class="text-center py-4 bg-dark text-white">
-            <h1>Autoridades</h1>
+    <header class="text-center py-4 bg-dark text-white">
+        <h1>Autoridades</h1>
 
-        </header>
-        <ul>
-            <li><strong>Ministra de Educacion:</strong> Ester Susana Montaldo </li>
-            <li><strong>Director de nivel:</strong> Carlos Antonio Diaz</li>
-            <li><strong>Supervisora de zona N°31:</strong> Prof. Beatriz Sayago</li>
-            <li><strong>Directora de la Institucion:</strong> Marcela Roxana Perillo</li>
-        </ul>
+    </header>
+    <ul>
+        <li><strong>Ministra de Educacion:</strong> Ester Susana Montaldo </li>
+        <li><strong>Director de nivel:</strong> Carlos Antonio Diaz</li>
+        <li><strong>Supervisora de zona N°31:</strong> Prof. Beatriz Sayago</li>
+        <li><strong>Directora de la Institucion:</strong> Marcela Roxana Perillo</li>
+    </ul>
     </div>
-
-    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
-        <div class="container p-4">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
-                    <p>
-                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y aprendizaje.
-                    </p>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
-                        <li><a href="materias.html" class="text-white text-decoration-none">Materias</a></li>
-                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
-                        <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                    <h5 class="text-uppercase">Síguenos</h5>
-                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="text-center p-3 bg-dark">
-            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
-        </div>
-    </footer>
-
-    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div id="footer-container"></div>
+    <script type="module" src="/src/js/main.js"></script>
+    <script type="module" src="/src/js/auth.js"></script>
+    
+    
 </body>
+
 </html>

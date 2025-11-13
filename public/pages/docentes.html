@@ -1,275 +1,282 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autoridades - Escuela Mariano Ariza</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="/js/login.js"></script>
+
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">Escuela Mariano Ariza</a>
-            <img src="css/img/logo.png" height="50" width="50" alt="Logo">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="institucionDropdown" role="button"
-                            data-bs-toggle="dropdown">
-                            Quienes somos
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="historia.html">Historia</a></li>
-                            <li><a class="dropdown-item" href="autoridades.html">Autoridades</a></li>
-                            <li><a class="dropdown-item" href="docentes.html">Docentes</a></li>
-                            <li><a class="dropdown-item" href="pei.html">Proyecto Educativo Institucional</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
-                            data-bs-target="#authModal">Aula Virtual</a></li>
-                    <li class="nav-item"><a class="nav-link" href="horarios.html">Horarios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="novedades.html">Novedades</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminModal"
-                            style="color: #d8e1e7; display: inline-flex; align-items: center;">
-                            <i class="fas fa-user-cog" style="margin-right: 8px;"></i> Admin
-                        </a>
-                    </li>
-                </ul>
+
+    <div id="navbar-container"></div>
+    <div id="modal-container"></div>
+    <!-- Carrusel de imágenes Docentes-->
+
+    <section class="text-center">
+        <h2 class="text-center mb-4">Nuestro Plantel Docente</h2>
+
+        <div id="carruselDocentes" class="carousel slide" data-bs-ride="carousel">
+
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="3"
+                    aria-label="Slide 4"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="4"
+                    aria-label="Slide 5"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="5"
+                    aria-label="Slide 6"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="6"
+                    aria-label="Slide 7"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="7"
+                    aria-label="Slide 8"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="8"
+                    aria-label="Slide 9"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="9"
+                    aria-label="Slide 10"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="10"
+                    aria-label="Slide 11"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="11"
+                    aria-label="Slide 12"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="12"
+                    aria-label="Slide 13"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="13"
+                    aria-label="Slide 14"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="14"
+                    aria-label="Slide 15"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="15"
+                    aria-label="Slide 16"></button>
+                <button type="button" data-bs-target="#carruselDocentes" data-bs-slide-to="16"
+                    aria-label="Slide 17"></button>
             </div>
-        </div>
-    </nav>
 
-    <!-- Modal de autenticación -->
-    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="authModalLabel">Acceso al Aula Virtual</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="authForm">
-                        <div class="mb-3">
-                            <label for="userType" class="form-label">Tipo de Usuario </label>
-                            <select id="userType" class="form-select">
-                                <option value="guest">Invitado</option>
-                                <option value="register">Registrarse</option>
-                                <option value="login">Iniciar sesión</option>
-                            </select>
-                        </div>
-                        <!-- Campos para iniciar sesión -->
-                        <div id="loginFields" class="form-group" style="display:none;">
-                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo Electrónico">
-                            <label for="loginPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña">
-                        </div>
-                        <!-- Campos para registrarse -->
-                        <div id="registerFields" class="form-group" style="display:none;">
-                            <label for="registerEmail" class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="registerEmail" placeholder="Correo Electrónico">
-                            <label for="registerPassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña">
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Acceder</button><br>
-                            <p>Si es alumno acceder como "Invitado"</p>
-
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-        <!-- Carrusel de imágenes Docentes-->
-        <style>
-            /* Ajustes para las imágenes dentro del carrusel */
-            .carousel-item img {
-                width: 100%;
-                height: 500px; /* Ajusta este valor según lo que necesites */
-                object-fit: contain; /* Esto asegura que la imagen no se recorte */
-            }
-        </style>
-
-    <section class="container my-5">
-        <h2 class="text-center mb-4">Galería Destacada</h2>
-        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
-                <!-- Indicadores -->
-                <ol class="carousel-indicators">
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="0" class="active"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="1"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="2"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="3"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="4"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="5"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="6"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="7"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="8"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="9"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="10"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="11"></li>
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="12"></li>
-                </ol>
-                <div class="carousel-inner" text-transform uppercase;>
-                    <!-- Primer item -->
-                    <div class="carousel-item active">
-                        <center><p> DIRECTORA ROXANA PERILLO</p></center>
-                    <img src="css/img/docentes/Directora Roxana Perillo.jpeg" class="d-block w-100" alt="Imagen 1">
-                    </div>  
-                    <div class="carousel-item ">
-                        <center><p> SECRETARIA ELVIRA DOROTEA NORRY </p></center>
-                    <img src="css/img/docentes/PROFE elvira dorotea Norry docente secretaria.jpeg" class="d-block w-100" alt="Imagen 1">
+
+                <div class="carousel-item active">
+                    <img src="../css/img/docentes/Directora Roxana Perillo.jpeg" class="d-block w-100 carousel-img"
+                        alt="Directora Roxana Perillo">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DIRECTORA ROXANA PERILLO</h5>
                     </div>
-                    <div class="carousel-item ">
-                        <center><p> PROFE DOCENTE DE 1 GRADO LAZARTE JESICA ISABEL</p></center>
-                    <img src="css/img/docentes/PROFE DOCENTE DE 1 GRADO LAZARTE JESICA ISABEL.jpeg" class="d-block w-100" alt="Imagen 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE elvira dorotea Norry docente secretaria.jpeg"
+                        class="d-block w-100 carousel-img" alt="Secretaria Elvira Norry">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>SECRETARIA ELVIRA DOROTEA NORRY</h5>
                     </div>
-                    <div class="carousel-item ">
-                        <center><p> ESTELA ROSA OCAMPO</p></center>
-                    <img src="css/img/docentes/PROFE Dte prof estela rosa  ocampo.jpeg" class="d-block w-100" alt="Imagen 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE DOCENTE DE 1 GRADO LAZARTE JESICA ISABEL.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Jesica Lazarte">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE 1° GRADO - LAZARTE JESICA ISABEL</h5>
                     </div>
-                    <div class="carousel-item ">
-                        <center><p> DOCENTE MARIA ALEJANDRA BUDEGUER</p></center>
-                    <img src="css/img/docentes/PROFE maria alejandra Budeguer prof de Ingles.jpeg" class="d-block w-100" alt="Imagen 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Dte prof estela rosa ocampo.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Estela Ocampo">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE ESTELA ROSA OCAMPO</h5>
                     </div>
-                    <div class="carousel-item ">
-                        <center><p> DOCENTE MARIA LAURA ALVAREZ</p></center>
-                    <img src="css/img/docentes/PROFE maria laura Alvarez Prof de 2 grado.jpeg" class="d-block w-100" alt="Imagen 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE maria alejandra Budeguer prof de Ingles.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Alejandra Budeguer">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE INGLÉS - MARIA ALEJANDRA BUDEGUER</h5>
                     </div>
-                    <div class="carousel-item ">
-                        <center><p> PERSONAL AUXILIAR MARIA GABRIELA NUÑEZ</p></center>
-                    <img src="css/img/docentes/PERSONAL AUXILIAR MARIA GABRIELA NUÑEZ.jpeg" class="d-block w-100" alt="Imagen 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE maria laura Alvarez Prof de 2 grado.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Maria Alvarez">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE 2° GRADO - MARIA LAURA ALVAREZ</h5>
                     </div>
-                    <div class="carousel-item ">
-                        <center><p> PERSONAL AUXILIAR NIETO RENE EDGARDO</p></center>
-                    <img src="css/img/docentes/Personal Auxiliar nieto Rene edgardo.jpeg" class="d-block w-100" alt="Imagen 1">
-                    </div>   
-                    <div class="carousel-item ">
-                        <center><p> DOCENTE NANCY DEL CARMEN lOBO DOCENTE DE 6 GRADO</p></center>
-                    <img src="css/img/docentes/PROFE nANCY DEL CARMEN lOBO DOCENTE DE 6 GRADO.jpeg" class="d-block w-100" alt="Imagen 1">
-                    </div>   
-                    <div class="carousel-item ">
-                        <center><p> DOCENTE ADELA SOTELO DE TECNOLOGIA AGROPECUARIAS</p></center>
-                    <img src="css/img/docentes/PROFE prof adela SOTELO DE TECNOLOGIA AGROPECUARIAS.jpeg" class="d-block w-100" alt="Imagen 1">
-                    </div>   
-                    <div class="carousel-item ">
-                        <center><p>DOCENTE SANDRA DE TECNOLOGIA</p></center>
-                    <img src="css/img/docentes/PROFE Prof de tecnologia  sandra.jpeg" class="d-block w-100" alt="Imagen 1">
-                    </div> 
-                    <div class="carousel-item ">
-                        <center><p> PROFESOR EDUCACION FISICA FABIAN ALCIDES LOPEZ</p></center>
-                    <img src="css/img/docentes/PROFE Prof educación física Fabian alcides lopez.jpeg" class="d-block w-100" alt="Imagen 1">
-                    </div>                 
-                    <div class="carousel-item">
-                        <center><p> DOCENTE MARIA ANTONIA VELIZ </p></center>
-                        <img src="css/img/docentes/PROFE prof maria Antonia Veliz docente de 4 grado .jpeg" class="d-block w-100" alt="Imagen 2">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PERSONAL AUXILIAR MARIA GABRIELA NUÑEZ.jpeg"
+                        class="d-block w-100 carousel-img" alt="Auxiliar Gabriela Nuñez">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>PERSONAL AUXILIAR - MARIA GABRIELA NUÑEZ</h5>
                     </div>
-                    <div class="carousel-item">
-                        <center><p> DOCENTE MATIA ERCILIA GERONIMA NULEZ MUSICA</p></center>
-                        <img src="css/img/docentes/PROFE Prof música matia ercilia Geronima nuñez.jpeg" class="d-block w-100" alt="Imagen 3">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/Personal Auxiliar nieto Rene edgardo.jpeg"
+                        class="d-block w-100 carousel-img" alt="Auxiliar Rene Nieto">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>PERSONAL AUXILIAR - NIETO RENE EDGARDO</h5>
                     </div>
-                    <div class="carousel-item">
-                        <center><p> DOCENTE ROSANA PAOLA OVEJERO 5 GRADO </p></center>
-                        <img src="css/img/docentes/PROFE Prof RosanaPaola Ovejero docente de 5 grado.jpeg" class="d-block w-100" alt="Imagen 3">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE nANCY DEL CARMEN lOBO DOCENTE DE 6 GRADO.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Nancy Lobo">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE 6° GRADO - NANCY DEL CARMEN LOBO</h5>
                     </div>
-                    <div class="carousel-item">
-                        <center><p> DOCENTE JUAN PABLO EDUARDO RIVERA TECNOLOGIA DIVERSAS</p></center>
-                        <img src="css/img/docentes/PROFE Prof tecnologia diversasjuan PabloEdusrdo Rivera.jpeg" class="d-block w-100" alt="Imagen 3">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE prof adela SOTELO DE TECNOLOGIA AGROPECUARIAS.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Adela Sotelo">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE TEC. AGROPECUARIAS - ADELA SOTELO</h5>
                     </div>
-                    <div class="carousel-item">
-                        <center><p> DOCENTE CLAUDIA NOEMI LOBO 4 GRADO</p></center>
-                        <img src="css/img/docentes/PROFE Prof. Claudia Noemi lobo docente de 4 grado.jpeg" class="d-block w-100" alt="Imagen 3">
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Prof de tecnologia sandra.jpeg" class="d-block w-100 carousel-img"
+                        alt="Docente Sandra">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE TECNOLOGÍA - SANDRA</h5>
                     </div>
-                </div>    
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Prof educación física Fabian alcides lopez.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Fabian Lopez">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>PROF. ED. FÍSICA - FABIAN ALCIDES LOPEZ</h5>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE prof maria Antonia Veliz docente de 4 grado .jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Maria Veliz">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE 4° GRADO - MARIA ANTONIA VELIZ</h5>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Prof música matia ercilia Geronima nuñez.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Matia Nuñez">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE MÚSICA - MATIA ERCILIA GERONIMA NUÑEZ</h5>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Prof RosanaPaola Ovejero docente de 5 grado.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Rosana Ovejero">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE 5° GRADO - ROSANA PAOLA OVEJERO</h5>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Prof tecnologia diversasjuan PabloEdusrdo Rivera.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Juan Pablo Rivera">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE TEC. DIVERSAS - JUAN PABLO RIVERA</h5>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="../css/img/docentes/PROFE Prof. Claudia Noemi lobo docente de 4 grado.jpeg"
+                        class="d-block w-100 carousel-img" alt="Docente Claudia Lobo">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>DOCENTE 4° GRADO - CLAUDIA NOEMI LOBO</h5>
+                    </div>
+                </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carruselDocentes" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Anterior</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#carruselDocentes" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Siguiente</span>
             </button>
         </div>
     </section>
 
-    <div class="container my-5">
-        <header class="text-center py-4 bg-dark text-white">
-            <h1>Docentes</h1>
+    <section>
+        <h2 class="text-center mb-4">Lista Detallada del Personal</h2>
 
-        </header>
-        <ul>
-            <h2 class="text_docentes">Directora:</h2><li> Marcela Roxana Perillo </li>
-            <strong><h2 class="text_docentes">Secretaria:</h2><li></strong> Elvira Dorotea Norry</li>
-            <h2 class="text_docentes">Docentes De Nivel Inicial:</h2> <h3>Docentes de Sala</h3>
-                <li></strong>PROF SALA 4° AÑO - Amaya Nadia Carolina</strong></li>
-                <li></strong>PROF SALA 5° AÑO - Lopez Mirtha Judith</strong></li>
-                <li><strong><h5>Docentes Especiales:</h5></li>
-                <li></strong>PROF De Tecnologia - Soria Sandra Isabel</strong></li>
-                <li></strong>PROF De Tecnologia Diversas - Riveras Juan Pablo</strong></li>
-                <li></strong>PROF De Musica - Nuñez Maria Ercilia Geronima</strong></li>
-                <li></strong>PROF De Educacion Fisica - Lopez Alcidez Fabian</strong></li>
-            <h2 class="text_docentes">Docentes De Nivel primario:</h2>  <h3>Docentes de Grado</h3>
-                <li></strong>Prof de 5° GRADO - Rosana Paola Ovejero </strong></li>
-                <li></strong>Prof de Idioma Extranjero: Ingles - Maria Alejandra Budeguer</strong></li>
-                <li></strong>Prof de Tecnologia Agropecuarias - Adela Sotelo</strong></li>
-                <li></strong>Prof de Ciencias Religiosas - Domingo Antonio Antunez</strong></li>
-            <h2 class="text_docentes">Docentes Especiales:</h2>
-                <li></strong>Prof de Idioma Extranjero: Ingles - Maria Alejandra Budeguer</strong></li>
-                <li></strong>Prof de Tecnologia Agropecuarias - Adela Marta Sotelo</strong></li>
-                <li></strong>Prof de Tecnologia Agropecuarias - Nieva Judith Magdalena</strong></li>
-                <li></strong>Prof de Ciencias Religiosas - Domingo Antonio Antunez</strong></li>
-                <li></strong>PROF De Tecnologia - Soria Sandra Isabel</strong></li>
-                <li></strong>PROF De Tecnologia Diversas - Riveras Juan Pablo</strong></li>
-                <li></strong>PROF De Musica - Nuñez Maria Ercilia Geronima</strong></li>
-                <li></strong>PROF De Educacion Fisica - Lopez Alcidez Fabian</strong></li>
-                <li></strong>PROF De Plastica - Ocampos Estela Rosa</strong></li>
-        </ul>
-    </div>
+        <div class="row">
 
-    <footer class="footer bg-primary text-white text-center text-lg-start mt-5">
-        <div class="container p-4">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Escuela Mariano Ariza</h5>
-                    <p>
-                        Un espacio preparado para que los alumnos y docentes realicen actividades de enseñanza y aprendizaje.
-                    </p>
+            <div class="col-md-6 mb-4">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action list-group-item-primary fw-bold">
+                        Equipo Directivo
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>Directora:</strong> Marcela Roxana
+                        Perillo</div>
+                    <div class="list-group-item list-group-item-action"><strong>Secretaria:</strong> Elvira Dorotea
+                        Norry</div>
                 </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
-                        <li><a href="materias.html" class="text-white text-decoration-none">Materias</a></li>
-                        <li><a href="aulas.html" class="text-white text-decoration-none">Aulas</a></li>
-                        <li><a href="perfil.html" class="text-white text-decoration-none">Perfil</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                    <h5 class="text-uppercase">Síguenos</h5>
-                    <a href="https://www.facebook.com/escuela.m.ariza" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+
+                <div class="list-group ">
+                    <div class="list-group-item list-group-item-action list-group-item-primary fw-bold">
+                        Nivel Inicial
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>Sala 4° Año:</strong> Amaya Nadia
+                        Carolina</div>
+                    <div class="list-group-item list-group-item-action"><strong>Sala 5° Año:</strong> Lopez Mirtha
+                        Judith</div>
                 </div>
             </div>
-        </div>
-        <div class="text-center p-3 bg-dark">
-            © 2025 Escuela Mariano Ariza - Todos los derechos reservados.
-        </div>
-    </footer>
 
-    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+            <div class="col-md-6 mb-4">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action list-group-item-primary fw-bold">
+                        Nivel Primario - Docentes de Grado
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>1° Grado:</strong> Lazarte Jesica Isabel
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>2° Grado:</strong> Maria Laura Alvarez
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>4° Grado:</strong> Claudia Noemi Lobo
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>4° Grado:</strong> Maria Antonia Veliz
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>5° Grado:</strong> Rosana Paola Ovejero
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>6° Grado:</strong> Nancy Del Carmen Lobo
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action list-group-item-primary fw-bold">
+                        Docentes Especiales (Inicial y Primario)
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>Inglés:</strong> Maria Alejandra
+                        Budeguer</div>
+                    <div class="list-group-item list-group-item-action"><strong>Tecnología:</strong> Soria Sandra Isabel
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>Tecnología Diversas:</strong> Riveras
+                        Juan Pablo</div>
+                    <div class="list-group-item list-group-item-action"><strong>Tecnología Agropecuarias:</strong> Adela
+                        Sotelo</div>
+                    <div class="list-group-item list-group-item-action"><strong>Tecnología Agropecuarias:</strong> Nieva
+                        Judith Magdalena</div>
+                    <div class="list-group-item list-group-item-action"><strong>Música:</strong> Nuñez Maria Ercilia
+                        Geronima</div>
+                    <div class="list-group-item list-group-item-action"><strong>Educación Física:</strong> Lopez Alcidez
+                        Fabian</div>
+                    <div class="list-group-item list-group-item-action"><strong>Plástica:</strong> Ocampos Estela Rosa
+                    </div>
+                    <div class="list-group-item list-group-item-action"><strong>Ciencias Religiosas:</strong> Domingo
+                        Antonio Antunez</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div id="footer-container"></div>
+    <script type="module" src="/src/js/main.js"></script>
+    <script type="module" src="/src/js/auth.js"></script>
+
 </body>
+
 </html>

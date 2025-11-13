@@ -8,10 +8,17 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f4f7fb;
     margin: 0;
     padding: 0;
     text-align: justify;
+
+    /* Aquí está el fondo nuevo */
+    background: linear-gradient(291deg, #8eb8db, #c4e0f7, #ffffff);
+    background-size: 600% 600%;
+
+    -webkit-animation: as 29s ease infinite;
+    -moz-animation: as 29s ease infinite;
+    animation: as 29s ease infinite;
 }
 
 /* Contenedores */
@@ -23,11 +30,19 @@ body {
 
 /* Estilos para el Navbar */
 .navbar {
-    
+    /* Posicionamiento (ya lo tenías) */
     top: 0px;
     left: 0;
     width: 100%;
     z-index: 1000;
+
+    /* --- EFECTO VIDRIO AÑADIDO --- */
+    /* Usamos 'important' para sobreescribir Bootstrap si es necesario */
+    background: rgba(255, 255, 255, 0.5) !important;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .navbar-brand {
@@ -105,40 +120,108 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Estilos para el Carrusel */
+/* ============================================== */
+/*          ESTILOS DEL CARRUSEL RESPONSIVO (CORREGIDO)         */
+/* ============================================== */
 
-#carouselExample .carousel-inner {
-    width: auto;
-    height: 600px;
+/* 1. Contenedor principal del carrusel */
+#galeriaDestacada,
+#carruselAutoridades,
+#carruselDocentes {
+    border-radius: 16px;
     overflow: hidden;
-}
-.carousel-img {
-    width: 600px;
-    height: 800px;
-    object-fit: contain; /* Asegura que la imagen se ajuste sin recortarse */
-    object-position: center; /* Centra la imagen dentro del contenedor */
+    height: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
+/* 2. Contenedor de las imágenes */
+.carousel-inner {
+    border-radius: 16px;
+    height: auto;
+}
 
-.carousel-item img {
-    width: 600px;
-    height: 800px;
+.carousel-item {
+    flex: 0 0 100%;
+    width: 100%;
+    max-height: auto;
+    min-height: 300px;
+
+    /* Fondo de vidrio transparente (70%) */
+    background: rgba(255, 255, 255, 0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    /* Borde sutil para el efecto vidrio */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 4. La imagen  */
+.carousel-item .carousel-img {
+    width: 100%;
+    max-height: 450px;
+    /* Puedes ajustar esto */
+
     object-fit: contain;
+    /* Muestra la imagen completa */
+    object-position: center;
+
+    height: auto;
+    display: block;
+    /* Aseguramos que sea un bloque */
+}
+
+/* 5. Estilo de los botones (flechas)  */
+#galeriaDestacada .carousel-control-prev-icon,
+#galeriaDestacada .carousel-control-next-icon,
+#carruselAutoridades .carousel-control-prev-icon,
+#carruselAutoridades .carousel-control-next-icon,
+#carruselDocentes .carousel-control-prev-icon,
+#carruselDocentes .carousel-control-next-icon {
+    background-color: rgba(25, 67, 108, 0.7);
+    border-radius: 50%;
+    padding: 20px;
+    background-size: 50%;
+}
+
+#galeriaDestacada .carousel-control-prev-icon:hover,
+#galeriaDestacada .carousel-control-next-icon:hover,
+#carruselAutoridades .carousel-control-prev-icon:hover,
+#carruselAutoridades .carousel-control-next-icon:hover,
+#carruselDocentes .carousel-control-prev-icon:hover,
+#carruselDocentes .carousel-control-next-icon:hover {
+    background-color: rgba(25, 67, 108, 1.0);
+}
+
+/* 6. Quitamos fondo de los controles */
+.carousel-control-prev,
+.carousel-control-next {
+    background: none !important;
+}
+
+.carousel-caption {
+    /* Fondo negro semitransparente para legibilidad */
+    background-color: rgba(0, 0, 0, 0.6);
     border-radius: 10px;
+    /* Esquinas redondeadas */
+    padding: 10px;
+    bottom: 1.25rem;
+    /* Lo separamos un poco del borde inferior */
 }
 
-#carouselExample .carousel-control-prev-icon, 
-#carouselExample .carousel-control-next-icon {
-    background-color: #4da058;
-    border-radius: 100%;
+.carousel-caption h5 {
+    font-weight: 700;
+    /* Título más grueso */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    /* Sombra para el texto */
 }
 
-#carouselExample .carousel-control-prev-icon:hover, 
-#carouselExample .carousel-control-next-icon:hover {
-    background-color: #1e4423;
+.carousel-caption p {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    /* Sombra para el texto */
 }
 
-
+/* FORMULARIOS*/
 
 /* Estilos para los Formularios */
 form .form-control {
@@ -263,13 +346,15 @@ form .btn-primary {
 /* ================================================================== */
 
 #roleChooserModal .modal-content {
-    border-radius: 0.75rem; /* Esquinas más suaves */
+    border-radius: 0.75rem;
+    /* Esquinas más suaves */
     border: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 #roleChooserModal .modal-header {
-    border-bottom: none; /* Un look más limpio y moderno */
+    border-bottom: none;
+    /* Un look más limpio y moderno */
     padding: 1.5rem 1.5rem 0 1.5rem;
 }
 
@@ -282,7 +367,8 @@ form .btn-primary {
 /* Usamos la clase que ya tienen los enlaces (<a>) */
 #roleChooserModal .card {
     border: none;
-    background-color: #f8f9fa; /* Un fondo gris muy suave */
+    background-color: #f8f9fa;
+    /* Un fondo gris muy suave */
     border-radius: 0.75rem;
     height: 100%;
     /* Transición suave para el hover */
@@ -305,14 +391,17 @@ form .btn-primary {
 }
 
 #roleChooserModal .card h6 {
-    font-weight: 700; /* Títulos más fuertes */
-    color: #343a40; /* Texto oscuro */
+    font-weight: 700;
+    /* Títulos más fuertes */
+    color: #343a40;
+    /* Texto oscuro */
     margin-top: 0.5rem;
 }
 
 #roleChooserModal .card small {
     font-size: 0.85rem;
-    color: #6c757d; /* Texto silenciado */
+    color: #6c757d;
+    /* Texto silenciado */
 }
 
 
@@ -334,30 +423,35 @@ form .btn-primary {
 /* --- Estilo de Pestañas (Tabs) --- */
 
 #authModal .nav-tabs {
-    border-bottom: 1px solid #dee2e6; /* Línea base ligera */
+    border-bottom: 1px solid #dee2e6;
+    /* Línea base ligera */
 }
 
 #authModal .nav-tabs .nav-link {
     border: none;
-    color: #6c757d; /* Gris inactivo */
+    color: #6c757d;
+    /* Gris inactivo */
     font-weight: 500;
     padding: 1rem 0.5rem;
-    margin-bottom: -1px; /* Alinea con la línea base */
+    margin-bottom: -1px;
+    /* Alinea con la línea base */
     transition: all 0.2s ease;
 }
 
 /* Pestaña activa  */
 #authModal .nav-tabs .nav-link.active {
-    color: #0d6efd; /* Color primario de Bootstrap */
+    color: #0d6efd;
+    /* Color primario de Bootstrap */
     font-weight: 700;
     /* Línea inferior distintiva en lugar de un borde de caja */
-    border-bottom: 3px solid #0d6efd; 
+    border-bottom: 3px solid #0d6efd;
     background-color: transparent;
 }
 
 /* Hover en pestañas inactivas */
 #authModal .nav-tabs .nav-link:not(.active):hover {
-    color: #343a40; /* Oscurece al pasar el mouse */
+    color: #343a40;
+    /* Oscurece al pasar el mouse */
 }
 
 /* Cuerpo del modal */
@@ -372,7 +466,8 @@ form .btn-primary {
     padding: 0.8rem;
     font-weight: 600;
     font-size: 0.95rem;
-    border-radius: 0.5rem; /* Botones más suaves */
+    border-radius: 0.5rem;
+    /* Botones más suaves */
     transition: all 0.2s ease;
 }
 
@@ -402,7 +497,8 @@ form .btn-primary {
     margin: 20px 0;
 }
 
-.horarios-table th, .horarios-table td {
+.horarios-table th,
+.horarios-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
@@ -440,7 +536,7 @@ form .btn-primary {
 /* Estilos específicos para Proyectos */
 .proyectos {
     padding: 30px 15px;
-    
+
 }
 
 .proyecto {
@@ -501,39 +597,54 @@ form .btn-primary {
     margin-bottom: 20px;
     /* Estilos de cada taller */
 }
+
 .col-md-9 {
-    margin: 0 auto; /* Centra horizontalmente */
-    float: none; /* Asegura que no flote, lo cual puede interferir con el centrado */
-    display: block; /* Asegura que sea un bloque para que los márgenes funcionen */
+    margin: 0 auto;
+    /* Centra horizontalmente */
+    float: none;
+    /* Asegura que no flote, lo cual puede interferir con el centrado */
+    display: block;
+    /* Asegura que sea un bloque para que los márgenes funcionen */
     /* ... otros estilos que ya tengas ... */
 }
+
 .carousel-img {
-    max-width: 100%; /* La imagen no superará el ancho del contenedor */
-    max-height: 400px; /* Puedes ajustar la altura máxima según tus necesidades */
-    object-fit: cover; /* La imagen cubre el contenedor, recortando si es necesario */
+    max-width: 100%;
+    /* La imagen no superará el ancho del contenedor */
+    max-height: 400px;
+    /* Puedes ajustar la altura máxima según tus necesidades */
+    object-fit: cover;
+    /* La imagen cubre el contenedor, recortando si es necesario */
 }
+
 .carousel-control-prev,
 .carousel-control-next {
-    position: absolute; /* Posiciona los botones absolutamente */
-    top: 50%; /* Coloca los botones en el centro vertical */
-    transform: translateY(-50%); /* Ajusta la posición vertical */
+    position: absolute;
+    /* Posiciona los botones absolutamente */
+    top: 50%;
+    /* Coloca los botones en el centro vertical */
+    transform: translateY(-50%);
+    /* Ajusta la posición vertical */
     z-index: 10;
     opacity: 0.7;
     transition: opacity 0.3s ease;
 }
 
 .carousel-control-prev {
-    left: 0; /* Coloca el botón izquierdo a la izquierda */
+    left: 0;
+    /* Coloca el botón izquierdo a la izquierda */
 }
 
 .carousel-control-next {
-    right: 0; /* Coloca el botón derecho a la derecha */
+    right: 0;
+    /* Coloca el botón derecho a la derecha */
 }
 
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
     opacity: 1;
 }
+
 #btn-taller-prev,
 #btn-taller-next {
     position: absolute;
@@ -542,13 +653,17 @@ form .btn-primary {
     z-index: 10;
     opacity: 0.7;
     transition: opacity 0.3s ease;
-    background-color: rgba(255, 255, 255, 0.5); /* Fondo blanco semitransparente */
+    background-color: rgba(255, 255, 255, 0.5);
+    /* Fondo blanco semitransparente */
     border: none;
     padding: 10px;
     border-radius: 50%;
-    width: 40px; /* Ajusta el ancho del botón */
-    height: 40px; /* Ajusta la altura del botón */
-    display: flex; /* Centra el icono usando flexbox */
+    width: 40px;
+    /* Ajusta el ancho del botón */
+    height: 40px;
+    /* Ajusta la altura del botón */
+    display: flex;
+    /* Centra el icono usando flexbox */
     justify-content: center;
     align-items: center;
 }
@@ -568,19 +683,25 @@ form .btn-primary {
 
 #btn-taller-prev .carousel-control-prev-icon,
 #btn-taller-next .carousel-control-next-icon {
-    background-image: none; /* Elimina el icono predeterminado */
-    width: 20px; /* Ajusta el ancho del icono */
-    height: 20px; /* Ajusta la altura del icono */
+    background-image: none;
+    /* Elimina el icono predeterminado */
+    width: 20px;
+    /* Ajusta el ancho del icono */
+    height: 20px;
+    /* Ajusta la altura del icono */
     background-size: 100% 100%;
 }
 
 #btn-taller-prev .carousel-control-prev-icon {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" width="8" height="14" viewBox="0 0 8 14"><path d="M7 1L1 7l6 6"/></svg>'); /* Flecha izquierda */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" width="8" height="14" viewBox="0 0 8 14"><path d="M7 1L1 7l6 6"/></svg>');
+    /* Flecha izquierda */
 }
 
 #btn-taller-next .carousel-control-next-icon {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" width="8" height="14" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"/></svg>'); /* Flecha derecha */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" width="8" height="14" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"/></svg>');
+    /* Flecha derecha */
 }
+
 /*Efecto POP UP*/
 .floating-sidebar {
     position: fixed;
@@ -661,7 +782,8 @@ form .btn-primary {
 .floating-sidebar {
     position: fixed;
     top: 50%;
-    left: -250px;  /* Oculto */
+    left: -250px;
+    /* Oculto */
     transform: translateY(-50%);
     width: 230px;
     background: rgba(34, 34, 34, 0.95);
@@ -759,8 +881,8 @@ form .btn-primary {
 
 
 
- /* Estilos para el sidebar principal */
- .floating-sidebar {
+/* Estilos para el sidebar principal */
+.floating-sidebar {
     position: fixed;
     left: -200px;
     /* Oculto por defecto */
@@ -836,7 +958,7 @@ form .btn-primary {
     left: 0;
 }
 
-.floating-sidebar.active + .toggle-btn {
+.floating-sidebar.active+.toggle-btn {
     /* Estilos para la X */
     left: 270px;
     /* Ajusta la posición de la X */
@@ -851,7 +973,7 @@ form .btn-primary {
     border-radius: 5px;
 }
 
-.floating-sidebar.active + .toggle-btn::before {
+.floating-sidebar.active+.toggle-btn::before {
     /* Pseudo-elemento para la X */
     content: "\00D7";
     /* Código HTML para la X */
@@ -880,55 +1002,60 @@ form .btn-primary {
 */
 
 #loader-container {
-  /* Configuración del contenedor */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #ffffff; /* Fondo blanco sólido */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  /* Esta es la capa que main.js ocultará seteando display: none; */
+    /* Configuración del contenedor */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    /* Fondo blanco sólido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    /* Esta es la capa que main.js ocultará seteando display: none; */
 }
 
 .loader-image {
-  width: 300px; /* Tamaño final del logo */
-  height: auto;
-  
-  /* Aquí aplicamos la animación:
+    width: 300px;
+    /* Tamaño final del logo */
+    height: auto;
+
+    /* Aquí aplicamos la animación:
     - fadeInScaleUp: El nombre de la animación (la definimos abajo)
     - 1s: Duración (1 segundo)
     - ease-out: Que termine suavemente
     - forwards: Que se QUEDE en el estado final (grande y opaco)
   */
-  animation: fadeInScaleUp 1s ease-out forwards;
+    animation: fadeInScaleUp 1s ease-out forwards;
 }
 
 /* Definición de la animación (@keyframes)
   "Crecer y aparecer"
 */
 @keyframes fadeInScaleUp {
-  from {
-    /* Estado inicial: pequeño y transparente */
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  to {
-    /* Estado final: tamaño normal y visible */
-    transform: scale(1);
-    opacity: 1;
-  }
+    from {
+        /* Estado inicial: pequeño y transparente */
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        /* Estado final: tamaño normal y visible */
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
-  /*modal notificacion*/
+/*modal notificacion*/
 .notificacion {
     position: fixed;
     top: 20px;
-    left: 50%; /* Centra horizontalmente */
-    transform: translateX(-50%); /* Ajusta el centrado */
+    left: 50%;
+    /* Centra horizontalmente */
+    transform: translateX(-50%);
+    /* Ajusta el centrado */
     padding: 10px 20px;
     border-radius: 5px;
     font-weight: bold;
@@ -947,4 +1074,373 @@ form .btn-primary {
 
 .modal {
     z-index: 1060 !important;
+}
+
+
+
+
+@-webkit-keyframes as {
+    0% {
+        background-position: 0% 72%
+    }
+
+    50% {
+        background-position: 100% 29%
+    }
+
+    100% {
+        background-position: 0% 72%
+    }
+}
+
+@-moz-keyframes as {
+    0% {
+        background-position: 0% 72%
+    }
+
+    50% {
+        background-position: 100% 29%
+    }
+
+    100% {
+        background-position: 0% 72%
+    }
+}
+
+@keyframes as {
+    0% {
+        background-position: 0% 72%
+    }
+
+    50% {
+        background-position: 100% 29%
+    }
+
+    100% {
+        background-position: 0% 72%
+    }
+}
+
+/* ================================================================== */
+/*                    ESTILO MODERNO "FLOTANTE"                       */
+/* ================================================================== */
+
+/* --- 1. Títulos de Sección --- */
+/* Hacemos que los títulos resalten con un color oscuro del gradiente */
+main h1,
+main h2,
+main h3 {
+    color: #19436c;
+    /* Azul oscuro y profesional */
+    font-weight: 700;
+    text-shadow: none;
+    /* Quitamos la sombra, ya no es necesaria */
+}
+
+/* --- 2. Tarjetas Flotantes --- */
+/* Esta es la parte importante */
+main .card {
+    background: #ffffff;
+    /* Fondo blanco sólido */
+    border: none;
+    /* Sin bordes */
+    border-radius: 16px;
+    /* Esquinas más suaves */
+
+    /* Sombra suave para el efecto "flotante" */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+
+    /* Transición suave para el hover */
+    transition: all 0.3s ease;
+
+    section.text-center {
+        margin-bottom: 3rem;
+        /* Añade espacio entre las secciones */
+    }
+}
+
+/* --- 3. Efecto Hover Mejorado --- */
+/* Al pasar el mouse, la tarjeta "salta" y la sombra crece */
+main .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* --- 4. Texto de las Tarjetas --- */
+/* Devolvemos el texto a colores oscuros para legibilidad */
+main .card .card-title {
+    color: #19436c;
+    /* Título con el azul oscuro */
+    font-weight: 700;
+    text-shadow: none;
+}
+
+main .card .card-text,
+main .card p {
+    color: #555;
+    /* Texto del párrafo en un gris suave */
+    text-shadow: none;
+}
+
+/* --- 5. Iconos de las Tarjetas --- */
+/* Devolvemos los iconos a su color original (azul) */
+main .card .card-icon {
+    color: #0d6efd;
+}
+
+/* ================================================================== */
+/*                   EFECTO "FLIP CARD" (TARJETA GIRATORIA)                */
+/* ================================================================== */
+
+/* 1. El contenedor principal de la tarjeta (el 'col-md-4')
+    Le damos la perspectiva 3D */
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    /* Asegura que la tarjeta tenga altura */
+    perspective: 1000px;
+    /* Efecto 3D */
+    min-height: 250px;
+    /* Dale una altura mínima */
+}
+
+/* 2. El contenedor que gira
+    Este elemento es el que tendrá la animación */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+/* 3. La animación de giro
+    Al pasar el mouse sobre el contenedor, gira el 'inner' 180 grados */
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* 4. Las dos caras (frontal y trasera)
+    Ambas ocupan el mismo espacio y ocultamos su 'cara de atrás' */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    /* Para Safari */
+    backface-visibility: hidden;
+    /* Mantenemos el estilo de tarjeta que ya tenías */
+    border-radius: 16px;
+}
+
+/* 5. Estilo de la cara trasera (la imagen)
+    La giramos 180 grados desde el inicio */
+.flip-card-back {
+    background-color: #19436c;
+    color: white;
+    transform: rotateY(180deg);
+    overflow: hidden;
+    display: flex;
+    /* Añade esto para usar flexbox */
+    flex-direction: column;
+    /* Coloca los elementos en columna */
+    justify-content: flex-end;
+    /* Alinea los elementos al final */
+    align-items: center;
+    /* Centra los elementos horizontalmente */
+    padding: 15px;
+    /* Añade un poco de relleno */
+}
+
+/* 6. La imagen de la cara trasera */
+.flip-card-image {
+    position: absolute;
+    /* Posiciona la imagen de forma absoluta */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    /* Asegura que la imagen esté detrás del contenido */
+}
+
+/* 7. Estilos para el botón en la cara trasera */
+.flip-card-back .btn {
+    position: relative;
+    /* Es importante para que esté sobre la imagen */
+    z-index: 1;
+    /* Asegura que el botón esté sobre la imagen */
+    margin-top: auto;
+    /* Empuja el botón hacia abajo si hay otros elementos */
+}
+
+/* ============================================== */
+/*          ESTILOS LISTA DE DOCENTES (VIDRIO)       */
+/* ============================================== */
+
+/* 1. Quitamos fondo y borde al contenedor de la lista */
+.list-group {
+    background-color: transparent;
+    border: none;
+    border-radius: 16px;
+    /* Esquinas redondeadas */
+    overflow: hidden;
+    /* Para que los items no se salgan */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* 2. Aplicamos el efecto vidrio a CADA item de la lista */
+.list-group-item {
+    background: rgba(255, 255, 255, 0.5);
+    /* Vidrio 50% */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #333;
+    /* Texto oscuro */
+}
+
+/* 3. Estilo para los Títulos Azules (Equipo Directivo) */
+.list-group-item-primary {
+    background: rgba(25, 67, 108, 0.6);
+    /* Vidrio Azul Oscuro */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #ffffff;
+    /* Texto blanco */
+    border-color: rgba(255, 255, 255, 0.2);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 4. Estilo para los Títulos Grises (Niveles) */
+.list-group-item-secondary {
+    background: rgba(255, 255, 255, 0.7);
+    /* Vidrio Blanco más opaco */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #19436c;
+    /* Texto Azul Oscuro */
+    border-color: rgba(255, 255, 255, 0.2);
+    font-weight: 700;
+}
+
+
+/* ============================================== */
+/*         CARRUSEL EXPANDIBLE (HISTORIA)         */
+/* ============================================== */
+
+.expanding-gallery-container {
+    display: flex;
+    width: 100%;
+    height: 450px;
+}
+
+.panel {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    border-radius: 16px;
+    color: #fff;
+    cursor: pointer;
+    flex: 0.5;
+    /* Pequeño por defecto */
+    margin: 5px;
+    position: relative;
+    transition: flex 0.7s ease;
+    /* La animación */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Estado activo (cuando se expande) */
+.panel.active {
+    flex: 5;
+    /* Grande */
+}
+
+/* Títulos dentro del panel */
+.panel h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    margin: 0;
+    opacity: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    transition: opacity 0.3s ease 0.4s;
+}
+
+/* Muestra el título solo en el panel activo */
+.panel.active h3 {
+    opacity: 1;
+}
+
+/* 1. La imagen del modal */
+#modalImage {
+    /* 1. La animación de zoom */
+    transition: transform 0.3s ease;
+
+    /* 2. El cursor para indicar que se puede hacer clic */
+    cursor: zoom-in;
+}
+
+/* 2. El estado "zoomed" (cuando se hace clic) */
+#modalImage.zoomed {
+    /* 3. La escala (puedes cambiar 1.5 por 2 si quieres más zoom) */
+    transform: scale(1.5);
+
+    /* 4. El cursor para indicar que se puede alejar */
+    cursor: zoom-out;
+}
+
+
+
+
+
+/* ============================================== */
+/*              ESTILOS DEL NAVBAR (VIDRIO)           */
+/* ============================================== */
+
+/* Colores de los links del Navbar */
+.navbar-light .navbar-brand {
+    color: #19436c;
+    /* Azul oscuro */
+    font-weight: 700;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #19436c;
+    /* Azul oscuro */
+    font-weight: 500;
+}
+
+/* Hover (al pasar el mouse) con EFECTO DOCK */
+.navbar-light .navbar-brand:hover,
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #0d6efd;
+    /* Mantiene el color brillante */
+
+    /* --- MAGIA DEL DOCK --- */
+    transform: scale(1.2) translateY(-4px);
+    /* Se agranda un 20% y sube 4px */
+    position: relative;
+    /* Necesario para que 'z-index' funcione */
+    z-index: 10;
+    /* Se pone por encima de los otros links */
+}
+
+/* 1. Transición suave para los links y el logo */
+.navbar-light .navbar-brand,
+.navbar-light .navbar-nav .nav-link {
+    transition: transform 0.2s ease-out, color 0.2s ease-out;
+
+    /* Damos un poco de espacio horizontal para que no se choquen al crecer */
+    margin-left: 5px;
+    margin-right: 5px;
 }
