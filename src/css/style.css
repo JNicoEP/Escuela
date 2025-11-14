@@ -735,7 +735,7 @@ form .btn-primary {
     left: 0 !important;
     /* <--- USAR !IMPORTANT PARA FORZAR EL MOVIMIENTO */
     box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3);
-    
+
 }
 
 /* Título del Sidebar */
@@ -1426,4 +1426,28 @@ main .card .card-icon {
     /* Damos un poco de espacio horizontal para que no se choquen al crecer */
     margin-left: 5px;
     margin-right: 5px;
+}
+
+/* --- DECLARACIONES DE BACKGROUNDS PARA LA GALERÍA --- */
+
+/* La ruta se lee: "Desde style.css, busca en la carpeta de al lado (./) llamada 'img'" */
+
+.panel-historia-1 {
+    background-image: url('./img/historia_page-0001.jpg');
+}
+
+.panel-historia-2 {
+    background-image: url('./img/historia2_page-0001.jpg');
+}
+
+.panel-historia-3 {
+    background-image: url('./img/historia3_page-0001.jpg');
+}
+
+.panel-historia-4 {
+    background-image: url('./img/historia4_page-0001.jpg');
+}
+
+.panel-historia-5 {
+    background-image: url('./img/historia5_page-0001.jpg');
 }
