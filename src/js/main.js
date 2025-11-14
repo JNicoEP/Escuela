@@ -1,4 +1,21 @@
-// Importar el HTML como texto plano (¡La forma Vite!)
+// main.js
+
+// ==========================================================
+// 1. IMPORTAR CSS (¡AQUÍ ESTÁ LA SOLUCIÓN!)
+// ==========================================================
+
+// Importa Bootstrap (o el framework) PRIMERO
+// (Asegúrate de que esta ruta sea correcta)
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Importa TUS estilos personalizados DESPUÉS
+// (Ajusta la ruta si es necesario. Asumo que está en /src/css/style.css)
+import '../css/style.css'; // 
+
+// ==========================================================
+// 2. IMPORTAR COMPONENTES HTML (Tu código original)
+// ==========================================================
+// // Importar el HTML como texto plano (¡La forma Vite!)
 // Usamos rutas relativas (..) para "subir" de /js a /src
 import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
