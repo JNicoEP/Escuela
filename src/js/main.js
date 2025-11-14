@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Importa TUS estilos personalizados DESPUÉS
 // (Ajusta la ruta si es necesario. Asumo que está en /src/css/style.css)
-import '/public/css/style.css'; // 
+import '../css/style.css'; // 
 
 // ==========================================================
 // 2. IMPORTAR COMPONENTES HTML 

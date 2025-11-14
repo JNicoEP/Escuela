@@ -7,7 +7,10 @@
 
 // Esta ruta asume que 'panel-padres.js' está en la raíz del proyecto (junto a index.html)
 // y 'supabaseClient.js' está en 'src/js/'.
-import { supabaseClient, showMessage } from './src/js/supabaseClient.js';
+// En src/js/panel-padres.js
+import { supabase, showMessage } from './supabaseClient.js';
+// La sintaxis './' indica "empezar en esta misma carpeta".
+
 
 const datosEstudiante = {
     matricula: "2024-001",
