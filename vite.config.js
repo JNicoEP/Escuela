@@ -10,7 +10,7 @@ export default defineConfig({
 
         // 2. Todas tus páginas dentro de /pages
         // (Debes tener una línea por CADA archivo .html)
-        adminPanel: resolve(__dirname, 'pages/admin-panel.html'),
+        adminPanel: resolve(__dirname, 'pages/admin_panel.html'),
         alumnos: resolve(__dirname, 'pages/alumnos.html'),
         archivos: resolve(__dirname, 'pages/archivos.html'),
         aulasPrimero: resolve(__dirname, 'pages/aulas-primero.html'),
