@@ -348,17 +348,17 @@ async function handleRedirection(user) {
         const baseUrl = window.location.origin;
         switch (userRole) {
             case 'alumno':
-                window.location.href = `${baseUrl}/public/pages/panel-alumno.html`;
+                window.location.href = `${baseUrl}/pages/panel-alumno.html`;
                 break;
             case 'padre':
-                window.location.href = `${baseUrl}/public/pages/panel-padres.html`;
+                window.location.href = `${baseUrl}/pages/panel-padres.html`;
                 break;
             case 'docente':
                 // Ya sabemos que está 'aprobado' si llegó aquí
-                window.location.href = `${baseUrl}/public/pages/docentes.html`;
+                window.location.href = `${baseUrl}/pages/docentes.html`;
                 break;
             case 'admin':
-                window.location.href = `${baseUrl}/public/pages/panel-admin.html`;
+                window.location.href = `${baseUrl}/pages/panel-admin.html`;
                 break;
             default:
                 showMessage('Rol de usuario desconocido.', 'Error');

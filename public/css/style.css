@@ -583,10 +583,7 @@ form .btn-primary {
     display: flex;
 }
 
-.floating-sidebar {
-    width: 200px;
-    /* Estilos del sidebar */
-}
+
 
 .talleres-content {
     flex: 1;
@@ -702,137 +699,132 @@ form .btn-primary {
     /* Flecha derecha */
 }
 
-/*Efecto POP UP*/
+
+/* ================================================================== */
+/*                   SIDEBAR FLOTANTE (VERSIÓN FINAL Y ÚNICA)        */
+/*                   ESTO REEMPLAZA TODOS LOS BLOQUES ANTIGUOS        */
+/* ================================================================== */
+
 .floating-sidebar {
+    /* Posicionamiento y estado inicial (oculto) */
     position: fixed;
     top: 50%;
-    left: 20px;
+    left: -250px;
+    /* Valor base: oculto */
     transform: translateY(-50%);
-    width: 250px;
-    background: rgba(53, 109, 141, 0.85);
-    color: white;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
+    width: 250px !important;
+    /* <--- USAR !IMPORTANT PARA FORZAR EL ANCHO */
+
+    /* Diseño de Vidrio */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Estética y capa */
+    color: #19436c;
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 0 16px 16px 0;
     z-index: 1000;
-    padding: 20px;
-    transition: all 0.3s ease-in-out;
+    padding: 20px 0;
+    /* Mantenemos la transición de 'left' */
+    transition: left 0.3s ease-in-out, box-shadow 0.3s;
 }
 
-.floating-sidebar:hover {
-    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.5);
+/* Estado activo: Muestra el sidebar */
+.floating-sidebar.active {
+    left: 0 !important;
+    /* <--- USAR !IMPORTANT PARA FORZAR EL MOVIMIENTO */
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3);
+    
 }
 
+/* Título del Sidebar */
 .floating-sidebar h4 {
-    font-size: 20px;
-    text-transform: uppercase;
     text-align: center;
     margin-bottom: 15px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #f8f9fa;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #19436c;
+    border-bottom: 2px solid rgba(25, 67, 108, 0.3);
     padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
-.list-group {
-    padding: 0;
+/* Estilo de los links y hover */
+.floating-sidebar .list-group-item {
+    background: transparent !important;
+    border: none !important;
+    padding: 12px 25px;
+    /* Más padding para que el texto respire */
+    margin: 0;
+    transition: all 0.2s ease-in-out;
 }
 
-.list-group-item {
-    background: transparent;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.list-group-item a {
-    color: #f8f9fa;
+.floating-sidebar .list-group-item a {
+    color: #19436c;
+    font-weight: 500;
     text-decoration: none;
     display: block;
+    /* FIX: Fuerza el texto a una sola línea con puntos suspensivos */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.list-group-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(5px);
-    border-radius: 8px;
+.floating-sidebar .list-group-item:hover {
+    background: rgba(25, 67, 108, 0.1) !important;
+    transform: translateX(3px);
 }
 
-/* Botón flotante para abrir/cerrar */
+/* ================================================================== */
+/*                   TOGGLE BUTTON (El botón de la X o hamburguesa)      */
+/* ================================================================== */
+
 .toggle-btn {
     position: fixed;
     top: 50%;
     left: 10px;
+    /* Posición inicial cuando el sidebar está oculto */
     transform: translateY(-50%);
-    background: rgba(34, 34, 34, 0.9);
+    background: #19436c;
     color: white;
     padding: 10px 15px;
-    border-radius: 8px;
+    border-radius: 0 8px 8px 0;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 1rem;
     z-index: 1100;
     transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+}
+
+/* Mueve el botón cuando el sidebar está activo */
+.floating-sidebar.active~.toggle-btn,
+.floating-sidebar.active+#sidebar-toggle {
+    left: 260px;
+    /* 250px (sidebar) + 10px (margen) */
+    background: #dc3545;
+    /* Fondo rojo de Bootstrap para 'cerrar' */
+    color: white;
+    border-radius: 8px;
+    /* Redondeado completo para el botón de cierre */
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #0d6efd;
 }
 
-/* Sidebar oculto al inicio */
-.floating-sidebar {
-    position: fixed;
-    top: 50%;
-    left: -250px;
-    /* Oculto */
-    transform: translateY(-50%);
-    width: 230px;
-    background: rgba(34, 34, 34, 0.95);
-    color: white;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
-    z-index: 1000;
-    padding: 20px;
-    transition: left 0.3s ease-in-out;
+.toggle-btn i {
+    font-size: 1.2rem;
 }
 
-/* Título */
-.floating-sidebar h4 {
-    text-align: center;
-    margin-bottom: 15px;
-    color: #f8f9fa;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-    padding-bottom: 10px;
-}
 
-/* Lista de elementos */
-.list-group-item {
-    background: transparent;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.list-group-item a {
-    color: #f8f9fa;
-    text-decoration: none;
-}
-
-.list-group-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(5px);
-    border-radius: 8px;
-}
-
-/* Mostrar sidebar al pasar el mouse */
-.floating-sidebar:hover {
-    left: 0;
-}
-
-/* Mostrar sidebar cuando se activa con el botón */
-.floating-sidebar.active {
-    left: 0;
-}
 
 
 
@@ -881,103 +873,8 @@ form .btn-primary {
 
 
 
-/* Estilos para el sidebar principal */
-.floating-sidebar {
-    position: fixed;
-    left: -200px;
-    /* Oculto por defecto */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 250px;
-    height: auto;
-    background: #8fc0bc;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    transition: all 0.3s ease;
-    border-radius: 0 10px 10px 0;
-    padding: 15px;
-}
 
-.floating-sidebar.active {
-    left: 0;
-}
 
-/* Estilos para el sidebar vertical (accesos directos) */
-.vertical-sidebar {
-    position: fixed;
-    left: 0;
-    /* Pegado al borde izquierdo */
-    top: 50%;
-    transform: translateY(-50%);
-    height: 50%;
-    /* Ocupa la mitad de la pantalla */
-    width: auto;
-    /* Ancho automático según contenido */
-    background: rgba(143, 192, 188, 0.8);
-    /* Fondo semi-transparente */
-    z-index: 999;
-    /* Debajo del sidebar principal */
-    padding: 10px;
-    border-radius: 0 10px 10px 0;
-    display: flex;
-    /* Para alinear verticalmente */
-    flex-direction: column;
-    /* Alineación vertical */
-    justify-content: center;
-    /* Centrar verticalmente */
-}
-
-.vertical-sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.vertical-sidebar li {
-    margin-bottom: 5px;
-}
-
-.vertical-sidebar a {
-    display: block;
-    /* Para que los enlaces ocupen todo el ancho */
-    padding: 5px 10px;
-    color: #333;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-    white-space: nowrap;
-    /* Evitar que el texto se corte */
-}
-
-.vertical-sidebar a:hover {
-    background-color: rgba(106, 170, 212, 0.5);
-    /* Color de fondo al pasar el mouse */
-}
-
-.floating-sidebar.active {
-    left: 0;
-}
-
-.floating-sidebar.active+.toggle-btn {
-    /* Estilos para la X */
-    left: 270px;
-    /* Ajusta la posición de la X */
-    background: transparent;
-    /* Fondo transparente */
-    color: black;
-    /* Color negro para la X */
-    font-size: 20px;
-    /* Tamaño de la X */
-    padding: 5px 10px;
-    /* Ajusta el padding */
-    border-radius: 5px;
-}
-
-.floating-sidebar.active+.toggle-btn::before {
-    /* Pseudo-elemento para la X */
-    content: "\00D7";
-    /* Código HTML para la X */
-}
 
 .list-group-item {
     border: none;

@@ -10,16 +10,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Importa TUS estilos personalizados DESPUÉS
 // (Ajusta la ruta si es necesario. Asumo que está en /src/css/style.css)
-import '../css/style.css'; // 
+import '/public/css/style.css'; // 
 
 // ==========================================================
-// 2. IMPORTAR COMPONENTES HTML (Tu código original)
+// 2. IMPORTAR COMPONENTES HTML 
 // ==========================================================
 // // Importar el HTML como texto plano (¡La forma Vite!)
 // Usamos rutas relativas (..) para "subir" de /js a /src
 import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
 import footerHtml from '../components/footer/footer.html?raw';
+import { setupSidebarToggle } from './sidebarToggle.js'; 
+
 
 /**
  * Función para cargar la barra de navegación
@@ -54,7 +56,7 @@ function loadModals() {
         console.error('Error al INYECTAR los modals:', error);
     }
 }
-  function loadFooter() { 
+function loadFooter() {
     try {
         const footerContainer = document.getElementById('footer-container');
         if (footerContainer) {
@@ -85,6 +87,8 @@ async function bootstrapApp() {
     loadNavbar();
     loadModals();
     loadFooter();
+setupSidebarToggle();
+
 
     //  Iniciar la carga de scripts DE FORMA ASÍNCRONA
     const loadScripts = async () => {
@@ -100,7 +104,6 @@ async function bootstrapApp() {
             console.error('Error al cargar los scripts de la página:', error);
         }
     };
-
     //  Crear una promesa de tiempo mínimo (1000ms = 1 segundo)
     // Esto debe coincidir con la duración de tu animación CSS
     const minimumDisplayTime = new Promise(resolve => setTimeout(resolve, 1000));
@@ -116,6 +119,5 @@ async function bootstrapApp() {
     // Esto ahora solo se ejecuta DESPUÉS de 1 segundo Y cuando la app está lista.
     hideLoader();
 }
-
 // Iniciar todo
 bootstrapApp();
