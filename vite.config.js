@@ -23,6 +23,7 @@ export default defineConfig({
         panelAlumno: resolve(__dirname, 'pages/panel-alumno.html'),
         panelPadres: resolve(__dirname, 'pages/panel-padres.html'),
         pei: resolve(__dirname, 'pages/pei.html'),
+        autoridades: resolve(__dirname, 'pages/autoridades.html'),
         profesores: resolve(__dirname, 'pages/profesores.html'),
         proyecto_e: resolve(__dirname, 'pages/proyecto-e.html'),
         talleres: resolve(__dirname, 'pages/talleres.html')
