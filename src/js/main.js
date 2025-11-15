@@ -14,7 +14,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // 2. IMPORTAR TUS ESTILOS
 // ==========================================================
 
-// Importa TUS estilos personalizados DESPUÉS
+// Importa estilos 
 import '../css/style.css';
 
 // ==========================================================
