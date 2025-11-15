@@ -1433,21 +1433,21 @@ main .card .card-icon {
 /* La ruta se lee: "Desde style.css, busca en la carpeta de al lado (./) llamada 'img'" */
 
 .panel-historia-1 {
-    background-image: url('./img/historia_page-0001.jpg');
+    background-image: url('/img/historia_page-0001.jpg');
 }
 
 .panel-historia-2 {
-    background-image: url('./img/historia2_page-0001.jpg');
+    background-image: url('/img/historia2_page-0001.jpg');
 }
 
 .panel-historia-3 {
-    background-image: url('./img/historia3_page-0001.jpg');
+    background-image: url('/img/historia3_page-0001.jpg');
 }
 
 .panel-historia-4 {
-    background-image: url('./img/historia4_page-0001.jpg');
+    background-image: url('/img/historia4_page-0001.jpg');
 }
 
 .panel-historia-5 {
-    background-image: url('./img/historia5_page-0001.jpg');
+    background-image: url('/img/historia5_page-0001.jpg');
 }

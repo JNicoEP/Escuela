@@ -5,11 +5,11 @@ import * as bootstrap from 'bootstrap';
 
 // 2. IMPORTAMOS LAS IMÁGENES (LA FORMA VITE)
 // (La ruta '../css/img/' es correcta porque subimos de 'js' a 'src' y bajamos a 'css/img')
-import imgHist1 from '../css/img/historia_page-0001.jpg';
-import imgHist2 from '../css/img/historia2_page-0001.jpg';
-import imgHist3 from '../css/img/historia3_page-0001.jpg';
-import imgHist4 from '../css/img/historia4_page-0001.jpg';
-import imgHist5 from '../css/img/historia5_page-0001.jpg';
+import imgHist1 from '/img/historia_page-0001.jpg';
+import imgHist2 from '/img/historia2_page-0001.jpg';
+import imgHist3 from '/img/historia3_page-0001.jpg';
+import imgHist4 from '/img/historia4_page-0001.jpg';
+import imgHist5 from '/img/historia5_page-0001.jpg';
 
 // 3. CREAR UN ARRAY CON LAS RUTAS PROCESADAS
 const galleryImages = [imgHist1, imgHist2, imgHist3, imgHist4, imgHist5];
