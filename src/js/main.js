@@ -1,26 +1,31 @@
 // main.js
 
 // ==========================================================
-// 1. IMPORTAR CSS (¡AQUÍ ESTÁ LA SOLUCIÓN!)
+// 1. IMPORTAR CSS Y JS DE BOOTSTRAP
 // ==========================================================
 
-// Importa Bootstrap (o el framework) PRIMERO
-// (Asegúrate de que esta ruta sea correcta)
+// Importa Bootstrap CSS 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Importa TUS estilos personalizados DESPUÉS
-// (Ajusta la ruta si es necesario. Asumo que está en /src/css/style.css)
-import '../css/style.css'; // 
+// (Esto activa carruseles, modals, dropdowns, etc.)
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 // ==========================================================
-// 2. IMPORTAR COMPONENTES HTML 
+// 2. IMPORTAR TUS ESTILOS
+// ==========================================================
+
+// Importa TUS estilos personalizados DESPUÉS
+import '../css/style.css';
+
+// ==========================================================
+// 3. IMPORTAR COMPONENTES HTML 
 // ==========================================================
 // // Importar el HTML como texto plano (¡La forma Vite!)
 // Usamos rutas relativas (..) para "subir" de /js a /src
 import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
 import footerHtml from '../components/footer/footer.html?raw';
-import { setupSidebarToggle } from './sidebarToggle.js'; 
+import { setupSidebarToggle } from './sidebarToggle.js';
 
 
 /**
@@ -87,8 +92,10 @@ async function bootstrapApp() {
     loadNavbar();
     loadModals();
     loadFooter();
-setupSidebarToggle();
 
+    if (document.getElementById('sidebar_proyecto')) {
+        setupSidebarToggle();
+    }
 
     //  Iniciar la carga de scripts DE FORMA ASÍNCRONA
     const loadScripts = async () => {

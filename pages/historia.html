@@ -99,73 +99,9 @@
             </div>
         </div>
     </div>
-    <div id="footer-container"></div>
+<div id="footer-container"></div>
     <script type="module" src="/src/js/main.js"></script>
-
-    <script>
-        // 1. Seleccionar todos los elementos
-        const panels = document.querySelectorAll('.panel');
-        const galleryModal = new bootstrap.Modal(document.getElementById('galleryModal'));
-        const modalImage = document.getElementById('modalImage');
-        const modalTitle = document.getElementById('galleryModalLabel');
-        // Lógica para hacer zoom en la imagen del modal
-        modalImage.addEventListener('click', () => {
-            // Simplemente añade o quita la clase "zoomed"
-            modalImage.classList.toggle('zoomed');
-        });
-        let currentIndex = 0;
-        let autoAdvanceTimer;
-
-        // 2. Función para quitar 'active' de todos
-        function removeAllActiveClasses() {
-            panels.forEach(panel => {
-                panel.classList.remove('active');
-            });
-        }
-
-        // 3. Función para avanzar automáticamente
-        function autoAdvance() {
-            removeAllActiveClasses();
-            currentIndex = (currentIndex + 1) % panels.length;
-            panels[currentIndex].classList.add('active');
-        }
-
-        // 4. Iniciar el temporizador (1000ms = 1 segundo)
-        autoAdvanceTimer = setInterval(autoAdvance, 3000);
-
-        // 5. Lógica para cada panel (Hover, Leave, Click)
-        panels.forEach((panel, index) => {
-
-            // A. AL PASAR EL MOUSE (HOVER)
-            panel.addEventListener('mouseenter', () => {
-                clearInterval(autoAdvanceTimer); // Pausa el automático
-                removeAllActiveClasses();
-                panel.classList.add('active'); // Activa este panel
-            });
-
-            // B. AL QUITAR EL MOUSE
-            panel.addEventListener('mouseleave', () => {
-                currentIndex = index; // Sincroniza el índice
-                autoAdvanceTimer = setInterval(autoAdvance, 3000); // Reinicia el automático
-            });
-
-            // C. AL HACER CLIC
-            panel.addEventListener('click', () => {
-                // Obtener datos del panel
-                const style = panel.style.backgroundImage;
-                const imageUrl = style.slice(5, -2); // Extrae la URL
-                const titleText = panel.querySelector('h3').textContent;
-
-                // Poner datos en el modal
-                modalImage.src = imageUrl;
-                modalTitle.textContent = titleText;
-
-                // Mostrar el modal
-                galleryModal.show();
-            });
-        });
-    </script>
-
+    
+    <script type="module" src="/src/js/historia.js"></script>
 </body>
-
 </html>
