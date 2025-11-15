@@ -8,8 +8,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // (Esto activa carruseles, modals, dropdowns, etc.)
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
+//import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { Dropdown } from 'bootstrap';
 // ==========================================================
 // 2. IMPORTAR TUS ESTILOS
 // ==========================================================
@@ -26,6 +26,7 @@ import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
 import footerHtml from '../components/footer/footer.html?raw';
 import { setupSidebarToggle } from './sidebarToggle.js';
+import { initHistoriaGallery } from './historia.js';
 
 
 /**
@@ -92,7 +93,11 @@ async function bootstrapApp() {
     loadNavbar();
     loadModals();
     loadFooter();
+    // INICIALIZA EL NAVBAR MANUALMENTE
+    const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+    [...dropdownElementList].map(dropdownToggleEl => new Dropdown(dropdownToggleEl));
 
+    // Lógica del Sidebar (condicional)
     if (document.getElementById('sidebar_proyecto')) {
         setupSidebarToggle();
     }
@@ -121,10 +126,15 @@ async function bootstrapApp() {
         loadScripts(),
         minimumDisplayTime
     ]);
-
+    // En este punto, estamos seguros de que main.js ha cargado todo.
+    if (document.querySelector('.expanding-gallery-container')) {
+        initHistoriaGallery();
+    }
     //  Ocultar el loader
     // Esto ahora solo se ejecuta DESPUÉS de 1 segundo Y cuando la app está lista.
     hideLoader();
 }
-// Iniciar todo
-bootstrapApp();
+// Iniciar todo SÓLO cuando el DOM esté listo
+// Esto asegura que 'bootstrap.bundle.min.js' haya tenido tiempo de cargarse
+// y 'window.bootstrap' exista ANTES de que llamemos a bootstrapApp().
+document.addEventListener('DOMContentLoaded', bootstrapApp);
