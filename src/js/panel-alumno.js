@@ -1,15 +1,12 @@
 /* ----------------------------------
-   Lógica para Panel de Alumno
+    Lógica para Panel de Alumno
 * Versión conectada a Supabase
 ---------------------------------- */
 'use strict';
 
 // 1. IMPORTAR SUPABASE
-// ¡Ajusta esta ruta! Depende de dónde esté tu archivo.
 import { supabase } from '../../src/js/supabaseClient.js';
 
-// --- NUEVO: Variable para guardar los datos cargados ---
-// La necesitamos fuera de la función para que el modal pueda acceder a ella
 let datosUsuarioActual = null;
 
 /**
@@ -25,10 +22,146 @@ const fillData = (id, text) => {
 };
 
 /**
+ * Carga el horario desde Supabase y lo dibuja como una grilla (tabla HTML)
+ * @param {number} idGrado - El ID del grado del alumno
+ */
+async function cargarHorarioGrid(idGrado) {
+    const contenedor = document.getElementById('contenedor-horario');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = `<p class="text-center p-5"><span class="spinner-border spinner-border-sm" role="status"></span> Cargando horario...</p>`;
+
+    try {
+        const { data: clases, error } = await supabase
+            .from('horarios')
+            .select('dia_semana, hora_inicio, hora_fin, materia_nombre, profesor_nombre')
+            .eq('id_grado', idGrado)
+            .order('hora_inicio');
+
+        if (error) throw error;
+
+        if (!clases || clases.length === 0) {
+            contenedor.innerHTML = '<p class="text-muted text-center p-4">No hay un horario asignado para este grado.</p>';
+            return;
+        }
+
+        // Esta función interna decide qué clase CSS usar
+        const getMateriaClass = (materia) => {
+            if (!materia) return 'materia-celda'; // Clase por defecto
+            const m = materia.toLowerCase();
+
+            if (m.includes('recreo')) return 'recreo';
+            
+            // Materias especiales (las que ya tenías)
+            if (m.includes('plástica') || m.includes('artística')) return 'materia-plastica';
+            if (m.includes('física')) return 'materia-efisica';
+            if (m.includes('religión') || m.includes('formación ética')) return 'materia-religion';
+            if (m.includes('música')) return 'materia-musica';
+            if (m.includes('tecnolo')) return 'materia-tecnologia';
+            if (m.includes('diversas')) return 'materia-diversas';
+            if (m.includes('inglés')) return 'materia-ingles';
+            if (m.includes('agropecuaria')) return 'materia-agro';
+
+            // =============================================
+            //        ▼▼ ¡NUEVAS MATERIAS! ▼▼
+            // =============================================
+            if (m.includes('matemática')) return 'materia-matematica'; // Naranja pastel
+            if (m.includes('lengua')) return 'materia-lengua';       // Azul claro
+            if (m.includes('naturales')) return 'materia-naturales';  // Menta/Verde
+            if (m.includes('sociales')) return 'materia-sociales';   // Beige/Crema
+            // =============================================
+            //        ▲▲ ¡FIN DE MATERIAS! ▲▲
+            // =============================================
+
+            return 'materia-celda'; // Clase por defecto
+        };
+
+        const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+        const bloquesHorarios = [...new Map(clases.map(c =>
+            [c.hora_inicio, c])).values()].sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+
+        let html = '<table class="table table-bordered horario-table">';
+        html += '<thead class="table-light"><tr><th>Hora</th>';
+        diasSemana.forEach(dia => {
+            html += `<th>${dia}</th>`;
+        });
+        html += '</tr></thead>';
+        html += '<tbody>';
+
+        bloquesHorarios.forEach(bloque => {
+            const horaInicio = bloque.hora_inicio.substring(0, 5);
+            const horaFin = bloque.hora_fin.substring(0, 5);
+            html += `<tr><td>${horaInicio}<br>${horaFin}</td>`;
+
+            diasSemana.forEach(dia => {
+                const clase = clases.find(c =>
+                    c.dia_semana === dia && c.hora_inicio === bloque.hora_inicio
+                );
+                if (clase) {
+                    const claseCSS = getMateriaClass(clase.materia_nombre);
+                    html += `<td class="${claseCSS}">`; // La clase se aplica aquí
+
+                    if (claseCSS !== 'recreo') { // Si no es recreo, muestra normal
+                        html += `<strong>${clase.materia_nombre || ''}</strong>`;
+                        if (clase.profesor_nombre) {
+                            html += `<br><small>${clase.profesor_nombre}</small>`;
+                        }
+                    } else {
+                        html += `${clase.materia_nombre}`; // Si es recreo, solo el texto
+                    }
+                    html += `</td>`;
+
+                } else {
+                    html += '<td></td>';
+                }
+            });
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        contenedor.innerHTML = html;
+
+    } catch (error) {
+        console.error("Error al cargar horario:", error);
+        contenedor.innerHTML = `<p class="text-danger text-center p-4"><b>Error al cargar el horario:</b><br>${error.message}</p>`;
+    }
+}
+
+/**
+ * Carga la lista de grados desde Supabase y la pone en un dropdown
+ * @param {string} selectElementId - El ID del <select> a rellenar
+ */
+async function poblarDropdownGrados(selectElementId) {
+    const selectEl = document.getElementById(selectElementId);
+    if (!selectEl) return;
+
+    try {
+        const { data: grados, error } = await supabase
+            .from('grado')
+            .select('id_grado, nombre_grado')
+            .order('id_grado', { ascending: true }); // Ordena por ID (1°, 2°, 3°)
+
+        if (error) throw error;
+
+        selectEl.innerHTML = '<option value="" disabled>Selecciona un grado...</option>';
+
+        grados.forEach(grado => {
+            const option = document.createElement('option');
+            option.value = grado.id_grado;
+            option.textContent = grado.nombre_grado;
+            selectEl.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error('Error al cargar grados:', error.message);
+        selectEl.innerHTML = '<option value="">Error al cargar grados</option>';
+    }
+}
+
+/**
  * Función principal para cargar y mostrar los datos del estudiante.
  */
 async function cargarDatosEstudiante() {
-    // 2. OBTENER EL USUARIO AUTENTICADO
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -38,22 +171,29 @@ async function cargarDatosEstudiante() {
         return;
     }
 
-    // 3. CONSULTAR LA BASE DE DATOS (CORREGIDO)
+    // 3. CONSULTAR LA BASE DE DATOS
     const { data, error: dbError } = await supabase
         .from('usuarios')
         .select(`
-            nombre,
-            apellido,
-            email,
-            dni,
-            alumnos ( 
-                estatus_inscripcion,
-                fecha_nacimiento,  
-                direccion,         
-                telefono,          
-                grado ( nombre_grado ) 
-            )
-      _ `)
+            nombre,
+            apellido,
+            email,
+            dni,
+            alumnos ( 
+                estatus_inscripcion,
+                fecha_nacimiento,  
+                direccion,        
+                telefono,          
+                tutor_nombre,       
+                tutor_educacion,    
+                tutor_trabajo,
+                
+                grado ( 
+                    id_grado, 
+                    nombre_grado 
+                ) 
+            )
+        `)
         .eq('id_usuario', user.id)
         .single();
 
@@ -69,41 +209,33 @@ async function cargarDatosEstudiante() {
         return;
     }
 
-    // --- NUEVO: Guardar los datos en la variable global ---
     datosUsuarioActual = data;
 
-    // 4. POPULAR (RELLENAR) EL HTML (CORREGIDO)
+    // 4. POPULAR (RELLENAR) EL HTML
     try {
-        const alumnoInfo = data.alumnos[0] || {};
+        const alumnoInfo = data.alumnos || {}; // Esta es la corrección clave
         const gradoInfo = alumnoInfo.grado || {};
         const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`;
 
-        // 1. Barra de Navegación
         fillData('nav-matricula', 'N/A');
-
-        // 2. Fila 1: Tarjetas de Estadísticas (Simuladas)
         fillData('stat-promedio-valor', 'N/A');
         fillData('stat-asistencia-valor', 'N/A');
         fillData('stat-cursos-valor', 'N/A');
         fillData('stat-tareas-valor', 'N/A');
-
-        // 3. Fila 3: Pestaña Perfil (Tarjeta Izquierda)
         fillData('profile-name', nombreCompleto);
         fillData('profile-matricula', 'Matrícula: N/A');
         fillData('profile-grado', gradoInfo.nombre_grado);
         fillData('profile-seccion', 'N/A');
         fillData('profile-promedio-card', 'N/A');
-
-        // 4. Fila 3: Pestaña Perfil (Tarjeta Derecha - Info Personal)
         fillData('info-nombre', nombreCompleto);
         fillData('info-email', data.email);
-        fillData('info-dni', data.dni); // Añadido en el paso anterior
+        fillData('info-dni', data.dni);
         fillData('info-direccion', alumnoInfo.direccion);
         fillData('info-telefono', alumnoInfo.telefono);
         fillData('info-fecha-nacimiento', alumnoInfo.fecha_nacimiento);
-        fillData('info-tutor', 'N/A');
-
-        // 5. Fila 4: Resumen Académico (Simulado)
+        fillData('info-tutor-nombre', alumnoInfo.tutor_nombre);
+        fillData('info-tutor-trabajo', alumnoInfo.tutor_trabajo);
+        fillData('info-tutor-educacion', alumnoInfo.tutor_educacion);
         fillData('summary-promedio', 'N/A');
         fillData('summary-mejor-materia-val', 'N/A');
         fillData('summary-mejor-materia-label', 'N/A');
@@ -116,13 +248,12 @@ async function cargarDatosEstudiante() {
 }
 
 /**
- * --- NUEVO: Función para guardar los cambios del perfil ---
+ * Función para guardar los cambios del perfil
  */
 async function guardarCambiosPerfil(e) {
-    e.preventDefault(); // Prevenir recarga de página
+    e.preventDefault();
     console.log("Guardando cambios...");
 
-    // 1. Obtener el ID del usuario
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         alert("Sesión expirada, por favor inicia sesión de nuevo.");
@@ -135,32 +266,43 @@ async function guardarCambiosPerfil(e) {
     const nuevoApellido = document.getElementById('input-apellido-modal').value;
     const nuevoDNI = document.getElementById('input-dni-modal').value;
     const nuevoTelefono = document.getElementById('input-telefono-modal').value;
-    const nuevaFecha = document.getElementById('input-fecha-nacimiento-modal').value;
     const nuevaDireccion = document.getElementById('input-direccion-modal').value;
+    const nuevoTutorNombre = document.getElementById('input-tutor-nombre-modal').value;
+    const nuevoTutorEducacion = document.getElementById('input-tutor-educacion-modal').value;
+    const nuevoTutorTrabajo = document.getElementById('input-tutor-trabajo-modal').value;
+    const nuevaFechaRaw = document.getElementById('input-fecha-nacimiento-modal').value;
+    const nuevoIdGradoRaw = document.getElementById('input-grado-modal').value;
+
+    // Convertir "" a null para la base de datos
+    const nuevaFecha = nuevaFechaRaw === "" ? null : nuevaFechaRaw;
+    const nuevoIdGrado = nuevoIdGradoRaw === "" ? null : nuevoIdGradoRaw;
 
     try {
-        // 3. Actualizar la tabla 'usuarios' (Nombre y Apellido)
+        // 3. Actualizar la tabla 'usuarios'
         const { error: userError } = await supabase
             .from('usuarios')
             .update({ nombre: nuevoNombre, apellido: nuevoApellido })
             .eq('id_usuario', userId);
         if (userError) throw userError;
 
-        // 4. Actualizar la tabla 'alumnos' (Teléfono, Fecha, Dirección)
+        // 4. Actualizar la tabla 'alumnos'
         const { error: alumnoError } = await supabase
             .from('alumnos')
             .update({
                 telefono: nuevoTelefono,
                 fecha_nacimiento: nuevaFecha,
-                direccion: nuevaDireccion
+                direccion: nuevaDireccion,
+                tutor_nombre: nuevoTutorNombre,
+                tutor_educacion: nuevoTutorEducacion,
+                tutor_trabajo: nuevoTutorTrabajo,
+                id_grado: nuevoIdGrado
             })
-            .eq('id_alumno', userId); // Asumiendo que id_alumno es el mismo que id_usuario
+            .eq('id_alumno', userId);
         if (alumnoError) throw alumnoError;
 
         // 5. Éxito
         alert("¡Perfil actualizado con éxito!");
 
-        // Ocultar el modal (usando el objeto global de Bootstrap)
         const modalEl = document.getElementById('modalEditarPerfil');
         const modal = bootstrap.Modal.getInstance(modalEl);
         modal.hide();
@@ -174,44 +316,62 @@ async function guardarCambiosPerfil(e) {
     }
 }
 
-
 /**
  * Función principal que se ejecuta cuando el DOM está listo.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Iniciar la carga de datos (como ya estaba)
+    // Iniciar la carga de datos
     cargarDatosEstudiante();
-
-    // --- NUEVO: Lógica para el modal de edición ---
 
     const modalEditarPerfil = document.getElementById('modalEditarPerfil');
     const formEditarPerfil = document.getElementById('formEditarPerfil');
 
     // 1. Rellenar el modal cuando se abre
     if (modalEditarPerfil) {
-        // Evento que se dispara ANTES de que el modal se muestre
-        modalEditarPerfil.addEventListener('show.bs.modal', () => {
-            // Rellenamos el modal con los datos actuales
+        modalEditarPerfil.addEventListener('show.bs.modal', async () => {
+            // Carga los grados en el dropdown ANTES de rellenar
+            await poblarDropdownGrados('input-grado-modal');
+            
             if (datosUsuarioActual) {
-                const alumnoInfo = datosUsuarioActual.alumnos[0] || {};
+                const alumnoInfo = datosUsuarioActual.alumnos || {}; // Esta es la corrección clave
+                
                 document.getElementById('input-nombre-modal').value = datosUsuarioActual.nombre || '';
                 document.getElementById('input-apellido-modal').value = datosUsuarioActual.apellido || '';
                 document.getElementById('input-dni-modal').value = datosUsuarioActual.dni || '';
                 document.getElementById('input-telefono-modal').value = alumnoInfo.telefono || '';
                 document.getElementById('input-fecha-nacimiento-modal').value = alumnoInfo.fecha_nacimiento || '';
                 document.getElementById('input-direccion-modal').value = alumnoInfo.direccion || '';
+                document.getElementById('input-tutor-nombre-modal').value = alumnoInfo.tutor_nombre || '';
+                document.getElementById('input-tutor-educacion-modal').value = alumnoInfo.tutor_educacion || '';
+                document.getElementById('input-tutor-trabajo-modal').value = alumnoInfo.tutor_trabajo || '';
+
+                // Selecciona el grado actual del alumno
+                if (alumnoInfo.grado) {
+                    document.getElementById('input-grado-modal').value = alumnoInfo.grado.id_grado;
+                }
             } else {
                 console.error("No se pudieron cargar los datos del usuario para editar.");
-                // Opcional: cerrar el modal si no hay datos
             }
         });
     }
 
     // 2. Guardar los cambios al enviar el formulario
     if (formEditarPerfil) {
-        // Evento que se dispara al ENVIAR el formulario
         formEditarPerfil.addEventListener('submit', guardarCambiosPerfil);
     }
 
-    // --- FIN de la lógica del modal ---
+    // --- Lógica para cargar el horario SÓLO al hacer clic en la pestaña ---
+    const tabHorario = document.getElementById('horario-tab');
+    if (tabHorario) {
+        tabHorario.addEventListener('shown.bs.tab', () => {
+            if (datosUsuarioActual && datosUsuarioActual.alumnos && datosUsuarioActual.alumnos.grado) {
+                const idGrado = datosUsuarioActual.alumnos.grado.id_grado;
+                cargarHorarioGrid(idGrado);
+            } else {
+                console.warn("No se pudieron cargar los datos del alumno para ver el horario.");
+                document.getElementById('contenedor-horario').innerHTML =
+                    '<p class="text-danger p-4">No se pudo identificar tu grado para cargar el horario. <br>Por favor, asigna un grado a este alumno en la pestaña "Perfil".</p>';
+            }
+        }, { once: true });
+    }
 });

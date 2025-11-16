@@ -152,3 +152,90 @@ body {
     background-color: #f3e5f5; /* Púrpura pastel */
     color: #6f42c1;
 }
+
+/* --- Estilos para la Grilla de Horario --- */
+.horario-table {
+    border: 1px solid #dee2e6;
+    min-width: 700px;
+}
+
+.horario-table th,
+.horario-table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+    height: 80px;
+    font-size: 0.9rem;
+    border: 1px solid #e9ecef;
+}
+
+.horario-table th:first-child,
+.horario-table td:first-child {
+    font-weight: bold;
+    font-size: 0.8rem;
+    width: 100px;
+    background-color: #f8f9fa;
+}
+
+.horario-table thead th {
+    background-color: #f1f3f5;
+    font-weight: 600;
+}
+
+/* --- Colores de Materias para Horario --- */
+
+/* Colores de fondo pastel */
+.horario-table .materia-plastica { background-color: #e0f7fa; } /* Azul */
+.horario-table .materia-efisica { background-color: #f1f8e9; } /* Verde claro */
+.horario-table .materia-religion { background-color: #fce4ec; } /* Rosa */
+.horario-table .materia-musica { background-color: #fffde7; } /* Amarillo */
+.horario-table .materia-tecnologia { background-color: #e1f5fe; } /* Celeste */
+.horario-table .materia-diversas { background-color: #e8eaf6; } /* Azul marino */
+.horario-table .materia-ingles { background-color: #f3e5f5; } /* Morado */
+.horario-table .materia-agro { background-color: #dcedc8; } /* Verde cocodrilo */
+.horario-table .materia-matematica { background-color: #fff3e0; } /* Naranja pastel */
+.horario-table .materia-lengua { background-color: #e3f2fd; }     /* Azul claro */
+.horario-table .materia-naturales { background-color: #e0f2f1; }  /* Menta/Verde */
+.horario-table .materia-sociales { background-color: #fbf3e6; }   /* Beige/Crema */
+
+/* Clase por defecto para Lengua, Matemática, etc. */
+.horario-table .materia-celda { 
+    background-color: #ffffff; 
+    line-height: 1.3;
+}
+
+.materia-celda strong {
+    display: block;
+    color: #333;
+}
+
+.materia-celda small {
+    color: #6c757d;
+    font-size: 0.85em;
+}
+
+/* Ajustes para que el texto se lea bien */
+.horario-table td {
+    color: #333;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.horario-table td strong {
+    font-weight: 700;
+}
+
+/* Efecto "alegre" al pasar el mouse */
+.horario-table td:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 10;
+}
+
+/* Texto del recreo */
+.horario-table .recreo {
+    background-color: #f8f9fa;
+    font-style: italic;
+    color: #6c757d;
+}
