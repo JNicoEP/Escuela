@@ -341,141 +341,9 @@ form .btn-primary {
     margin-top: auto;
 }
 
-/* ================================================================== */
-/* 1. ESTILOS PARA EL MODAL DE SELECCIÓN DE ROL (AUTOGESTIÓN)
-/* ================================================================== */
-
-#roleChooserModal .modal-content {
-    border-radius: 0.75rem;
-    /* Esquinas más suaves */
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-#roleChooserModal .modal-header {
-    border-bottom: none;
-    /* Un look más limpio y moderno */
-    padding: 1.5rem 1.5rem 0 1.5rem;
-}
-
-#roleChooserModal .modal-body {
-    padding: 1.5rem;
-}
-
-/* --- Estilo de las Tarjetas de Rol (El efecto "Bonito") --- */
-
-/* Usamos la clase que ya tienen los enlaces (<a>) */
-#roleChooserModal .card {
-    border: none;
-    background-color: #f8f9fa;
-    /* Un fondo gris muy suave */
-    border-radius: 0.75rem;
-    height: 100%;
-    /* Transición suave para el hover */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-/* Efecto "lift" (levantar) al pasar el mouse */
-#roleChooserModal .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* Ajustes de las tarjetas */
-#roleChooserModal .card-body {
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-#roleChooserModal .card h6 {
-    font-weight: 700;
-    /* Títulos más fuertes */
-    color: #343a40;
-    /* Texto oscuro */
-    margin-top: 0.5rem;
-}
-
-#roleChooserModal .card small {
-    font-size: 0.85rem;
-    color: #6c757d;
-    /* Texto silenciado */
-}
 
 
-/* ================================================================== */
-/* 2. ESTILOS PARA EL MODAL DE LOGIN/REGISTRO (TABS)
-/* ================================================================== */
 
-#authModal .modal-content {
-    border-radius: 0.75rem;
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-#authModal .modal-header {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-/* --- Estilo de Pestañas (Tabs) --- */
-
-#authModal .nav-tabs {
-    border-bottom: 1px solid #dee2e6;
-    /* Línea base ligera */
-}
-
-#authModal .nav-tabs .nav-link {
-    border: none;
-    color: #6c757d;
-    /* Gris inactivo */
-    font-weight: 500;
-    padding: 1rem 0.5rem;
-    margin-bottom: -1px;
-    /* Alinea con la línea base */
-    transition: all 0.2s ease;
-}
-
-/* Pestaña activa  */
-#authModal .nav-tabs .nav-link.active {
-    color: #0d6efd;
-    /* Color primario de Bootstrap */
-    font-weight: 700;
-    /* Línea inferior distintiva en lugar de un borde de caja */
-    border-bottom: 3px solid #0d6efd;
-    background-color: transparent;
-}
-
-/* Hover en pestañas inactivas */
-#authModal .nav-tabs .nav-link:not(.active):hover {
-    color: #343a40;
-    /* Oscurece al pasar el mouse */
-}
-
-/* Cuerpo del modal */
-#authModal .modal-body {
-    padding: 2rem;
-}
-
-/* --- Estilo de Formularios y Botones --- */
-
-/* Los inputs "form-floating" ya se ven bien, pero mejoramos el botón */
-#authModal .d-grid .btn {
-    padding: 0.8rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-radius: 0.5rem;
-    /* Botones más suaves */
-    transition: all 0.2s ease;
-}
-
-/* Efecto hover en el botón principal */
-#authModal .d-grid .btn-primary:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
-}
 
 /* Estilos para las publicaciones */
 .publicacion {
@@ -969,9 +837,7 @@ form .btn-primary {
     color: white;
 }
 
-.modal {
-    z-index: 1060 !important;
-}
+
 
 
 

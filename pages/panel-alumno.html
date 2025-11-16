@@ -140,8 +140,8 @@
             </div>
         </div>
 
-        <div class="tab-content" id="myTabContent">
 
+        <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="perfil-tab-pane" role="tabpanel">
                 <div class="row g-4">
                     <div class="col-lg-4">
@@ -170,6 +170,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-lg-8">
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body p-4">
@@ -236,10 +237,29 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-id-badge"></i>
+                                            <div>
+                                                <small class="text-muted">Certificado (CUD)</small>
+                                                <p class="fw-medium" id="info-cud-estado">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="info-field">
+                                            <i class="fas fa-notes-medical"></i>
+                                            <div>
+                                                <small class="text-muted">Tipo de CUD</small>
+                                                <p class="fw-medium" id="info-cud-diagnostico">Cargando...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="col-12 mt-4">
                                         <h6 class="border-top pt-3">Información del Tutor</h6>
                                     </div>
-
                                     <div class="col-md-6">
                                         <div class="info-field">
                                             <i class="fas fa-user-shield"></i>
@@ -279,6 +299,7 @@
                     <div class="card-body p-4">Contenido de Calificaciones aquí...</div>
                 </div>
             </div>
+            
             <div class="tab-pane fade" id="horario-tab-pane" role="tabpanel">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">
@@ -288,7 +309,6 @@
                                 <i class="fas fa-print me-1"></i> Imprimir
                             </button>
                         </div>
-
                         <div id="contenedor-horario" class="table-responsive">
                             <p class="text-center p-5">
                                 <span class="spinner-border spinner-border-sm" role="status"></span>
@@ -298,11 +318,13 @@
                     </div>
                 </div>
             </div>
+            
             <div class="tab-pane fade" id="asistencia-tab-pane" role="tabpanel">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">Contenido de Asistencia aquí...</div>
                 </div>
             </div>
+            
             <div class="tab-pane fade" id="tareas-tab-pane" role="tabpanel">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">Contenido de Tareas aquí...</div>
@@ -340,6 +362,8 @@
             </div>
         </div>
     </div>
+
+
     <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfilLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -368,7 +392,6 @@
                                 <label for="input-dni-modal" class="form-label">DNI</label>
                                 <input type="text" class="form-control" id="input-dni-modal">
                             </div>
-
                             <div class="col-md-6">
                                 <label for="input-telefono-modal" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control" id="input-telefono-modal">
@@ -388,6 +411,38 @@
                                 <input type="text" class="form-control" id="input-direccion-modal">
                             </div>
 
+                            <h6 class="mt-4 border-top pt-3">Información Adicional (CUD)</h6>
+                            <div class="col-md-6">
+                                <label for="input-cud-tiene" class="form-label">¿Tiene CUD?</label>
+                                <select id="input-cud-tiene" class="form-select">
+                                    <option value="false" selected>No</option>
+                                    <option value="true">Sí</option>
+                                </select>
+                            </div>
+                            <div class="col-12" id="cud-detalles-container" style="display: none;">
+                                <div class="row g-3 p-3 bg-light border rounded">
+                                    <div class="col-md-6">
+                                        <label for="input-cud-diagnostico" class="form-label">Tipo de CUD
+                                            (Diagnóstico)</label>
+                                        <select id="input-cud-diagnostico" class="form-select">
+                                            <option value="" selected>Seleccionar tipo...</option>
+                                            <option value="Motriz">Motriz</option>
+                                            <option value="Visceral">Visceral</option>
+                                            <option value="Auditivo">Auditivo</option>
+                                            <option value="Visual">Visual</option>
+                                            <option value="Intelectual">Intelectual / Mental</option>
+                                            <option value="Psicosocial">Psicosocial</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="input-cud-vencimiento" class="form-label">Fecha de
+                                            Vencimiento</label>
+                                        <input type="date" class="form-control" id="input-cud-vencimiento">
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <h6 class="mt-4 border-top pt-3">Información del Tutor</h6>
 
                             <div class="col-md-12">
@@ -417,7 +472,18 @@
                             <div class="col-md-6">
                                 <label for="input-tutor-trabajo-modal" class="form-label">Trabajo/Ocupación
                                     (Tutor)</label>
-                                <input type="text" class="form-control" id="input-tutor-trabajo-modal">
+                                <select id="input-tutor-trabajo-modal" class="form-select">
+                                    <option value="" selected>Seleccionar...</option>
+                                    <option value="Desocupado">Desocupado</option>
+                                    <option value="Plan social">Plan social</option>
+                                    <option value="Docente">Docente</option>
+                                    <option value="Jubilado">Jubilado</option>
+                                    <option value="Jornalero">Jornalero</option>
+                                    <option value="Independiente">Independiente</option>
+                                    <option value="Profesional">Profesional</option>
+                                    <option value="Empleado">Empleado</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -430,6 +496,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>

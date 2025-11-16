@@ -31,6 +31,7 @@ function setupPasswordToggle(inputId, buttonId) {
     }
 }
 
+
 /**
  * Función principal que se ejecuta al cargar el DOM.
  */
@@ -42,15 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     roleSelectButtons.forEach(button => {
         button.addEventListener('click', (e) => {
-            // No prevenimos el default, ya que data-bs-toggle lo necesita
+            // ¡OJO! No prevenimos el default, dejamos que modal.js lo haga.
             let role = e.currentTarget.getAttribute('data-role').toLowerCase();
 
-            
-
-            selectedRoleForRegistration = role;
+            selectedRoleForRegistration = role; // <-- ESTA ES LA PARTE IMPORTANTE
 
             if (loginModalTitle) {
-                // Pone el título del modal (ej: "Acceso - Panel de Alumno")
                 const capitalRole = role.charAt(0).toUpperCase() + role.slice(1);
                 loginModalTitle.textContent = 'Acceso - Panel de ' + capitalRole;
             }
@@ -84,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
-            iniciarSesion(email, password); // Usa la misma función de login
+            iniciarSesion(email, password);
         });
     }
 
@@ -93,34 +91,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
+            // ... (tu código de registro sigue igual) ...
             const nombre = document.getElementById('registerNombre').value;
             const apellido = document.getElementById('registerApellido').value;
-            const dni = document.getElementById('registerDNI').value; // <-- AÑADIR ESTA LÍNEA
+            const dni = document.getElementById('registerDNI').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
 
-            if (!nombre || !apellido || !dni || !email || !password) { // <-- AÑADIR !dni
+            if (!nombre || !apellido || !dni || !email || !password) {
                 showMessage('Por favor, complete todos los campos.', 'Error');
                 return;
             }
 
-            // Llamar a la función de registro
             const result = await registrarUsuario(nombre, apellido, dni, email, password, selectedRoleForRegistration);
 
             if (result.success) {
-
-                // 1. Muestra el mensaje de éxito (esto ya lo hace)
                 if (result.requiresConfirmation) {
                     showMessage('Registro exitoso. Revisa tu correo...', 'Éxito');
                 } else {
                     showMessage('¡Registro exitoso! Ya puedes iniciar sesión.', 'Éxito');
                 }
-
-                // 2. Resetea el formulario de registro
                 registerForm.reset();
-
-                // 3. Cambia automáticamente a la pestaña de Iniciar Sesión
                 const loginTabButton = document.getElementById('login-tab');
                 if (loginTabButton) {
                     new bootstrap.Tab(loginTabButton).show();

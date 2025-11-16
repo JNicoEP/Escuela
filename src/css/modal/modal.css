@@ -1,0 +1,241 @@
+/* ================================================================== */
+/* ESTILOS MODERNOS PARA MODALES DE AUTENTICACIÓN            */
+/* (modal.css)                                               */
+/* ================================================================== */
+
+/* --- 1. Estilos Globales del Modal --- */
+
+/* Fondo desenfocado (Efecto Vidrio) */
+.modal-backdrop.show {
+    opacity: 0.5;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    border-radius: 1rem; /* Bordes redondeados */
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    /* Sombra profesional */
+    overflow: hidden;
+    /* Para que los bordes redondeados se apliquen al header */
+}
+
+.modal-header {
+    border-bottom: 1px solid #f0f0f0;
+    /* Línea sutil */
+    padding: 1.5rem 1.75rem;
+    background-color: #f8f9fa;
+    /* Fondo ligero para el header */
+}
+
+.modal-header .modal-title {
+    font-weight: 700;
+    color: #212529;
+}
+
+.modal-body {
+    padding: 2rem;
+    /* Más espacio */
+    background-color: #ffffff;
+}
+
+.modal-footer {
+    border-top: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+    padding: 1rem 1.75rem;
+}
+
+
+/* --- 2. Modal de Selección de Rol (#roleChooserModal) --- */
+
+#roleChooserModal .modal-body p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+#roleChooserModal .role-select-btn.card {
+    border: 1px solid #e9ecef;
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecto "lift" (levantar) al pasar el mouse */
+#roleChooserModal .role-select-btn.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border-color: #0d6efd;
+    /* Borde azul al pasar el mouse */
+}
+
+#roleChooserModal .role-select-btn .card-body {
+    padding: 1.5rem 1rem;
+}
+
+#roleChooserModal .role-select-btn h6 {
+    font-weight: 700;
+    color: #343a40;
+    margin-top: 0.75rem;
+}
+
+/* Colores de íconos (tomados del HTML) */
+#roleChooserModal .text-primary {
+    color: #0d6efd !important;
+}
+
+#roleChooserModal .text-info {
+    color: #0dcaf0 !important;
+}
+
+#roleChooserModal .text-danger {
+    color: #dc3545 !important;
+}
+
+
+/* --- 3. Modal de Login/Registro (Auth & Admin) --- */
+
+/* Estilo de Pestañas (Tabs) */
+#authModal .nav-tabs {
+    border-bottom: none;
+    padding: 0 1.5rem;
+    /* Centra las pestañas */
+}
+
+#authModal .nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    /* Gris inactivo */
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    margin-bottom: -1px;
+    transition: all 0.2s ease;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+#authModal .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    /* Color primario */
+    font-weight: 700;
+    background-color: #ffffff;
+    /* Fondo blanco para la pestaña activa */
+    border-bottom: 3px solid #0d6efd;
+}
+
+#authModal .nav-tabs .nav-link:not(.active):hover {
+    color: #343a40;
+}
+
+/* Contenedor de Pestañas (Login y Registro) */
+#authModal .tab-content {
+    background-color: #ffffff;
+    border-radius: 0 0 0.5rem 0.5rem;
+    padding: 1.5rem;
+}
+
+/* Inputs de Formulario (para todos los modales de login) */
+.form-floating .form-control {
+    border-radius: 0.5rem;
+    /* Bordes más suaves */
+    border: 1px solid #ced4da;
+    background-color: #f8f9fa;
+    /* Fondo ligero para inputs */
+}
+
+.form-floating .form-control:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Contenedor del Ojo (Mostrar Contraseña) */
+.password-toggle-container {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    z-index: 10;
+    color: #6c757d;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.password-toggle-btn:hover {
+    color: #0d6efd;
+}
+
+/* Botón Principal (Login y Registro) */
+#loginForm .btn-primary,
+#adminForm .btn-primary {
+    padding: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    background: #0d6efd;
+    border: none;
+}
+
+/* Efecto de hover en botones primarios */
+#loginForm .btn-primary:hover,
+#adminForm .btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* Botón de Registro (Outline) */
+#registerForm .btn-outline-primary {
+    padding: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border-width: 2px;
+}
+
+/* --- 4. Modal de Mensajes (Avisos del Sistema) --- */
+
+#messageModal .modal-header {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 1.5rem;
+}
+
+#messageModal .modal-body {
+    font-size: 1.1rem;
+    color: #495057;
+    line-height: 1.6;
+}
+/* ================================================================== */
+/* 4. ESTILOS PARA EL MODAL DE ADMIN (#adminModal)           */
+/* ================================================================== */
+
+/* Define el contenedor del formulario */
+.auth-container {
+    background-color: #f8f9fa; /* Fondo ligero */
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+/* Ajusta el padding del modal-body para que el contenedor se vea bien */
+#adminModal .modal-body {
+    padding: 1rem;
+    background-color: #f8f9fa; /* Asegura que el fondo del modal coincida */
+}
+
+/* El header del modal de admin */
+#adminModal .modal-header {
+    background-color: #ffffff; /* Fondo blanco (diferente al de authModal) */
+    padding: 1.5rem 1.75rem;
+}
+
+/* El botón de admin (ya cubierto por las reglas de #adminForm .btn-primary) */
+#adminForm .btn-primary.btn-lg {
+    padding: 0.8rem; /* Asegura el mismo padding que los otros botones */
+    font-size: 1rem;
+}

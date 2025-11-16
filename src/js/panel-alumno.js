@@ -161,6 +161,9 @@ async function poblarDropdownGrados(selectElementId) {
 /**
  * Función principal para cargar y mostrar los datos del estudiante.
  */
+/**
+ * Función principal para cargar y mostrar los datos del estudiante.
+ */
 async function cargarDatosEstudiante() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -171,7 +174,7 @@ async function cargarDatosEstudiante() {
         return;
     }
 
-    // 3. CONSULTAR LA BASE DE DATOS
+    // 3. CONSULTAR LA BASE DE DATOS (CON CAMPOS CUD)
     const { data, error: dbError } = await supabase
         .from('usuarios')
         .select(`
@@ -187,7 +190,9 @@ async function cargarDatosEstudiante() {
                 tutor_nombre,       
                 tutor_educacion,    
                 tutor_trabajo,
-                
+                tiene_cud,         
+                cud_diagnostico,   
+                cud_vencimiento,   
                 grado ( 
                     id_grado, 
                     nombre_grado 
@@ -213,7 +218,7 @@ async function cargarDatosEstudiante() {
 
     // 4. POPULAR (RELLENAR) EL HTML
     try {
-        const alumnoInfo = data.alumnos || {}; // Esta es la corrección clave
+        const alumnoInfo = data.alumnos || {};
         const gradoInfo = alumnoInfo.grado || {};
         const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`;
 
@@ -236,6 +241,10 @@ async function cargarDatosEstudiante() {
         fillData('info-tutor-nombre', alumnoInfo.tutor_nombre);
         fillData('info-tutor-trabajo', alumnoInfo.tutor_trabajo);
         fillData('info-tutor-educacion', alumnoInfo.tutor_educacion);
+        
+        // --- NUEVO CAMPO CUD ---
+        fillData('info-cud-diagnostico', alumnoInfo.cud_diagnostico);
+        
         fillData('summary-promedio', 'N/A');
         fillData('summary-mejor-materia-val', 'N/A');
         fillData('summary-mejor-materia-label', 'N/A');
@@ -247,6 +256,9 @@ async function cargarDatosEstudiante() {
     }
 }
 
+/**
+ * Función para guardar los cambios del perfil
+ */
 /**
  * Función para guardar los cambios del perfil
  */
@@ -277,6 +289,12 @@ async function guardarCambiosPerfil(e) {
     const nuevaFecha = nuevaFechaRaw === "" ? null : nuevaFechaRaw;
     const nuevoIdGrado = nuevoIdGradoRaw === "" ? null : nuevoIdGradoRaw;
 
+    // --- NUEVOS VALORES CUD ---
+    const nuevoCudTiene = document.getElementById('input-cud-tiene').value === 'true';
+    const nuevoCudDiagnostico = document.getElementById('input-cud-diagnostico').value || null;
+    const nuevoCudVencimientoRaw = document.getElementById('input-cud-vencimiento').value;
+    const nuevoCudVencimiento = nuevoCudVencimientoRaw === "" ? null : nuevoCudVencimientoRaw;
+    
     try {
         // 3. Actualizar la tabla 'usuarios'
         const { error: userError } = await supabase
@@ -285,7 +303,7 @@ async function guardarCambiosPerfil(e) {
             .eq('id_usuario', userId);
         if (userError) throw userError;
 
-        // 4. Actualizar la tabla 'alumnos'
+        // 4. Actualizar la tabla 'alumnos' (CON CAMPOS CUD)
         const { error: alumnoError } = await supabase
             .from('alumnos')
             .update({
@@ -295,7 +313,10 @@ async function guardarCambiosPerfil(e) {
                 tutor_nombre: nuevoTutorNombre,
                 tutor_educacion: nuevoTutorEducacion,
                 tutor_trabajo: nuevoTutorTrabajo,
-                id_grado: nuevoIdGrado
+                id_grado: nuevoIdGrado,
+                tiene_cud: nuevoCudTiene,
+                cud_diagnostico: nuevoCudDiagnostico,
+                cud_vencimiento: nuevoCudVencimiento
             })
             .eq('id_alumno', userId);
         if (alumnoError) throw alumnoError;
@@ -349,8 +370,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (alumnoInfo.grado) {
                     document.getElementById('input-grado-modal').value = alumnoInfo.grado.id_grado;
                 }
+
+                // --- NUEVO: Rellenar campos CUD y lógica de visibilidad ---
+                const selectorCud = document.getElementById('input-cud-tiene');
+                const detallesCud = document.getElementById('cud-detalles-container');
+
+                // 1. Rellenar los campos
+                selectorCud.value = alumnoInfo.tiene_cud ? 'true' : 'false';
+                document.getElementById('input-cud-diagnostico').value = alumnoInfo.cud_diagnostico || '';
+                document.getElementById('input-cud-vencimiento').value = alumnoInfo.cud_vencimiento || '';
+
+                // 2. Mostrar/ocultar el contenedor basado en el valor
+                detallesCud.style.display = alumnoInfo.tiene_cud ? 'block' : 'none';
+
             } else {
                 console.error("No se pudieron cargar los datos del usuario para editar.");
+            }
+        });
+    }
+
+    // --- NUEVO: Listener para el dropdown de CUD ---
+    const selectorCud = document.getElementById('input-cud-tiene');
+    if (selectorCud) {
+        selectorCud.addEventListener('change', () => {
+            const detallesCud = document.getElementById('cud-detalles-container');
+            if (selectorCud.value === 'true') {
+                detallesCud.style.display = 'block';
+            } else {
+                detallesCud.style.display = 'none';
             }
         });
     }
