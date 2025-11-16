@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
     <link rel="icon" href="/favicon.ico.png" type="image/x-icon">
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <!-- Font Awesome (para íconos) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Estilos personalizados -->
-  <link rel="stylesheet" href="/src/css/paneles/panel-admin.css">
+    <link rel="stylesheet" href="/src/css/paneles/panel-admin.css">
 </head>
+
 <body class="bg-light-subtle">
 
     <!-- 1. Cabecera (Navbar/Header) -->
@@ -41,22 +46,26 @@
             <div class="card-header bg-white border-0 pt-3">
                 <ul class="nav nav-tabs-card" id="adminTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="auditoria-tab" data-bs-toggle="tab" data-bs-target="#auditoria-tab-pane" type="button" role="tab">
+                        <button class="nav-link active" id="auditoria-tab" data-bs-toggle="tab"
+                            data-bs-target="#auditoria-tab-pane" type="button" role="tab">
                             <i class="fas fa-history me-2"></i> Auditoría
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="gestion-docentes-tab" data-bs-toggle="tab" data-bs-target="#gestion-docentes-tab-pane" type="button" role="tab">
+                        <button class="nav-link" id="gestion-docentes-tab" data-bs-toggle="tab"
+                            data-bs-target="#gestion-docentes-tab-pane" type="button" role="tab">
                             <i class="fas fa-chalkboard-teacher me-2"></i> Gestión Docentes
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="documentacion-tab" data-bs-toggle="tab" data-bs-target="#documentacion-tab-pane" type="button" role="tab">
+                        <button class="nav-link" id="documentacion-tab" data-bs-toggle="tab"
+                            data-bs-target="#documentacion-tab-pane" type="button" role="tab">
                             <i class="fas fa-file-alt me-2"></i> Documentación
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="mensajeria-tab" data-bs-toggle="tab" data-bs-target="#mensajeria-tab-pane" type="button" role="tab">
+                        <button class="nav-link" id="mensajeria-tab" data-bs-toggle="tab"
+                            data-bs-target="#mensajeria-tab-pane" type="button" role="tab">
                             <i class="fas fa-envelope me-2"></i> Mensajería
                         </button>
                     </li>
@@ -65,33 +74,38 @@
 
             <!-- Contenido de las Pestañas -->
             <div class="tab-content" id="adminTabContent">
-                
+
                 <!-- Pestaña 1: Auditoría -->
                 <div class="tab-pane fade show active" id="auditoria-tab-pane" role="tabpanel">
                     <div class="card-body p-4">
-                        <h5 class="mb-3">Auditoría de Accesos</h5>
-                        <!-- Filtros -->
-                        <div class="mb-3">
-                            <button class="btn btn-success-soft" id="ver-docentes-btn" data-rol="docente"><i class="fas fa-user-tie me-1"></i> Ver Docentes</button>
-                            <button class="btn btn-success-soft" id="ver-alumnos-btn" data-rol="alumno"><i class="fas fa-user-graduate me-1"></i> Ver Alumnos</button>
-                            <button class="btn btn-success-soft" id="ver-padres-btn" data-rol="padre"><i class="fas fa-users me-1"></i> Ver Padres</button>
-                            <button class="btn btn-success-soft" id="ver-todos-btn" data-rol="todos"><i class="fas fa-globe me-1"></i> Ver Todos</button>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Usuarios Registrados</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                                <i class="fas fa-print me-1"></i> Imprimir
+                            </button>
                         </div>
-                        <!-- Tabla -->
+                        <div class="mb-3">
+                            <button class="btn btn-success-soft" data-rol="docente"><i class="fas fa-user-tie me-1"></i>
+                                Ver Docentes</button>
+                            <button class="btn btn-success-soft" data-rol="alumno"><i
+                                    class="fas fa-user-graduate me-1"></i> Ver Alumnos</button>
+                            <button class="btn btn-success-soft active" data-rol="todos"><i
+                                    class="fas fa-globe me-1"></i> Ver Todos</button>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
-                                        <th scope="col">Usuario (ID)</th>
+                                        <th scope="col">Nombre Completo</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">DNI</th>
                                         <th scope="col">Rol</th>
-                                        <th scope="col">Fecha/Hora</th>
-                                        <th scope="col">Acción</th>
-                                        <th scope="col">IP</th>
+                                        <th scope="col">Fecha de Registro</th>
+                                        <th scope="col" style="width: 150px;">Acciones</th> </tr>
                                     </tr>
-                                <thead>
-                                <tbody id="auditoria-table-body">
-                                    <!-- JS insertará el historial aquí -->
-                                </tbody>
+                                    <thead>
+                                    <tbody id="auditoria-table-body">
+                                    </tbody>
                             </table>
                         </div>
                     </div>
@@ -103,11 +117,14 @@
                         <h5 class="mb-3">Gestión de Docentes</h5>
                         <!-- Filtros -->
                         <div class="mb-3">
-                            <button class="btn btn-success-soft" id="pendientes-btn" data-estado="pendiente"><i class="fas fa-clock me-1"></i> Pendientes</button>
-                            <button class="btn btn-success-soft" id="aprobados-btn" data-estado="aprobado"><i class="fas fa-check-circle me-1"></i> Aprobados</button>
-                            <button class="btn btn-success-soft" id="rechazados-btn" data-estado="rechazado"><i class="fas fa-times-circle me-1"></i> Rechazados</button>
+                            <button class="btn btn-success-soft" id="pendientes-btn" data-estado="pendiente"><i
+                                    class="fas fa-clock me-1"></i> Pendientes</button>
+                            <button class="btn btn-success-soft" id="aprobados-btn" data-estado="aprobado"><i
+                                    class="fas fa-check-circle me-1"></i> Aprobados</button>
+                            <button class="btn btn-success-soft" id="rechazados-btn" data-estado="rechazado"><i
+                                    class="fas fa-times-circle me-1"></i> Rechazados</button>
                         </div>
-                        
+
                         <!-- NUEVO: Acciones en Lote -->
                         <div id="bulk-actions-container" class="card bg-light p-3 mb-3" style="display: none;">
                             <div class="row g-2 align-items-center">
@@ -141,10 +158,10 @@
                                         <th scope="col">Estado</th>
                                         <th scope="col">Acciones</th>
                                     </tr>
-                                <thead>
-                                <tbody id="docentes-table-body">
-                                    <!-- JS insertará los docentes aquí -->
-                                </tbody>
+                                    <thead>
+                                    <tbody id="docentes-table-body">
+                                        <!-- JS insertará los docentes aquí -->
+                                    </tbody>
                             </table>
                         </div>
                     </div>
@@ -162,7 +179,8 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="filtro-profesor" placeholder="Filtrar por Profesor...">
+                                <input type="text" class="form-control" id="filtro-profesor"
+                                    placeholder="Filtrar por Profesor...">
                             </div>
                         </div>
                         <!-- Lista de Documentos -->
@@ -177,7 +195,8 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0">Mensajería Interna</h5>
-                            <button class="btn btn-success-soft" id="nuevo-mensaje-admin-btn" data-bs-toggle="modal" data-bs-target="#adminNuevoMensajeModal">
+                            <button class="btn btn-success-soft" id="nuevo-mensaje-admin-btn" data-bs-toggle="modal"
+                                data-bs-target="#adminNuevoMensajeModal">
                                 <i class="fas fa-plus me-2"></i> Nuevo Mensaje
                             </button>
                         </div>
@@ -205,7 +224,8 @@
 
 
     <!-- Modal: Nuevo Mensaje (Admin) -->
-    <div class="modal fade" id="adminNuevoMensajeModal" tabindex="-1" aria-labelledby="adminNuevoMensajeModalLabel" aria-hidden="true">
+    <div class="modal fade" id="adminNuevoMensajeModal" tabindex="-1" aria-labelledby="adminNuevoMensajeModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
                 <div class="modal-header border-0">
@@ -223,11 +243,13 @@
                         </div>
                         <div class="mb-3">
                             <label for="admin-mensaje-asunto" class="form-label">Asunto:</label>
-                            <input type="text" class="form-control" id="admin-mensaje-asunto" placeholder="Ej: Anuncio importante">
+                            <input type="text" class="form-control" id="admin-mensaje-asunto"
+                                placeholder="Ej: Anuncio importante">
                         </div>
                         <div class="mb-3">
                             <label for="admin-mensaje-cuerpo" class="form-label">Mensaje:</label>
-                            <textarea class="form-control" id="admin-mensaje-cuerpo" rows="6" placeholder="Escriba su mensaje aquí..."></textarea>
+                            <textarea class="form-control" id="admin-mensaje-cuerpo" rows="6"
+                                placeholder="Escriba su mensaje aquí..."></textarea>
                         </div>
                     </form>
                 </div>
@@ -240,7 +262,7 @@
             </div>
         </div>
     </div>
-<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -248,25 +270,111 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="messageModalBody">
-                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="userDetailsModalLabel">Detalles del Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form id="formEditUser">
+                <div class="modal-body p-4">
+                    
+                    <h6><i class="fas fa-user-circle me-2"></i> Datos Principales</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" id="modal-user-nombre" class="form-control" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="modal-user-email" class="form-control" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">DNI</label>
+                            <input type="text" id="modal-user-dni" class="form-control" disabled>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="modal-user-rol" class="form-label fw-bold text-primary">Cambiar Rol</label>
+                            <select id="modal-user-rol" class="form-select">
+                                <option value="">Cargando roles...</option>
+                                </select>
+                        </div>
+                    </div>
+
+                    <div id="modal-alumno-info" style="display: none;">
+                        <h6 class="mt-4 border-top pt-3"><i class="fas fa-user-graduate me-2"></i> Datos del Alumno</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Grado</label>
+                                <input type="text" id="modal-alumno-grado" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" id="modal-alumno-fecha" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" id="modal-alumno-telefono" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Dirección</label>
+                                <input type="text" id="modal-alumno-direccion" class="form-control" disabled>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-4 border-top pt-3"><i class="fas fa-user-shield me-2"></i> Datos del Tutor</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre del Tutor</label>
+                                <input type="text" id="modal-tutor-nombre" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Trabajo del Tutor</label>
+                                <input type="text" id="modal-tutor-trabajo" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Educación del Tutor</label>
+                                <input type="text" id="modal-tutor-educacion" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div> </div>
+                <div class="modal-footer border-0">
+                    <input type="hidden" id="modal-user-id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="modal-guardar-rol-btn">
+                        <i class="fas fa-save me-2"></i> Guardar Cambios de Rol
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ...></script>
-    
+
     <script type="module" src="/src/js/panel-admin.js"></script>
 </body>
+
 </html>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    
-    <!-- Script modular personalizado -->
-    <!-- Ajusta la ruta si 'panel-admin.html' está en 'src/pages/' -->
-    <script type="module" src="/src/js/panel-admin.js"></script>
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+<!-- Script modular personalizado -->
+<!-- Ajusta la ruta si 'panel-admin.html' está en 'src/pages/' -->
+<script type="module" src="/src/js/panel-admin.js"></script>
 </body>
+
 </html>

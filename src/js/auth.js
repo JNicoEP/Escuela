@@ -45,10 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // No prevenimos el default, ya que data-bs-toggle lo necesita
             let role = e.currentTarget.getAttribute('data-role').toLowerCase();
 
-            // Manejar 'Padres' (plural) a 'padre' (singular)
-            if (role === 'padres') {
-                role = 'padre';
-            }
+            
 
             selectedRoleForRegistration = role;
 
@@ -311,7 +308,7 @@ async function handleRedirection(user) {
         // 2. Caso especial: Docente pendiente o rechazado
         if (userRole === 'docente') {
             // 'docentes' es un array (relación 1:1), tomamos el primero [0]
-            const docenteInfo = userData.docentes[0];
+            const docenteInfo = userData.docentes;
 
             if (!docenteInfo) {
                 // Esto no debería pasar si el registro fue correcto, pero es un control
@@ -349,9 +346,6 @@ async function handleRedirection(user) {
         switch (userRole) {
             case 'alumno':
                 window.location.href = `${baseUrl}/pages/panel-alumno.html`;
-                break;
-            case 'padre':
-                window.location.href = `${baseUrl}/pages/panel-padres.html`;
                 break;
             case 'docente':
                 // Ya sabemos que está 'aprobado' si llegó aquí

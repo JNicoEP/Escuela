@@ -1,17 +1,18 @@
 /* ----------------------------------
-   Lógica para Panel de Admin (CON SUPABASE)
-   (panel-admin.js - Módulo ESM)
+    Lógica para Panel de Admin (CON SUPABASE)
+    (panel-admin.js - Módulo ESM)
 ---------------------------------- */
 'use strict';
 
-// ¡NUEVO! Importamos el cliente de Supabase
-// Ajusta esta ruta si es necesario (ej: '../js/supabaseClient.js')
+// 1. IMPORTAR SUPABASE
 import { supabase, showMessage } from '../js/supabaseClient.js';
 
 // --- Referencias al DOM ---
 const welcomeAlert = document.getElementById('welcome-alert');
 let currentUser = null; // Para guardar el usuario admin
 let currentDocenteFilter = 'pendiente'; // Estado del filtro de docentes
+let allUsersData = []; // Para guardar los datos de los usuarios
+let allRolesData = []; // Para guardar los roles (1, 2, 3)
 
 // Pestaña Auditoría
 const auditoriaTableBody = document.getElementById('auditoria-table-body');
@@ -38,6 +39,12 @@ const adminMensajePara = document.getElementById('admin-mensaje-para');
 const adminEnviarMensajeBtn = document.getElementById('admin-enviar-mensaje-btn');
 const formAdminNuevoMensaje = document.getElementById('form-admin-nuevo-mensaje');
 
+// Modal de Detalles de Usuario
+const userDetailsModalEl = document.getElementById('userDetailsModal');
+const userDetailsModal = new bootstrap.Modal(userDetailsModalEl);
+const formEditUser = document.getElementById('formEditUser');
+const modalAlumnoInfo = document.getElementById('modal-alumno-info');
+
 
 /**
  * Función principal que se ejecuta cuando el DOM está listo.
@@ -50,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             welcomeAlert.addEventListener('transitionend', () => {
                 welcomeAlert.style.display = 'none';
             }, { once: true });
-        }, 5000); 
+        }, 5000);
     }
 
     // --- Carga de Datos y Autenticación ---
@@ -64,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Verifica la sesión, el rol del usuario y carga los datos iniciales.
  */
 async function loadPanelData() {
+    // 1. Obtener y verificar el usuario
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         window.location.href = "/index.html";
@@ -71,13 +79,13 @@ async function loadPanelData() {
     }
     currentUser = user;
 
-    // Verificar que el usuario sea un admin
+    // 2. Verificar que el usuario sea un admin
     const { data, error } = await supabase
         .from('usuarios')
         .select('rol:rol(nombre_rol)')
-        .eq('id', user.id)
+        .eq('id_usuario', user.id)
         .single();
-    
+
     if (error || !data || data.rol.nombre_rol !== 'admin') {
         showMessage('Acceso no autorizado.', 'Error');
         await supabase.auth.signOut();
@@ -85,9 +93,10 @@ async function loadPanelData() {
         return;
     }
 
-    // Carga inicial de datos para todas las pestañas
-    await renderAuditoria('todos');
-    await renderDocentes(currentDocenteFilter); // 'pendiente' por defecto
+    // 3. Carga inicial de datos para todas las pestañas
+    await loadAllRoles(); // Carga los roles para el dropdown
+    await renderAuditoria('todos'); // "Ver Todos" por defecto
+    await renderDocentes(currentDocenteFilter);
     await renderDocumentos();
     await renderMensajesAdmin();
     await populateMensajeSelect();
@@ -98,13 +107,39 @@ async function loadPanelData() {
  * Configura todos los event listeners para los botones de filtro y acciones.
  */
 function setupTabsAndFilters() {
-    // --- Pestaña Auditoría ---
+
+    // --- Pestaña Auditoría/Usuarios ---
     auditoriaFilterButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             auditoriaFilterButtons.forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
             renderAuditoria(e.currentTarget.dataset.rol);
         });
+    });
+
+    auditoriaTableBody.addEventListener('click', (e) => {
+        // Botón Borrar
+        const deleteButton = e.target.closest('.delete-user-btn');
+        if (deleteButton) {
+            const userId = deleteButton.dataset.id;
+            const userName = deleteButton.dataset.name;
+            handleSoftDeleteUser(userId, userName);
+        }
+        // Botón Ver/Editar
+        const editButton = e.target.closest('.edit-user-btn');
+        if (editButton) {
+            const userId = editButton.dataset.id;
+            const user = allUsersData.find(u => u.id_usuario === userId);
+            if (user) {
+                openUserDetailsModal(user);
+            }
+        }
+    });
+
+    // Listener para el formulario del modal de edición
+    formEditUser.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleUpdateRole();
     });
 
     // --- Pestaña Gestión Docentes ---
@@ -117,7 +152,6 @@ function setupTabsAndFilters() {
         });
     });
 
-    // Checkbox "Seleccionar Todos"
     selectAllCheckbox.addEventListener('change', (e) => {
         docentesTableBody.querySelectorAll('.docente-checkbox').forEach(checkbox => {
             checkbox.checked = e.target.checked;
@@ -125,7 +159,6 @@ function setupTabsAndFilters() {
         updateBulkActionsUI();
     });
 
-    // Botón "Aplicar" acciones en lote
     bulkApplyBtn.addEventListener('click', handleBulkUpdate);
 
     // --- Pestaña Documentación ---
@@ -136,64 +169,229 @@ function setupTabsAndFilters() {
     adminEnviarMensajeBtn.addEventListener('click', handleSendMensaje);
 }
 
-
 // =================================================================
-// PESTAÑA 1: AUDITORÍA
+// PESTAÑA 1: GESTIÓN DE USUARIOS (antes Auditoría)
 // =================================================================
 
 /**
- * Renderiza la tabla de Auditoría consultando 'historial_accesos'.
- * @param {string} filtroRol - 'docente', 'alumno', 'padre' o 'todos'.
+ * Renderiza la tabla de Gestión de Usuarios
+ */
+/**
+ * Renderiza la tabla de Gestión de Usuarios
  */
 async function renderAuditoria(filtroRol = 'todos') {
-    auditoriaTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Cargando...</td></tr>';
+    auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center">Cargando...</td></tr>';
 
     let query = supabase
-        .from('historial_accesos')
+        .from('usuarios')
         .select(`
-            user_id,
-            rol,
-            accion,
-            ip_address,
-            timestamp
+            id_usuario, nombre, apellido, email, dni, fecha_creacion, is_active,
+            rol:rol ( id_rol, nombre_rol ),
+            alumnos (
+                fecha_nacimiento, direccion, telefono,
+                tutor_nombre, tutor_educacion, tutor_trabajo,
+                grado ( nombre_grado )
+            )
         `)
-        .order('timestamp', { ascending: false })
-        .limit(50);
+        .order('fecha_creacion', { ascending: false })
+        .eq('is_active', true); // Solo usuarios activos
 
     if (filtroRol !== 'todos') {
-        query = query.eq('rol', filtroRol);
+        query = query.eq('rol.nombre_rol', filtroRol);
+    } else {
+        query = query.in('rol.nombre_rol', ['alumno', 'docente']);
     }
 
-    const { data: historial, error } = await query;
+    const { data: usuarios, error } = await query;
 
     if (error) {
-        console.error('Error fetching auditoria:', error);
-        auditoriaTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error al cargar historial.</td></tr>`;
+        console.error('Error fetching usuarios:', error);
+        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar usuarios.</td></tr>`;
         return;
     }
 
-    if (historial.length === 0) {
-        auditoriaTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay registros para este filtro.</td></tr>`;
+    if (usuarios.length === 0) {
+        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No hay usuarios para este filtro.</td></tr>`;
         return;
     }
 
+    allUsersData = usuarios; // Guardamos los datos globalmente
     let html = '';
-    historial.forEach(log => {
+
+    usuarios.forEach(user => {
+        const userRoleName = user.rol ? user.rol.nombre_rol : 'Sin rol';
+        let badgeClass = 'bg-secondary';
+        if (userRoleName === 'docente') badgeClass = 'bg-primary-soft';
+        if (userRoleName === 'alumno') badgeClass = 'bg-success-soft';
+
         html += `
             <tr>
-                <td>${log.user_id ? log.user_id.substring(0, 8) : 'N/A'}...</td>
-                <td>${log.rol || 'N/A'}</td>
-                <td>${new Date(log.timestamp).toLocaleString()}</td>
+                <td>${user.nombre} ${user.apellido}</td>
+                <td>${user.email}</td>
+                <td>${user.dni || 'N/A'}</td>
+                <td><span class="badge ${badgeClass} fs-6">${userRoleName}</span></td>
+                <td>${new Date(user.fecha_creacion).toLocaleDateString()}</td>
+                
                 <td>
-                    <span class="badge ${log.accion === 'LOGIN_SUCCESS' ? 'bg-success-soft' : 'bg-danger-soft'}">
-                        ${log.accion}
-                    </span>
+                    <button class="btn btn-primary btn-sm edit-user-btn" 
+                            data-id="${user.id_usuario}" 
+                            title="Editar Rol"> <i class="fas fa-pencil-alt"></i> </button>
+                    ${userRoleName !== 'admin' ? 
+                    `<button class="btn btn-danger btn-sm delete-user-btn" 
+                             data-id="${user.id_usuario}" 
+                             data-name="${user.nombre} ${user.apellido}" title="Borrar">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>` : ''}
                 </td>
-                <td>${log.ip_address || 'N/A'}</td>
             </tr>
         `;
     });
     auditoriaTableBody.innerHTML = html;
+}
+
+/**
+ * Desactiva un usuario (Borrado Lógico).
+ * @param {string} userId - El ID (uuid) del usuario a borrar.
+ * @param {string} userName - El nombre del usuario (para el confirm).
+ */
+async function handleSoftDeleteUser(userId, userName) {
+    if (!confirm(`¿Estás seguro de que quieres desactivar al usuario "${userName}"? El usuario no podrá iniciar sesión.`)) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('usuarios')
+            .update({ is_active: false }) // <-- LA ACCIÓN DE BORRADO!
+            .eq('id_usuario', userId);
+
+        if (error) throw error;
+
+        showMessage('Usuario desactivado con éxito.', 'Éxito');
+        
+        // Recarga la lista (obteniendo el filtro activo)
+        const activeFilter = document.querySelector('#auditoria-tab-pane .btn-success-soft.active').dataset.rol;
+        await renderAuditoria(activeFilter);
+
+    } catch (error) {
+        console.error('Error al desactivar usuario:', error);
+        showMessage('Error al desactivar el usuario: ' + error.message, 'Error');
+    }
+}
+
+/**
+ * Carga todos los roles (alumno, docente, admin) en una variable global.
+ */
+async function loadAllRoles() {
+    const { data, error } = await supabase.from('rol').select('*');
+    if (error) {
+        console.error('Error cargando roles:', error);
+    } else {
+        allRolesData = data;
+    }
+}
+
+/**
+ * Rellena el dropdown de roles en el modal.
+ * @param {number} currentRoleId - El ID del rol actual del usuario.
+ */
+function populateRoleDropdown(currentRoleId) {
+    const selectEl = document.getElementById('modal-user-rol');
+    selectEl.innerHTML = ''; // Limpiar
+
+    allRolesData.forEach(rol => {
+        // No permitimos cambiar a "padre" ya que se eliminó
+        if (rol.nombre_rol !== 'padre') {
+            const option = document.createElement('option');
+            option.value = rol.id_rol;
+            option.textContent = rol.nombre_rol;
+            selectEl.appendChild(option);
+        }
+    });
+    
+    // Seleccionar el rol actual del usuario
+    selectEl.value = currentRoleId;
+}
+
+/**
+ * Abre y rellena el modal de Detalles de Usuario.
+ * @param {object} user - El objeto de usuario completo (con 'alumnos' y 'rol').
+ */
+function openUserDetailsModal(user) {
+    // Guardar el ID en el modal para usarlo al guardar
+    document.getElementById('modal-user-id').value = user.id_usuario;
+
+    // Rellenar datos de USUARIO
+    document.getElementById('modal-user-nombre').value = `${user.nombre} ${user.apellido}`;
+    document.getElementById('modal-user-email').value = user.email;
+    document.getElementById('modal-user-dni').value = user.dni || 'N/A';
+
+    // =============================================
+    //              ¡LA CORRECCIÓN!
+    //   Verificamos si user.rol existe ANTES de usarlo
+    // =============================================
+    
+    // 1. Obtenemos el ID del rol de forma segura
+    const currentRoleId = user.rol ? user.rol.id_rol : null;
+
+    // 2. Rellenamos el dropdown y le pasamos el ID (que puede ser null)
+    populateRoleDropdown(currentRoleId);
+
+    // =============================================
+    //            FIN DE LA CORRECCIÓN
+    // =============================================
+
+    // Rellenar datos de ALUMNO (si existe)
+    if (user.alumnos) {
+        // Corrección: user.alumnos es un objeto, no un array
+        const alumno = user.alumnos; 
+        document.getElementById('modal-alumno-grado').value = alumno.grado ? alumno.grado.nombre_grado : 'N/A';
+        document.getElementById('modal-alumno-fecha').value = alumno.fecha_nacimiento || '';
+        document.getElementById('modal-alumno-telefono').value = alumno.telefono || 'N/A';
+        document.getElementById('modal-alumno-direccion').value = alumno.direccion || 'N/A';
+        document.getElementById('modal-tutor-nombre').value = alumno.tutor_nombre || 'N/A';
+        document.getElementById('modal-tutor-trabajo').value = alumno.tutor_trabajo || 'N/A';
+        document.getElementById('modal-tutor-educacion').value = alumno.tutor_educacion || 'N/A';
+        
+        modalAlumnoInfo.style.display = 'block'; // Mostrar la sección de alumno
+    } else {
+        modalAlumnoInfo.style.display = 'none'; // Ocultar si es docente
+    }
+
+    // Abrir el modal
+    userDetailsModal.show();
+}
+
+/**
+ * Lee el nuevo rol del modal y lo actualiza en la DB.
+ */
+async function handleUpdateRole() {
+    const userId = document.getElementById('modal-user-id').value;
+    const newRoleId = document.getElementById('modal-user-rol').value;
+
+    if (!userId || !newRoleId) {
+        showMessage('Error, no se pudo identificar al usuario o al rol.', 'Error');
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('usuarios')
+            .update({ id_rol: newRoleId })
+            .eq('id_usuario', userId);
+        
+        if (error) throw error;
+
+        showMessage('Rol de usuario actualizado con éxito.', 'Éxito');
+        userDetailsModal.hide(); // Ocultar modal
+        
+        const activeFilter = document.querySelector('#auditoria-tab-pane .btn-success-soft.active').dataset.rol;
+        await renderAuditoria(activeFilter);
+
+    } catch (error) {
+        console.error('Error al actualizar rol:', error);
+        showMessage('Error al actualizar el rol: ' + error.message, 'Error');
+    }
 }
 
 
@@ -206,10 +404,10 @@ async function renderAuditoria(filtroRol = 'todos') {
  * @param {string} filtroEstado - 'pendiente', 'aprobado', 'rechazado'.
  */
 async function renderDocentes(filtroEstado) {
-    currentDocenteFilter = filtroEstado; // Guardar estado actual
+    currentDocenteFilter = filtroEstado;
     docentesTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Cargando...</td></tr>';
-    selectAllCheckbox.checked = false; // Desmarcar al recargar
-    updateBulkActionsUI(); // Ocultar menú bulk
+    selectAllCheckbox.checked = false;
+    updateBulkActionsUI();
 
     const { data: docentes, error } = await supabase
         .from('docentes')
@@ -261,7 +459,7 @@ async function renderDocentes(filtroEstado) {
                     ${docente.estado !== 'aprobado' ? `
                         <button class="btn btn-success btn-sm btn-accion" data-accion="aprobado" title="Aprobar">
                             <i class="fas fa-check"></i>
-                        </button>
+                        </button>,
                     ` : ''}
                     ${docente.estado !== 'rechazado' ? `
                         <button class="btn btn-danger btn-sm btn-accion" data-accion="rechazado" title="Rechazar">
@@ -286,8 +484,6 @@ async function renderDocentes(filtroEstado) {
  * Añade listeners a los botones de acción individuales y checkboxes.
  */
 function addDocenteActionListeners() {
-    
-    // Botones de acción individuales (Aprobar, Rechazar, Pendiente)
     docentesTableBody.querySelectorAll('.btn-accion').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const docenteId = e.currentTarget.closest('tr').dataset.id;
@@ -295,12 +491,11 @@ function addDocenteActionListeners() {
             
             if (confirm(`¿Está seguro de que desea cambiar el estado de este docente a "${nuevaAccion}"?`)) {
                 await updateDocenteEstado([docenteId], nuevaAccion);
-                await renderDocentes(currentDocenteFilter); // Recargar la tabla
+                await renderDocentes(currentDocenteFilter);
             }
         });
     });
 
-    // Checkboxes individuales
     docentesTableBody.querySelectorAll('.docente-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             updateBulkActionsUI();
@@ -322,7 +517,6 @@ function updateBulkActionsUI() {
         bulkActionsContainer.style.display = 'none';
     }
 
-    // Sincronizar "Seleccionar Todos"
     const totalCheckboxes = docentesTableBody.querySelectorAll('.docente-checkbox').length;
     selectAllCheckbox.checked = (count > 0 && count === totalCheckboxes);
 }
@@ -332,7 +526,7 @@ function updateBulkActionsUI() {
  */
 async function handleBulkUpdate() {
     const selectedIds = Array.from(docentesTableBody.querySelectorAll('.docente-checkbox:checked'))
-                             .map(cb => cb.value);
+                            .map(cb => cb.value);
     
     const nuevoEstado = bulkActionSelect.value;
 
@@ -347,7 +541,7 @@ async function handleBulkUpdate() {
 
     if (confirm(`¿Está seguro de que desea cambiar el estado de ${selectedIds.length} docente(s) a "${nuevoEstado}"?`)) {
         await updateDocenteEstado(selectedIds, nuevoEstado);
-        await renderDocentes(currentDocenteFilter); // Recargar la tabla
+        await renderDocentes(currentDocenteFilter);
     }
 }
 
@@ -396,15 +590,11 @@ async function renderDocumentos() {
         `)
         .order('fecha_subida', { ascending: false });
 
-    // Aplicar filtros
     if (gradoFiltro) {
         query = query.eq('id_grado', gradoFiltro);
     }
     if (profesorFiltro.length > 2) {
-        // Asumimos que el filtro de profesor busca en el nombre/apellido del docente
         query = query.ilike('docente.usuario.nombre', `%${profesorFiltro}%`);
-        // Nota: Supabase puede tener limitaciones en filtros de tablas anidadas.
-        // Una mejor forma sería un RPC, pero esto puede funcionar.
     }
 
     const { data: materiales, error } = await query;
@@ -538,26 +728,29 @@ async function renderMensajesAdmin() {
  */
 async function populateMensajeSelect() {
     let html = '<option value="">Seleccionar destinatario...</option>';
-    
+
     // Cargar Docentes
     const { data: docentes, error: errDocentes } = await supabase
         .from('usuarios')
-        .select('id, nombre, apellido, rol:rol(nombre_rol)')
+        .select(`
+            id_usuario, 
+            nombre, 
+            apellido, 
+            rol!inner(nombre_rol)
+        `)
         .eq('rol.nombre_rol', 'docente');
-    
+
+    if (errDocentes) {
+        console.error('Error al cargar destinatarios (docentes):', errDocentes);
+    }
+
     if (docentes) {
         html += '<optgroup label="Docentes">';
         docentes.forEach(d => {
-            html += `<option value="${d.id}">${d.nombre} ${d.apellido}</option>`;
+            html += `<option value="${d.id_usuario}">${d.nombre} ${d.apellido}</option>`;
         });
         html += '</optgroup>';
     }
-
-    // Cargar Padres (Aún no tienes padres en tu schema, esto es un placeholder)
-    // const { data: padres, error: errPadres } = ...
-    // html += '<optgroup label="Padres">';
-    // ...
-    // html += '</optgroup>';
 
     adminMensajePara.innerHTML = html;
 }
@@ -590,7 +783,6 @@ async function handleSendMensaje() {
         showMessage('Mensaje enviado con éxito.', 'Éxito');
         formAdminNuevoMensaje.reset();
         
-        // Ocultar el modal manualmente
         const modalEl = document.getElementById('adminNuevoMensajeModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) {
