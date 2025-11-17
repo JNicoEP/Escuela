@@ -51,7 +51,7 @@ async function cargarHorarioGrid(idGrado) {
             const m = materia.toLowerCase();
 
             if (m.includes('recreo')) return 'recreo';
-            
+
             // Materias especiales (las que ya tenías)
             if (m.includes('plástica') || m.includes('artística')) return 'materia-plastica';
             if (m.includes('física')) return 'materia-efisica';
@@ -241,10 +241,12 @@ async function cargarDatosEstudiante() {
         fillData('info-tutor-nombre', alumnoInfo.tutor_nombre);
         fillData('info-tutor-trabajo', alumnoInfo.tutor_trabajo);
         fillData('info-tutor-educacion', alumnoInfo.tutor_educacion);
-        
+        fillData('print-title-alumno', nombreCompleto);
+
+
         // --- NUEVO CAMPO CUD ---
         fillData('info-cud-diagnostico', alumnoInfo.cud_diagnostico);
-        
+
         fillData('summary-promedio', 'N/A');
         fillData('summary-mejor-materia-val', 'N/A');
         fillData('summary-mejor-materia-label', 'N/A');
@@ -294,7 +296,7 @@ async function guardarCambiosPerfil(e) {
     const nuevoCudDiagnostico = document.getElementById('input-cud-diagnostico').value || null;
     const nuevoCudVencimientoRaw = document.getElementById('input-cud-vencimiento').value;
     const nuevoCudVencimiento = nuevoCudVencimientoRaw === "" ? null : nuevoCudVencimientoRaw;
-    
+
     try {
         // 3. Actualizar la tabla 'usuarios'
         const { error: userError } = await supabase
@@ -336,6 +338,196 @@ async function guardarCambiosPerfil(e) {
         alert('Error al actualizar: ' + error.message);
     }
 }
+/**
+ * Carga las calificaciones del alumno desde Supabase
+ */
+async function cargarCalificaciones() {
+    const container = document.getElementById('calificaciones-container');
+    container.innerHTML = '<p class="text-center text-muted">Cargando calificaciones...</p>';
+
+    try {
+        // Obtenemos las inscripciones del alumno y, para cada una, sus calificaciones
+        // y el nombre de la materia. La RLS se encarga de filtrar por alumno.
+        const { data: inscripciones, error } = await supabase
+            .from('inscripciones')
+            .select(`
+                materias ( nombre_materia ),
+                calificaciones ( nota, tipo_evaluacion, fecha, periodo, observaciones )
+            `)
+            .eq('id_alumno', datosUsuarioActual.alumnos.id_alumno); // Usamos el ID de la variable global
+
+        if (error) throw error;
+
+        if (!inscripciones || inscripciones.length === 0) {
+            container.innerHTML = '<p class="text-center text-muted">Aún no estás inscrito en ninguna materia.</p>';
+            return;
+        }
+
+        let html = '';
+
+        inscripciones.forEach(insc => {
+            if (!insc.materias) return; // Omitir si la materia no existe
+
+            html += `<h6 class="mt-4 mb-2 fw-bold">${insc.materias.nombre_materia}</h6>`;
+
+            if (insc.calificaciones && insc.calificaciones.length > 0) {
+                html += '<ul class="list-group">';
+                insc.calificaciones.forEach(calif => {
+                    const notaClass = calif.nota >= 6 ? 'text-success' : 'text-danger'; // Asumiendo que 6 aprueba
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${calif.tipo_evaluacion || 'Evaluación'}</strong> (${calif.periodo || 'Sin Periodo'})
+                                <small class="d-block text-muted">${calif.observaciones || 'Sin comentarios'}</small>
+                            </div>
+                            <span class="badge bg-${notaClass.includes('success') ? 'success' : 'danger'}-soft text-${notaClass} fs-5" style="min-width: 50px;">
+                                ${calif.nota}
+                            </span>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p class="small text-muted">Sin calificaciones registradas para esta materia.</p>';
+            }
+        });
+
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error al cargar calificaciones:', error);
+        container.innerHTML = `<p class="text-center text-danger">Error al cargar calificaciones: ${error.message}</p>`;
+    }
+}
+
+/**
+ * Carga las asistencias del alumno desde Supabase
+ */
+async function cargarAsistencia() {
+    const container = document.getElementById('asistencia-container');
+    container.innerHTML = '<p class="text-center text-muted">Cargando asistencias...</p>';
+
+    try {
+        // Pedimos asistencias y unimos la materia. La RLS filtra por alumno.
+        const { data: asistencias, error } = await supabase
+            .from('asistencias')
+            .select(`
+                fecha,
+                estado,
+                inscripciones ( materias ( nombre_materia ) )
+            `)
+            .order('fecha', { ascending: false })
+            .limit(50); // Traemos las últimas 50 asistencias
+
+        if (error) throw error;
+
+        if (!asistencias || asistencias.length === 0) {
+            container.innerHTML = '<p class="text-center text-muted">No tienes registros de asistencia.</p>';
+            return;
+        }
+
+        let html = `
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Materia</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        asistencias.forEach(asist => {
+            const materia = asist.inscripciones?.materias?.nombre_materia || 'Materia no disponible';
+            const estado = asist.estado;
+            let badgeClass = 'text-secondary';
+            if (estado === 'presente') badgeClass = 'text-success';
+            if (estado === 'ausente') badgeClass = 'text-danger';
+            if (estado === 'tarde') badgeClass = 'text-warning';
+
+            html += `
+                <tr>
+                    <td>${new Date(asist.fecha).toLocaleDateString()}</td>
+                    <td>${materia}</td>
+                    <td>
+                        <span class="fw-bold ${badgeClass}">${estado.charAt(0).toUpperCase() + estado.slice(1)}</span>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error al cargar asistencias:', error);
+        container.innerHTML = `<p class="text-center text-danger">Error al cargar asistencias: ${error.message}</p>`;
+    }
+}
+
+/**
+ * Carga las tareas del alumno desde Supabase
+ */
+async function cargarTareas() {
+    const container = document.getElementById('tareas-container');
+    container.innerHTML = '<div class="list-group-item text-center text-muted">Cargando tareas...</div>';
+
+    try {
+        // Pedimos tareas y unimos el nombre de la materia. La RLS filtra por alumno.
+        const { data: tareas, error } = await supabase
+            .from('tareas')
+            .select(`
+                titulo,
+                descripcion,
+                fecha_entrega,
+                puntaje_maximo,
+                archivo_path,
+                materias ( nombre_materia )
+            `)
+            .order('fecha_entrega', { ascending: true });
+
+        if (error) throw error;
+
+        if (!tareas || tareas.length === 0) {
+            container.innerHTML = '<div class="list-group-item text-center text-muted">¡No tienes tareas pendientes!</div>';
+            return;
+        }
+
+        let html = '';
+        tareas.forEach(tarea => {
+            const hoy = new Date();
+            const fechaEntrega = new Date(tarea.fecha_entrega);
+            const isVencida = fechaEntrega < hoy;
+
+            html += `
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold">${tarea.titulo}</h6>
+                        <small class="text-muted">${tarea.materias.nombre_materia}</small>
+                    </div>
+                    <p class="mb-1 small">${tarea.descripcion || 'Sin descripción.'}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small>
+                            <strong>Entrega:</strong> 
+                            <span class="${isVencida ? 'text-danger fw-bold' : ''}">
+                                ${fechaEntrega.toLocaleDateString()}
+                            </span>
+                        </small>
+                        <span class="badge bg-primary-soft text-primary rounded-pill">${tarea.puntaje_maximo} pts</span>
+                    </div>
+                    ${tarea.archivo_path ? `
+                        <a href="${supabase.storage.from('materiales').getPublicUrl(tarea.archivo_path).data.publicUrl}" 
+                           target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                           <i class="fas fa-download me-1"></i> Ver Archivo Adjunto
+                        </a>` : ''}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error al cargar tareas:', error);
+        container.innerHTML = `<div class="list-group-item text-center text-danger">Error al cargar tareas: ${error.message}</div>`;
+    }
+}
 
 /**
  * Función principal que se ejecuta cuando el DOM está listo.
@@ -352,10 +544,10 @@ document.addEventListener('DOMContentLoaded', () => {
         modalEditarPerfil.addEventListener('show.bs.modal', async () => {
             // Carga los grados en el dropdown ANTES de rellenar
             await poblarDropdownGrados('input-grado-modal');
-            
+
             if (datosUsuarioActual) {
                 const alumnoInfo = datosUsuarioActual.alumnos || {}; // Esta es la corrección clave
-                
+
                 document.getElementById('input-nombre-modal').value = datosUsuarioActual.nombre || '';
                 document.getElementById('input-apellido-modal').value = datosUsuarioActual.apellido || '';
                 document.getElementById('input-dni-modal').value = datosUsuarioActual.dni || '';
@@ -407,17 +599,47 @@ document.addEventListener('DOMContentLoaded', () => {
         formEditarPerfil.addEventListener('submit', guardarCambiosPerfil);
     }
 
-    // --- Lógica para cargar el horario SÓLO al hacer clic en la pestaña ---
-    const tabHorario = document.getElementById('horario-tab');
-    if (tabHorario) {
-        tabHorario.addEventListener('shown.bs.tab', () => {
-            if (datosUsuarioActual && datosUsuarioActual.alumnos && datosUsuarioActual.alumnos.grado) {
-                const idGrado = datosUsuarioActual.alumnos.grado.id_grado;
-                cargarHorarioGrid(idGrado);
-            } else {
-                console.warn("No se pudieron cargar los datos del alumno para ver el horario.");
-                document.getElementById('contenedor-horario').innerHTML =
-                    '<p class="text-danger p-4">No se pudo identificar tu grado para cargar el horario. <br>Por favor, asigna un grado a este alumno en la pestaña "Perfil".</p>';
+// --- Lógica para cargar el horario SÓLO al hacer clic en la pestaña ---
+    const tabHorario = document.getElementById('horario-tab');
+    if (tabHorario) {
+        tabHorario.addEventListener('shown.bs.tab', () => {
+            if (datosUsuarioActual && datosUsuarioActual.alumnos && datosUsuarioActual.alumnos.grado) {
+                const idGrado = datosUsuarioActual.alumnos.grado.id_grado;
+                cargarHorarioGrid(idGrado);
+            } else {
+                console.warn("No se pudieron cargar los datos del alumno para ver el horario.");
+                document.getElementById('contenedor-horario').innerHTML =
+                    '<p class="text-danger p-4">No se pudo identificar tu grado para cargar el horario. <br>Por favor, asigna un grado a este alumno en la pestaña "Perfil".</p>';
+            }
+        }, { once: true });
+    }
+
+    // --- NUEVO: Listener para Calificaciones ---
+    const tabCalificaciones = document.getElementById('calificaciones-tab');
+    if (tabCalificaciones) {
+        tabCalificaciones.addEventListener('shown.bs.tab', () => {
+            if (datosUsuarioActual) {
+                cargarCalificaciones();
+            }
+        }, { once: true });
+    }
+
+    // --- NUEVO: Listener para Asistencia ---
+    const tabAsistencia = document.getElementById('asistencia-tab');
+    if (tabAsistencia) {
+        tabAsistencia.addEventListener('shown.bs.tab', () => {
+            if (datosUsuarioActual) {
+                cargarAsistencia();
+            }
+        }, { once: true });
+    }
+
+    // --- NUEVO: Listener para Tareas ---
+    const tabTareas = document.getElementById('tareas-tab');
+    if (tabTareas) {
+        tabTareas.addEventListener('shown.bs.tab', () => {
+            if (datosUsuarioActual) {
+                cargarTareas();
             }
         }, { once: true });
     }

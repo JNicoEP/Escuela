@@ -108,10 +108,11 @@ async function bootstrapApp() {
             console.log("Intentando cargar modal.js...");
             await import('./modal.js');
             console.log("OK: modal.js cargado.");
-
+            
             /*console.log("Intentando cargar auth.js...");
             await import('./auth.js'); // <-- AÑADE ESTA LÍNEA
             console.log("OK: auth.js cargado.");*/
+            
         } catch (error) {
             console.error('Error al cargar los scripts de la página:', error);
         }

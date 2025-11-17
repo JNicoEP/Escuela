@@ -1,6 +1,6 @@
 /* ================================================================== */
 /* ESTILOS MODERNOS PARA MODALES DE AUTENTICACIÓN            */
-/* (modal.css)                                               */
+/* (modal.css)                                              */
 /* ================================================================== */
 
 /* --- 1. Estilos Globales del Modal --- */
@@ -35,7 +35,7 @@
 
 .modal-body {
     padding: 2rem;
-    /* Más espacio */
+    /* Más espacio (global) */
     background-color: #ffffff;
 }
 
@@ -95,7 +95,7 @@
 
 /* --- 3. Modal de Login/Registro (Auth & Admin) --- */
 
-/* Estilo de Pestañas (Tabs) */
+/* Estilo de Pestañas (Tabs) - Específico de #authModal */
 #authModal .nav-tabs {
     border-bottom: none;
     padding: 0 1.5rem;
@@ -127,14 +127,15 @@
     color: #343a40;
 }
 
-/* Contenedor de Pestañas (Login y Registro) */
+/* Contenedor de Pestañas (Login y Registro) - Específico de #authModal */
 #authModal .tab-content {
     background-color: #ffffff;
     border-radius: 0 0 0.5rem 0.5rem;
     padding: 1.5rem;
+    /* Padding para el área del formulario */
 }
 
-/* Inputs de Formulario (para todos los modales de login) */
+/* Inputs de Formulario (para TODOS los modales de login) */
 .form-floating .form-control {
     border-radius: 0.5rem;
     /* Bordes más suaves */
@@ -149,7 +150,7 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-/* Contenedor del Ojo (Mostrar Contraseña) */
+/* Contenedor del Ojo (Mostrar Contraseña) - (Global) */
 .password-toggle-container {
     position: relative;
 }
@@ -171,7 +172,7 @@
     color: #0d6efd;
 }
 
-/* Botón Principal (Login y Registro) */
+/* Botón Principal (Login y Admin) - (Compartido) */
 #loginForm .btn-primary,
 #adminForm .btn-primary {
     padding: 0.8rem;
@@ -183,14 +184,14 @@
     border: none;
 }
 
-/* Efecto de hover en botones primarios */
+/* Efecto de hover en botones primarios - (Compartido) */
 #loginForm .btn-primary:hover,
 #adminForm .btn-primary:hover {
     transform: scale(1.02);
     box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
 }
 
-/* Botón de Registro (Outline) */
+/* Botón de Registro (Outline) - (Específico) */
 #registerForm .btn-outline-primary {
     padding: 0.8rem;
     font-weight: 600;
@@ -200,7 +201,7 @@
 }
 
 /* --- 4. Modal de Mensajes (Avisos del Sistema) --- */
-
+/* (Este ya estaba bien) */
 #messageModal .modal-header {
     border-bottom: 1px solid #eee;
     padding: 1rem 1.5rem;
@@ -211,31 +212,28 @@
     color: #495057;
     line-height: 1.6;
 }
+
 /* ================================================================== */
-/* 4. ESTILOS PARA EL MODAL DE ADMIN (#adminModal)           */
+/* 5. AJUSTE PARA EL MODAL DE ADMIN (#adminModal)           */
 /* ================================================================== */
 
-/* Define el contenedor del formulario */
-.auth-container {
-    background-color: #f8f9fa; /* Fondo ligero */
-    border-radius: 0.5rem;
+/*
+  El único ajuste necesario es cambiar el padding del body.
+  El padding global del .modal-body es 2rem (Sección 1),
+  pero el padding del contenido del formulario en #authModal es 1.5rem
+  (definido en #authModal .tab-content en la Sección 3).
+
+  Igualamos el padding de #adminModal .modal-body a 1.5rem
+  para que ambos formularios se vean idénticos.
+*/
+#adminModal .modal-body {
     padding: 1.5rem;
 }
 
-/* Ajusta el padding del modal-body para que el contenedor se vea bien */
-#adminModal .modal-body {
-    padding: 1rem;
-    background-color: #f8f9fa; /* Asegura que el fondo del modal coincida */
-}
-
-/* El header del modal de admin */
-#adminModal .modal-header {
-    background-color: #ffffff; /* Fondo blanco (diferente al de authModal) */
-    padding: 1.5rem 1.75rem;
-}
-
-/* El botón de admin (ya cubierto por las reglas de #adminForm .btn-primary) */
-#adminForm .btn-primary.btn-lg {
-    padding: 0.8rem; /* Asegura el mismo padding que los otros botones */
-    font-size: 1rem;
-}
+/*
+  ¡Eso es todo!
+  El .modal-header de #adminModal usará automáticamente
+  los estilos globales (fondo #f8f9fa).
+  Los inputs y botones usarán los estilos compartidos
+  (definidos en la Sección 3).
+*/

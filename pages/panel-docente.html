@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Docente - Colegio Excelencia</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/src/css/paneles/panel-docente.css">
+</head>
+<body>
+
+    <header class="header-principal shadow-sm">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <span class="school-name">Colegio Excelencia</span>
+            <nav class="d-none d-md-flex ms-4">
+                <a class="nav-link active" href="#">
+                    <i class="bi bi-house-door-fill"></i> Inicio
+                </a>
+            </nav>
+        </div>
+        
+        <div class="user-profile">
+            <a href="#" class="nav-link position-relative" id="btn-notificaciones">
+                <i class="bi bi-bell-fill fs-5"></i>
+                <span id="notificaciones-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6em;">
+                    0
+                </span>
+            </a>
+            <div class="vr mx-2"></div>
+            <div class="text-end d-none d-md-block">
+                <div class="fw-bold" id="user-name-display">Dr. Roberto Martínez</div>
+                <div class="small text-muted">Docente</div>
+            </div>
+            <div class="user-initials" id="user-initials-display">RM</div>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="btn-logout">Salir</button>
+        </div>
+    </header>
+
+    <nav class="nav-tabs-container">
+        <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="dashboard-tab" data-target="#dashboard" href="#" role="tab"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="cursos-tab" data-target="#cursos" href="#" role="tab"><i class="bi bi-collection-fill"></i> Mis Cursos</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="tareas-tab" data-target="#tareas" href="#" role="tab"><i class="bi bi-file-earmark-text-fill"></i> Tareas</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="calificaciones-tab" data-target="#calificaciones" href="#" role="tab"><i class="bi bi-patch-check-fill"></i> Calificaciones</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="asistencia-tab" data-target="#asistencia" href="#" role="tab"><i class="bi bi-clock-fill"></i> Asistencia</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link position-relative" id="mensajes-tab" data-target="#mensajes" href="#" role="tab">
+                    <i class="bi bi-chat-left-text-fill"></i> Mensajes
+                    <span id="mensajes-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6em;">
+                        0
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="tab-content" id="mainTabsContent">
+
+        <section class="tab-pane active" id="dashboard" role="tabpanel">
+            <h2 class="h4 mb-4">Bienvenido, Profesor</h2>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="summary-card bg-card-cursos shadow-sm">
+                        <div class="summary-card-content">
+                            <h3 id="summary-cursos">0</h3><p>Mis Cursos</p>
+                        </div><i class="bi bi-book-fill summary-card-icon"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="summary-card bg-card-estudiantes shadow-sm">
+                        <div class="summary-card-content">
+                            <h3 id="summary-estudiantes">0</h3><p>Estudiantes</p>
+                        </div><i class="bi bi-people-fill summary-card-icon"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="summary-card bg-card-tareas shadow-sm">
+                        <div class="summary-card-content">
+                            <h3 id="summary-tareas">0</h3><p>Tareas Activas</p>
+                        </div><i class="bi bi-file-earmark-text-fill summary-card-icon"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="summary-card bg-card-calificar shadow-sm">
+                        <div class="summary-card-content">
+                            <h3 id="summary-calificar">0</h3><p>Por Calificar</p>
+                        </div><i class="bi bi-patch-question-fill summary-card-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="bi bi-activity me-2"></i> Actividad Reciente</div>
+                <div id="actividad-reciente-container" class="list-group list-group-flush">
+                    <div class="list-group-item text-muted">No hay actividad reciente.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-pane" id="cursos" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-0">Mis Cursos y Materias</h2>
+                    <p class="text-muted mb-0">Gestiona las materias que impartes.</p>
+                </div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarMateria">
+                    <i class="bi bi-plus-lg me-1"></i> Agregar Materia
+                </button>
+            </div>
+            <div id="cursos-container" class="row g-4">
+                <div class="col-12 text-center text-muted" id="cursos-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-pane" id="tareas" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-0">Gestión de Tareas</h2>
+                    <p class="text-muted mb-0">Crea y administra tareas para tus estudiantes.</p>
+                </div>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCrearTarea">
+                    <i class="bi bi-plus-lg me-1"></i> Nueva Tarea
+                </button>
+            </div>
+
+            <div class="collapse" id="collapseCrearTarea">
+                <div class="card card-body mb-4">
+                    <h3 class="h5 mb-3">Crear Nueva Tarea</h3>
+                    <form id="form-crear-tarea">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="tareaMateria" class="form-label">Materia</label>
+                                <select id="tareaMateria" class="form-select" required>
+                                    <option value="">Cargando materias...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tareaTitulo" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="tareaTitulo" placeholder="Ej: Tarea 1 - Investigación" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="tareaDescripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="tareaDescripcion" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="tareaArchivo" class="form-label">Adjuntar Archivo</label>
+                                <input class="form-control" type="file" id="tareaArchivo">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tareaFechaEntrega" class="form-label">Fecha de Entrega</label>
+                                <input type="date" class="form-control" id="tareaFechaEntrega" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tareaPuntaje" class="form-label">Puntaje Máximo</label>
+                                <input type="number" class="form-control" id="tareaPuntaje" value="100" required>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#collapseCrearTarea">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Crear Tarea</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <h3 class="h5 mb-3">Tareas Asignadas</h3>
+            <div id="tareas-container">
+                <div class="text-center text-muted">Cargando tareas...</div>
+            </div>
+        </section>
+
+        <section class="tab-pane" id="calificaciones" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-0">Gestión de Calificaciones</h2>
+                    <p class="text-muted mb-0">Registra las calificaciones de tus estudiantes.</p>
+                </div>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegistrarCalificacion">
+                    <i class="bi bi-plus-lg me-1"></i> Nueva Calificación
+                </button>
+            </div>
+
+            <div class="collapse" id="collapseRegistrarCalificacion">
+                <div class="card card-body mb-4">
+                    <h3 class="h5 mb-3">Registrar Calificación</h3>
+                    <form id="form-registrar-calificacion">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="califMateria" class="form-label">Materia</label>
+                                <select id="califMateria" class="form-select" required>
+                                    <option value="">Cargando materias...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="califInscripcion" class="form-label">Estudiante</label>
+                                <select id="califInscripcion" class="form-select" required disabled>
+                                    <option value="">Seleccione una materia primero</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="califTipo" class="form-label">Tipo de Evaluación</label>
+                                <input type="text" class="form-control" id="califTipo" placeholder="Ej: Examen Parcial, Tarea 1..." required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="califPeriodo" class="form-label">Período</label>
+                                <input type="text" class="form-control" id="califPeriodo" placeholder="Ej: Primer Período" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="califNota" class="form-label">Calificación (0-100)</label>
+                                <input type="number" class="form-control" id="califNota" min="0" max="100" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="califObservaciones" class="form-label">Comentarios</label>
+                                <textarea class="form-control" id="califObservaciones" rows="3"></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#collapseRegistrarCalificacion">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Calificación</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="califSelectMateriaVer" class="form-label fw-bold">Seleccionar Materia:</label>
+                    <select id="califSelectMateriaVer" class="form-select">
+                        <option value="">Cargando materias...</option>
+                    </select>
+                </div>
+            </div>
+            <div id="calificaciones-container">
+                <div class="text-center text-muted">Seleccione una materia para ver las calificaciones.</div>
+            </div>
+        </section>
+
+        <section class="tab-pane" id="asistencia" role="tabpanel">
+            <h2 class="h4 mb-4">Control de Asistencia</h2>
+            <form id="form-control-asistencia">
+                <div class="card card-body mb-4">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label for="asistenciaMateria" class="form-label">Materia</label>
+                            <select id="asistenciaMateria" class="form-select" required>
+                                <option value="">Cargando materias...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="asistenciaFecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="asistenciaFecha" required>
+                        </div>
+                        <div class="col-md-5 attendance-actions">
+                            <label class="form-label d-block">Marcar todos como:</label>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-success" id="btn-marcar-presente"><i class="bi bi-check-circle"></i> Presente</button>
+                                <button type="button" class="btn btn-outline-danger" id="btn-marcar-ausente"><i class="bi bi-x-circle"></i> Ausente</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h5 mb-0">Estudiantes</h3>
+                    <span id="asistencia-conteo-alumnos" class="badge bg-success-subtle text-success-emphasis">0 estudiantes</span>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-0" id="asistencia-lista-alumnos">
+                        <div class="p-3 text-center text-muted">Seleccione una materia y fecha.</div>
+                    </div>
+                </div>
+                
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar Asistencia</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="tab-pane" id="mensajes" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="h4 mb-0">Mensajería</h2>
+                    <p class="text-muted mb-0">Comuníquese con padres de familia.</p>
+                </div>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRedactarMensaje">
+                    <i class="bi bi-plus-lg me-1"></i> Nuevo Mensaje
+                </button>
+            </div>
+
+            <div class="collapse" id="collapseRedactarMensaje">
+                <div class="card card-body mb-4">
+                    <h3 class="h5 mb-3"><i class="bi bi-send-fill me-2"></i> Redactar Mensaje</h3>
+                    <form id="form-redactar-mensaje">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="msgDestinatario" class="form-label">Destinatario (Padre/Madre)</label>
+                                <select id="msgDestinatario" class="form-select" required>
+                                    <option value="">Cargando destinatarios...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="msgPrioridad" class="form-label">Prioridad</label>
+                                <select id="msgPrioridad" class="form-select">
+                                    <option>Normal</option>
+                                    <option>Importante</option>
+                                    <option>Urgente</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="msgAsunto" class="form-label">Asunto</label>
+                                <input type="text" class="form-control" id="msgAsunto" placeholder="Asunto del mensaje" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="msgContenido" class="form-label">Mensaje</label>
+                                <textarea class="form-control" id="msgContenido" rows="5" placeholder="Escriba su mensaje aquí..." required></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#collapseRedactarMensaje">Cancelar</button>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill me-1"></i> Enviar Mensaje</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-inbox-fill me-2"></i> Recibidos</div>
+                        <ul class="list-group list-group-flush message-list" id="mensajes-recibidos">
+                            <div class="list-group-item text-muted">Cargando mensajes...</div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-send-fill me-2"></i> Enviados</div>
+                        <ul class="list-group list-group-flush message-list" id="mensajes-enviados">
+                            <div class="list-group-item text-muted">Cargando mensajes...</div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal fade" id="modalAgregarMateria" tabindex="-1" aria-labelledby="modalAgregarMateriaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarMateriaLabel">Agregar Nueva Materia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-agregar-materia">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="materiaGrado" class="form-label">Grado al que pertenece</label>
+                            <select id="materiaGrado" class="form-select" required>
+                                <option value="">Cargando grados...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="materiaNombre" class="form-label">Nombre de la Materia</label>
+                            <input type="text" class="form-control" id="materiaNombre" placeholder="Ej: Lengua y Literatura" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="materiaDescripcion" class="form-label">Descripción (opcional)</label>
+                            <textarea class="form-control" id="materiaDescripcion" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Materia</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Aviso del Sistema</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="messageModalBody">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+<script type="module" src="/src/js/supabaseClient.js"></script> 
+    <script type="module" src="/src/js/panel-docente.js"></script>
+</body>
+</html>

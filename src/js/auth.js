@@ -44,16 +44,33 @@ document.addEventListener('DOMContentLoaded', () => {
     roleSelectButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             // ¡OJO! No prevenimos el default, dejamos que modal.js lo haga.
-            let role = e.currentTarget.getAttribute('data-role').toLowerCase();
 
-            selectedRoleForRegistration = role; // <-- ESTA ES LA PARTE IMPORTANTE
+            // ================================================================
+            // AQUÍ ESTÁ LA CORRECCIÓN
+            // ================================================================
+            
+            // 1. Obtenemos el atributo
+            const roleAttribute = e.currentTarget.getAttribute('data-role');
 
-            if (loginModalTitle) {
-                const capitalRole = role.charAt(0).toUpperCase() + role.slice(1);
-                loginModalTitle.textContent = 'Acceso - Panel de ' + capitalRole;
+            // 2. SOLO si el atributo existe (es decir, no es el botón de Admin)
+            //    ejecutamos la lógica de cambio de rol.
+            if (roleAttribute) {
+                let role = roleAttribute.toLowerCase();
+
+                selectedRoleForRegistration = role; // <-- ESTA ES LA PARTE IMPORTANTE
+
+                if (loginModalTitle) {
+                    const capitalRole = role.charAt(0).toUpperCase() + role.slice(1);
+                    loginModalTitle.textContent = 'Acceso - Panel de ' + capitalRole;
+                }
             }
+            // Si roleAttribute es null (el botón de Admin),
+            // simplemente no hacemos nada y dejamos que Bootstrap abra el modal.
+            // ================================================================
+            // FIN DE LA CORRECCIÓN
+            // ================================================================
 
-            // Limpiar formularios
+            // Limpiar formularios (esto se ejecuta siempre, lo cual es correcto)
             document.getElementById('registerForm')?.reset();
             document.getElementById('loginForm')?.reset();
         });
@@ -340,7 +357,7 @@ async function handleRedirection(user) {
                 break;
             case 'docente':
                 // Ya sabemos que está 'aprobado' si llegó aquí
-                window.location.href = `${baseUrl}/pages/docentes.html`;
+                window.location.href = `${baseUrl}/pages/panel-docente.html`;
                 break;
             case 'admin':
                 window.location.href = `${baseUrl}/pages/panel-admin.html`;

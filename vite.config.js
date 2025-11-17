@@ -21,7 +21,7 @@ export default defineConfig({
         padres: resolve(__dirname, 'pages/padres.html'),
         panelAdmin: resolve(__dirname, 'pages/panel-admin.html'),
         panelAlumno: resolve(__dirname, 'pages/panel-alumno.html'),
-        panelPadres: resolve(__dirname, 'pages/panel-padres.html'),
+        panelDocente: resolve(__dirname, 'pages/panel-docente.html'),
         pei: resolve(__dirname, 'pages/pei.html'),
         autoridades: resolve(__dirname, 'pages/autoridades.html'),
         profesores: resolve(__dirname, 'pages/profesores.html'),

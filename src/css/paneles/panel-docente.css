@@ -1,0 +1,228 @@
+/* --- Paleta de Colores (basada en tus imágenes) --- */
+:root {
+    --color-primario: #0d6efd; /* Azul de Bootstrap, se puede cambiar */
+    --color-verde: #198754;      /* Verde para botones 'Guardar' */
+    --color-verde-claro: #f0f9f0; /* Fondo general muy claro */
+    --color-borde: #dee2e6;
+    --color-texto: #212529;
+    --color-card-bg: #ffffff;
+    --color-rojo: #dc3545;
+    --color-naranja: #fd7e14;
+    --color-purpura: #6f42c1;
+    --color-azul: #0d6efd;
+}
+
+body {
+    background-color: #f8f9fa; /* Un gris muy claro para el fondo */
+    color: var(--color-texto);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* --- Header Principal --- */
+.header-principal {
+    background-color: var(--color-card-bg);
+    border-bottom: 1px solid var(--color-borde);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header-principal .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.header-principal .logo-icon {
+    background-color: var(--color-verde);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 1.25rem;
+}
+.header-principal .school-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+.header-principal .nav-link {
+    font-size: 1rem;
+    color: #495057;
+}
+.header-principal .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.header-principal .user-initials {
+    background-color: var(--color-verde);
+    color: white;
+    font-weight: 600;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* --- Navegación de Pestañas (Tabs) --- */
+.nav-tabs-container {
+    background-color: var(--color-card-bg);
+    padding: 0.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid var(--color-borde);
+}
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    padding: 0.75rem 0.25rem;
+    margin: 0 0.75rem;
+    font-weight: 500;
+}
+.nav-tabs .nav-link i {
+    margin-right: 0.5rem;
+}
+.nav-tabs .nav-link.active {
+    border-bottom-color: var(--color-verde);
+    color: var(--color-verde);
+    background-color: transparent;
+}
+
+/* --- Contenido de las Pestañas --- */
+.tab-content {
+    padding: 1.5rem;
+}
+.tab-pane {
+    display: none; /* Oculto por defecto */
+}
+.tab-pane.active {
+    display: block; /* Visible si está activo */
+}
+
+/* --- Estilos de Componentes (Tarjetas, Botones, etc.) --- */
+.card {
+    border: 1px solid var(--color-borde);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.card-header {
+    background-color: #fdfdfd;
+    border-bottom: 1px solid var(--color-borde);
+    font-weight: 600;
+}
+.btn-primary {
+    background-color: var(--color-verde);
+    border-color: var(--color-verde);
+}
+.btn-primary:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+.btn-outline-secondary {
+    border-color: var(--color-borde);
+}
+
+/* Estilos para Tarjetas de Resumen (Dashboard) */
+.summary-card {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.summary-card-icon {
+    font-size: 2.5rem;
+    opacity: 0.7;
+}
+.summary-card-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+.summary-card-content p {
+    margin: 0;
+    font-size: 1rem;
+}
+.bg-card-cursos { background-color: #198754; } /* Verde */
+.bg-card-estudiantes { background-color: var(--color-azul); }
+.bg-card-tareas { background-color: var(--color-naranja); }
+.bg-card-calificar { background-color: var(--color-purpura); }
+
+/* Actividad Reciente */
+.list-group-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.activity-icon {
+    font-size: 1.25rem;
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.icon-cursos { background-color: #e8f5e9; color: var(--color-verde); }
+.icon-tareas { background-color: #e3f2fd; color: var(--color-azul); }
+.icon-calificar { background-color: #f3e5f5; color: var(--color-purpura); }
+
+/* Asistencia */
+.attendance-actions .btn {
+    margin-right: 0.5rem;
+}
+.student-attendance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+.student-attendance-row:not(:last-child) {
+    border-bottom: 1px solid var(--color-borde);
+}
+.attendance-status-buttons .btn-check + .btn {
+    border-color: var(--color-borde);
+    color: #6c757d;
+}
+.attendance-status-buttons .btn-check:checked + .btn-outline-success {
+    background-color: var(--color-verde);
+    color: white;
+}
+.attendance-status-buttons .btn-check:checked + .btn-outline-danger {
+    background-color: var(--color-rojo);
+    color: white;
+}
+.attendance-status-buttons .btn-check:checked + .btn-outline-warning {
+    background-color: var(--color-naranja);
+    color: var(--color-texto);
+}
+.attendance-status-buttons .btn-check:checked + .btn-outline-info {
+    background-color: #0dcaf0;
+    color: white;
+}
+
+/* Mensajería */
+.message-list .list-group-item {
+    display: block; /* Sobrescribir flex */
+    cursor: pointer;
+}
+.message-list .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+.message-snippet {
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+.message-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}

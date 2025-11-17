@@ -239,3 +239,100 @@ body {
     font-style: italic;
     color: #6c757d;
 }
+
+/* ================================================= */
+/* == REGLAS DE IMPRESIÓN (Horizontal Definitivo) == */
+/* ================================================= */
+
+@media print {
+
+    /* 1. Sugerir modo horizontal y márgenes mínimos */
+    @page {
+        size: landscape;
+        margin: 0.5cm; /* Márgenes más pequeños */
+    }
+
+    /* 2. Ocultar TODO con display:none para evitar páginas en blanco */
+    body > nav.navbar,
+    .container-fluid > .row.g-4.mb-4,       /* Tarjetas de stats */
+    .container-fluid > .card.shadow-sm.border-0.mb-4, /* Contenedor de pestañas */
+    .tab-pane:not(#horario-tab-pane),       /* Las OTRAS pestañas */
+    .container-fluid > .card.shadow-sm.border-0.mt-4, /* Resumen Académico */
+    .modal,
+    #horario-tab-pane .d-flex.justify-content-between, /* Botón Imprimir y "Mi Horario" */
+    #print-title-grado /* Oculta el grado (por si acaso) */
+    {
+        display: none !important;
+    }
+
+    /* 3. Quitar márgenes/padding de los contenedores */
+    html, body, .container-fluid,
+    .card.shadow-sm.border-0.mb-4,
+    .card-body,
+    #horario-tab-pane {
+        display: block !important;
+        visibility: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background-color: #fff !important;
+    }
+
+    /* 4. Mostrar el Título del Alumno y el Contenedor del Horario */
+    #print-title-alumno,
+    #contenedor-horario,
+    #contenedor-horario * {
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    /* 5. Estilizar el título (Nombre del Alumno) */
+    #print-title-alumno {
+        position: relative;
+        width: 100%;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-bottom: 2px solid #000;
+    }
+    
+    /* 6. ARREGLO CRÍTICO: Anular el 'table-responsive' */
+    #contenedor-horario {
+        position: relative;
+        width: 100%;
+        overflow: visible !important; /* ESTO ANULA EL SCROLL */
+    }
+    
+    /* 7. Ajustar la tabla y forzar colores */
+    .horario-table {
+        width: 100% !important;
+        font-size: 0.8rem; /* Letra chica para que quepa */
+        border-collapse: collapse;
+    }
+
+    .horario-table td,
+    .horario-table th {
+        padding: 0.4rem;
+        height: auto;
+        border: 1px solid #ccc !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    /* 8. Colores de materias */
+    .horario-table .recreo { background-color: #f8f9fa !important; }
+    .horario-table .materia-plastica { background-color: #e0f7fa !important; }
+    .horario-table .materia-efisica { background-color: #f1f8e9 !important; }
+    .horario-table .materia-religion { background-color: #fce4ec !important; }
+    .horario-table .materia-musica { background-color: #fffde7 !important; }
+    .horario-table .materia-tecnologia { background-color: #e1f5fe !important; }
+    .horario-table .materia-diversas { background-color: #e8eaf6 !important; }
+    .horario-table .materia-ingles { background-color: #f3e5f5 !important; }
+    .horario-table .materia-agro { background-color: #dcedc8 !important; }
+    .horario-table .materia-matematica { background-color: #fff3e0 !important; }
+    .horario-table .materia-lengua { background-color: #e3f2fd !important; }
+    .horario-table .materia-naturales { background-color: #e0f2f1 !important; }
+    .horario-table .materia-sociales { background-color: #fbf3e6 !important; }
+}
