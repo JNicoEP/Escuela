@@ -750,26 +750,55 @@ async function loadMensajes() {
 
 
 async function handleEnviarMensaje(e) {
-    e.preventDefault();
-    const form = e.target;
+    e.preventDefault();
+    const form = e.target;
 
-    // CORREGIDO: 'asunto' y 'prioridad' ahora se guardan en sus columnas correctas.
-    const { error } = await supabase
-        .from('mensajes')
-        .insert({
-            sender_id: currentDocenteId,
-            receiver_id: form.msgDestinatario.value,
-            asunto: form.msgAsunto.value, // <-- CORRECCIÓN
-            contenido: form.msgContenido.value,
-            prioridad: form.msgPrioridad.value // <-- CORRECCIÓN
-        });
+    // 1. Obtener el ID del destinatario
+    const receiverId = form.msgDestinatario.value;
+    if (!receiverId) {
+        showMessage('Debe seleccionar un destinatario.', 'Error');
+        return;
+    }
 
-    if (error) {
-        showMessage('Error al enviar mensaje: ' + error.message, 'Error');
-    } else {
-        showMessage('Mensaje enviado exitosamente.', 'Éxito');
-        form.reset();
-        bootstrap.Collapse.getInstance(document.getElementById('collapseRedactarMensaje')).hide();
-        loadMensajes(); // Recargar listas de mensajes
-    }
+    try {
+        // 2. Buscar el email del destinatario en la tabla 'usuarios'
+        const { data: userData, error: userError } = await supabase
+            .from('usuarios')
+            .select('email')
+            .eq('id_usuario', receiverId)
+            .single();
+
+        if (userError || !userData) {
+            throw new Error('No se pudo encontrar el email del destinatario.');
+        }
+
+        const destinatarioEmail = userData.email;
+        const asunto = form.msgAsunto.value;
+        const contenido = form.msgContenido.value;
+
+        // 3. Crear el link "mailto:"
+        // Esto abre el cliente de email por defecto del profesor
+        const mailtoLink = `mailto:${destinatarioEmail}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(contenido)}`;
+        
+        // 4. Abrir el link
+        window.location.href = mailtoLink;
+
+        // Opcional: Guardar una copia en tu tabla 'mensajes'
+        await supabase.from('mensajes').insert({
+            sender_id: currentDocenteId,
+            receiver_id: receiverId,
+            asunto: asunto,
+            contenido: `(Intento de envío a ${destinatarioEmail}) ${contenido}`,
+            prioridad: form.msgPrioridad.value
+        });
+        
+        // No mostramos "Email enviado", solo reseteamos el formulario
+        form.reset();
+        bootstrap.Collapse.getInstance(document.getElementById('collapseRedactarMensaje')).hide();
+        loadMensajes(); // Recargar la lista de enviados
+
+    } catch (error) {
+        console.error('Error al preparar email:', error);
+        showMessage(`Error al preparar email: ${error.message}`, 'Error');
+    }
 }

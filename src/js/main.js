@@ -16,6 +16,8 @@ import { Dropdown } from 'bootstrap';
 
 // Importa estilos 
 import '../css/style.css';
+import '../css/modal/modal.css';
+
 
 // ==========================================================
 // 3. IMPORTAR COMPONENTES HTML 
