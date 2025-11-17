@@ -10,7 +10,7 @@ let bootstrap = window.bootstrap; // Acceso global a Bootstrap
 // --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', async () => {
     await checkUserSession();
-    
+
     if (currentUser) {
         setupEventListeners();
         setupTabLogic();
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 async function checkUserSession() {
     const { data: { session }, error } = await supabase.auth.getSession();
-    
+
     if (error) {
         console.error('Error al obtener la sesión:', error);
         return;
@@ -36,7 +36,7 @@ async function checkUserSession() {
     if (!session) {
         // No hay sesión, redirigir a la página de login
         // Cambia '/index.html' por tu página de inicio de sesión
-        window.location.href = '/index.html'; 
+        window.location.href = '/index.html';
         return;
     }
 
@@ -46,7 +46,7 @@ async function checkUserSession() {
     // Actualizar la UI del header
     const userEmail = currentUser.email;
     document.getElementById('user-name-display').textContent = currentUser.user_metadata?.nombre || userEmail;
-    
+
     const initials = (currentUser.user_metadata?.nombre?.[0] || '') + (currentUser.user_metadata?.apellido?.[0] || '');
     document.getElementById('user-initials-display').textContent = initials || userEmail[0].toUpperCase();
 }
@@ -72,12 +72,12 @@ function setupTabLogic() {
     tabLinks.forEach(link => {
         link.addEventListener('click', function (event) {
             event.preventDefault();
-            
+
             const targetId = this.getAttribute('data-target');
-            
+
             tabLinks.forEach(l => l.classList.remove('active'));
             tabPanes.forEach(p => p.classList.remove('active'));
-            
+
             document.querySelector(targetId).classList.add('active');
             this.classList.add('active');
         });
@@ -96,10 +96,10 @@ function setupEventListeners() {
     // Formulario: Crear Tarea
     // ! VER NOTA IMPORTANTE AL FINAL SOBRE LA TABLA 'tareas'
     document.getElementById('form-crear-tarea').addEventListener('submit', handleCrearTarea);
-    
+
     // Formulario: Registrar Calificación
     document.getElementById('form-registrar-calificacion').addEventListener('submit', handleRegistrarCalificacion);
-    
+
     // Formulario: Guardar Asistencia
     document.getElementById('form-control-asistencia').addEventListener('submit', handleGuardarAsistencia);
 
@@ -108,15 +108,15 @@ function setupEventListeners() {
 
     // Selects dinámicos (que cargan otros selects)
     document.getElementById('califMateria').addEventListener('change', (e) => loadEstudiantesParaSelect(e.target.value, 'califInscripcion'));
-    
+
     // Selects que cargan listas
     document.getElementById('califSelectMateriaVer').addEventListener('change', (e) => loadCalificaciones(e.target.value));
-    
+
     const asistenciaMateria = document.getElementById('asistenciaMateria');
     const asistenciaFecha = document.getElementById('asistenciaFecha');
     asistenciaMateria.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
     asistenciaFecha.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
-    
+
     // Botones "Marcar Todos" en Asistencia
     document.getElementById('btn-marcar-presente').addEventListener('click', () => marcarTodosAsistencia('presente'));
     document.getElementById('btn-marcar-ausente').addEventListener('click', () => marcarTodosAsistencia('ausente'));
@@ -150,12 +150,12 @@ async function loadDashboardData() {
     // 2. Conteo de Estudiantes (total de inscripciones únicas)
     // Esto es más complejo, podría requerir una función RPC en Supabase
     // Por ahora, lo dejamos en 0
-    document.getElementById('summary-estudiantes').textContent = '...'; 
+    document.getElementById('summary-estudiantes').textContent = '...';
 
     // 3. Conteo de Tareas Activas
     // ! Depende de la tabla 'tareas' que no existe
     document.getElementById('summary-tareas').textContent = '...';
-    
+
     // 4. Conteo por Calificar
     // ! Depende de una lógica de entregas que no está en el schema
     document.getElementById('summary-calificar').textContent = '...';
@@ -166,7 +166,7 @@ async function loadDashboardData() {
         .select('tipo_evaluacion, fecha, inscripciones(materias(nombre_materia))')
         .limit(3)
         .order('fecha', { ascending: false }); // Faltaría filtrar por docente
-        
+
     const container = document.getElementById('actividad-reciente-container');
     container.innerHTML = '';
     if (ultimasCalificaciones && ultimasCalificaciones.length > 0) {
@@ -190,17 +190,22 @@ async function loadDashboardData() {
  * Carga todos los dropdowns (selects) de los formularios.
  */
 async function loadAllSelects() {
-    // 1. Cargar Grados asignados al docente (para el modal "Agregar Materia")
+    // 1. Cargar TODOS los grados (para el modal "Agregar Materia")
     const { data: grados, error: errorGrados } = await supabase
-        .from('docente_grado')
-        .select('grado(id_grado, nombre_grado)')
-        .eq('id_docente', currentDocenteId);
-    
+        .from('grado')
+        .select('id_grado, nombre_grado')
+        .order('id_grado'); // Opcional: para ordenarlos 1°, 2°, 3°...
+
+    if (errorGrados) {
+        console.error('Error cargando grados:', errorGrados);
+    }
+
     if (grados) {
         const selectGrado = document.getElementById('materiaGrado');
         selectGrado.innerHTML = '<option value="">Seleccione un grado</option>';
         grados.forEach(item => {
-            selectGrado.innerHTML += `<option value="${item.grado.id_grado}">${item.grado.nombre_grado}</option>`;
+            // La estructura de 'item' es simple ahora: item.id_grado, item.nombre_grado
+            selectGrado.innerHTML += `<option value="${item.id_grado}">${item.nombre_grado}</option>`;
         });
     }
 
@@ -219,7 +224,7 @@ async function loadAllSelects() {
             });
         });
     }
-    
+
     // 3. Cargar Destinatarios (Padres) para Mensajes
     // Asumimos que los padres tienen un rol específico (ej: id_rol = 3)
     const { data: padres, error: errorPadres } = await supabase
@@ -330,7 +335,7 @@ async function handleAgregarMateria(e) {
             nombre_materia: nombre,
             descripcion: descripcion,
             id_grado: id_grado,
-            id_docente: currentDocenteId 
+            id_docente: currentDocenteId
         });
 
     if (error) {
@@ -405,7 +410,7 @@ async function loadTareas() {
         container.innerHTML = `<div class="alert alert-warning">No se pudo cargar tareas. (Asegúrate de tener una tabla 'tareas' en tu DB): ${error.message}</div>`;
         return;
     }
-    
+
     container.innerHTML = '';
     if (data && data.length > 0) {
         data.forEach(tarea => {
@@ -436,33 +441,33 @@ async function loadTareas() {
 
 // --- PESTAÑA 4: CALIFICACIONES ---
 
-async function handleRegistrarCalificacion(e) {
-    e.preventDefault();
-    const form = e.target;
-    
-    // ! NOTA: 'periodo' no existe en tu tabla 'calificaciones'
-    // Lo usaremos en 'observaciones' o 'tipo_evaluacion'
-    const observacion = `Período: ${form.califPeriodo.value}. ${form.califObservaciones.value}`;
-    
-    const { error } = await supabase
-        .from('calificaciones')
-        .insert({
-            id_inscripcion: form.califInscripcion.value,
-            nota: form.califNota.value,
-            tipo_evaluacion: form.califTipo.value,
-            observaciones: observacion,
-            fecha: new Date()
-        });
+// --- PESTAÑA 4: CALIFICACIONES ---
 
-    if (error) {
-        showMessage('Error al registrar calificación: ' + error.message, 'Error');
-    } else {
-        showMessage('Calificación registrada exitosamente.', 'Éxito');
-        form.reset();
-        bootstrap.Collapse.getInstance(document.getElementById('collapseRegistrarCalificacion')).hide();
-        // Recargar la lista de calificaciones de esa materia
-        loadCalificaciones(document.getElementById('califSelectMateriaVer').value);
-    }
+async function handleRegistrarCalificacion(e) {
+    e.preventDefault();
+    const form = e.target;
+
+    // CORREGIDO: Ahora 'periodo' y 'observaciones' se guardan en sus columnas correctas.
+    const { error } = await supabase
+        .from('calificaciones')
+        .insert({
+            id_inscripcion: form.califInscripcion.value,
+            nota: form.califNota.value,
+            tipo_evaluacion: form.califTipo.value,
+            periodo: form.califPeriodo.value, // <-- CORRECCIÓN
+            observaciones: form.califObservaciones.value, // <-- CORRECCIÓN
+            fecha: new Date()
+        });
+
+    if (error) {
+        showMessage('Error al registrar calificación: ' + error.message, 'Error');
+    } else {
+        showMessage('Calificación registrada exitosamente.', 'Éxito');
+        form.reset();
+        bootstrap.Collapse.getInstance(document.getElementById('collapseRegistrarCalificacion')).hide();
+        // Recargar la lista de calificaciones de esa materia
+        loadCalificaciones(document.getElementById('califSelectMateriaVer').value);
+    }
 }
 
 async function loadCalificaciones(id_materia) {
@@ -471,7 +476,7 @@ async function loadCalificaciones(id_materia) {
         container.innerHTML = '<div class="text-center text-muted">Seleccione una materia para ver las calificaciones.</div>';
         return;
     }
-    
+
     container.innerHTML = '<div class="text-center text-muted">Cargando calificaciones...</div>';
 
     // 1. Obtener inscripciones de esa materia
@@ -484,13 +489,13 @@ async function loadCalificaciones(id_materia) {
         container.innerHTML = `<div class="alert alert-danger">Error al cargar calificaciones: ${error.message}</div>`;
         return;
     }
-    
+
     container.innerHTML = '';
     if (inscripciones && inscripciones.length > 0) {
         inscripciones.forEach(insc => {
             const alumno = insc.alumnos.usuarios;
             const calificaciones = insc.calificaciones;
-            
+
             // Calcular promedio
             let total = 0;
             calificaciones.forEach(c => total += c.nota);
@@ -562,12 +567,12 @@ async function loadEstudiantesParaAsistencia(id_materia, fecha) {
         container.innerHTML = `<div class="p-3 alert alert-danger">Error: ${errorInsc.message}</div>`;
         return;
     }
-    
+
     if (!inscripciones || inscripciones.length === 0) {
         container.innerHTML = '<div class="p-3 alert alert-info">No hay estudiantes en esta materia.</div>';
         return;
     }
-    
+
     // 2. Obtener asistencias YA registradas para esa fecha
     const idsInscripcion = inscripciones.map(i => i.id_inscripcion);
     const { data: asistencias, error: errorAsis } = await supabase
@@ -581,7 +586,7 @@ async function loadEstudiantesParaAsistencia(id_materia, fecha) {
     if (asistencias) {
         asistencias.forEach(a => mapaAsistencias.set(a.id_inscripcion, a.estado));
     }
-    
+
     // 3. Renderizar lista
     container.innerHTML = '';
     document.getElementById('asistencia-conteo-alumnos').textContent = `${inscripciones.length} estudiantes`;
@@ -623,7 +628,7 @@ async function handleGuardarAsistencia(e) {
         showMessage('Por favor, seleccione una fecha.', 'Error');
         return;
     }
-    
+
     const filas = document.querySelectorAll('#asistencia-lista-alumnos .student-attendance-row');
     if (filas.length === 0) {
         showMessage('No hay estudiantes para guardar asistencia.', 'Error');
@@ -631,11 +636,11 @@ async function handleGuardarAsistencia(e) {
     }
 
     const registrosParaGuardar = [];
-    
+
     filas.forEach(fila => {
         const id_inscripcion = fila.dataset.idInscripcion;
         const radioChecked = fila.querySelector(`input[name="status-${id_inscripcion}"]:checked`);
-        
+
         if (radioChecked) {
             registrosParaGuardar.push({
                 id_inscripcion: id_inscripcion,
@@ -673,7 +678,7 @@ function marcarTodosAsistencia(estado) {
 async function loadMensajes() {
     const contRecibidos = document.getElementById('mensajes-recibidos');
     const contEnviados = document.getElementById('mensajes-enviados');
-    
+
     contRecibidos.innerHTML = '<div class="list-group-item text-muted">Cargando...</div>';
     contEnviados.innerHTML = '<div class="list-group-item text-muted">Cargando...</div>';
 
@@ -713,7 +718,7 @@ async function loadMensajes() {
             contRecibidos.innerHTML = '<div class="list-group-item text-muted">No tienes mensajes recibidos.</div>';
         }
     }
-    
+
     // 2. Cargar Enviados
     const { data: enviados, error: errorEnv } = await supabase
         .from('mensajes')
@@ -742,29 +747,29 @@ async function loadMensajes() {
     }
 }
 
+
+
 async function handleEnviarMensaje(e) {
-    e.preventDefault();
-    const form = e.target;
-    
-    // ! NOTA: 'prioridad' no existe en tu tabla 'mensajes'
-    // Lo podemos agregar al asunto o al contenido.
-    const asunto = `[${form.msgPrioridad.value}] ${form.msgAsunto.value}`;
-    
-    const { error } = await supabase
-        .from('mensajes')
-        .insert({
-            sender_id: currentDocenteId,
-            receiver_id: form.msgDestinatario.value,
-            asunto: asunto,
-            contenido: form.msgContenido.value
-        });
-        
-    if (error) {
-        showMessage('Error al enviar mensaje: ' + error.message, 'Error');
-    } else {
-        showMessage('Mensaje enviado exitosamente.', 'Éxito');
-        form.reset();
-        bootstrap.Collapse.getInstance(document.getElementById('collapseRedactarMensaje')).hide();
-        loadMensajes(); // Recargar listas de mensajes
-    }
+    e.preventDefault();
+    const form = e.target;
+
+    // CORREGIDO: 'asunto' y 'prioridad' ahora se guardan en sus columnas correctas.
+    const { error } = await supabase
+        .from('mensajes')
+        .insert({
+            sender_id: currentDocenteId,
+            receiver_id: form.msgDestinatario.value,
+            asunto: form.msgAsunto.value, // <-- CORRECCIÓN
+            contenido: form.msgContenido.value,
+            prioridad: form.msgPrioridad.value // <-- CORRECCIÓN
+        });
+
+    if (error) {
+        showMessage('Error al enviar mensaje: ' + error.message, 'Error');
+    } else {
+        showMessage('Mensaje enviado exitosamente.', 'Éxito');
+        form.reset();
+        bootstrap.Collapse.getInstance(document.getElementById('collapseRedactarMensaje')).hide();
+        loadMensajes(); // Recargar listas de mensajes
+    }
 }

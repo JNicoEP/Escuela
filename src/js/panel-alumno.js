@@ -178,6 +178,7 @@ async function cargarDatosEstudiante() {
     const { data, error: dbError } = await supabase
         .from('usuarios')
         .select(`
+            id_usuario,
             nombre,
             apellido,
             email,
@@ -354,7 +355,7 @@ async function cargarCalificaciones() {
                 materias ( nombre_materia ),
                 calificaciones ( nota, tipo_evaluacion, fecha, periodo, observaciones )
             `)
-            .eq('id_alumno', datosUsuarioActual.alumnos.id_alumno); // Usamos el ID de la variable global
+            .eq('id_alumno', datosUsuarioActual.id_usuario); // Usamos el id_usuario (que es el id_alumno)
 
         if (error) throw error;
 
