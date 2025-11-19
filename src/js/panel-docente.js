@@ -59,7 +59,7 @@ async function handleLogout() {
     if (error) {
         showMessage('Error al cerrar sesión: ' + error.message, 'Error');
     } else {
-        window.location.href = '/login.html'; // Redirigir al login
+        window.location.href = '/index.html'; // Redirigir al login
     }
 }
 
@@ -87,6 +87,11 @@ function setupTabLogic() {
 // --- CONFIGURACIÓN DE EVENT LISTENERS ---
 
 function setupEventListeners() {
+    // NUEVO: Listener para el formulario de edición
+    const formEditar = document.getElementById('form-editar-tarea');
+    if (formEditar) {
+        formEditar.addEventListener('submit', handleGuardarEdicion);
+    }
     // Botón de Logout
     document.getElementById('btn-logout').addEventListener('click', handleLogout);
 
@@ -248,33 +253,53 @@ async function loadAllSelects() {
  */
 async function loadEstudiantesParaSelect(id_materia, selectId) {
     const selectEstudiante = document.getElementById(selectId);
+    
     if (!id_materia) {
         selectEstudiante.innerHTML = '<option value="">Seleccione una materia primero</option>';
         selectEstudiante.disabled = true;
         return;
     }
 
-    const { data: inscripciones, error } = await supabase
-        .from('inscripciones')
-        .select('id_inscripcion, alumnos(usuarios(nombre, apellido)))')
-        .eq('id_materia', id_materia);
+    try {
+        // 1. Averiguar de qué grado es esta materia
+        const { data: materia, error: errMat } = await supabase
+            .from('materias')
+            .select('id_grado')
+            .eq('id_materia', id_materia)
+            .single();
+            
+        if (errMat) throw errMat;
 
-    if (error) {
+        // 2. Buscar TODOS los alumnos de ese grado
+        const { data: alumnos, error: errAlum } = await supabase
+            .from('alumnos')
+            .select('id_alumno, usuarios(nombre, apellido)')
+            .eq('id_grado', materia.id_grado);
+
+        if (errAlum) throw errAlum;
+
+        // 3. Llenar el select
+        if (alumnos && alumnos.length > 0) {
+            selectEstudiante.innerHTML = '<option value="">Seleccione un estudiante</option>';
+            alumnos.forEach(alum => {
+                // BLINDAJE AQUÍ: Chequeamos si alum.usuarios existe
+                if (alum.usuarios) {
+                    selectEstudiante.innerHTML += `<option value="${alum.id_alumno}">
+                        ${alum.usuarios.nombre} ${alum.usuarios.apellido}
+                    </option>`;
+                } else {
+                     console.warn('Alumno con datos de usuario faltantes:', alum.id_alumno);
+                }
+            });
+            selectEstudiante.disabled = false;
+        } else {
+            selectEstudiante.innerHTML = '<option value="">No hay estudiantes en este grado</option>';
+            selectEstudiante.disabled = true;
+        }
+
+    } catch (error) {
+        console.error(error);
         showMessage('Error cargando estudiantes: ' + error.message, 'Error');
-        return;
-    }
-
-    if (inscripciones && inscripciones.length > 0) {
-        selectEstudiante.innerHTML = '<option value="">Seleccione un estudiante</option>';
-        inscripciones.forEach(insc => {
-            selectEstudiante.innerHTML += `<option value="${insc.id_inscripcion}">
-                ${insc.alumnos.usuarios.nombre} ${insc.alumnos.usuarios.apellido}
-            </option>`;
-        });
-        selectEstudiante.disabled = false;
-    } else {
-        selectEstudiante.innerHTML = '<option value="">No hay estudiantes inscritos</option>';
-        selectEstudiante.disabled = true;
     }
 }
 
@@ -399,15 +424,14 @@ async function loadTareas() {
     const container = document.getElementById('tareas-container');
     container.innerHTML = '<div class="text-center text-muted">Cargando tareas...</div>';
 
-    // ! Usando la tabla 'tareas' (HIPOTÉTICA)
     const { data, error } = await supabase
-        .from('tareas') // ! TABLA HIPOTÉTICA
+        .from('tareas')
         .select('*, materias(nombre_materia)')
         .eq('id_docente', currentDocenteId)
         .order('fecha_entrega', { ascending: true });
 
     if (error) {
-        container.innerHTML = `<div class="alert alert-warning">No se pudo cargar tareas. (Asegúrate de tener una tabla 'tareas' en tu DB): ${error.message}</div>`;
+        container.innerHTML = `<div class="alert alert-warning">Error: ${error.message}</div>`;
         return;
     }
 
@@ -417,13 +441,28 @@ async function loadTareas() {
             container.innerHTML += `
                 <div class="card mb-3">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h4 class="h6">${tarea.titulo}</h4>
-                                <p class="text-muted small mb-2">${tarea.descripcion || 'Sin descripción'}</p>
-                                <span class="badge bg-success-subtle text-success-emphasis">${tarea.materias.nombre_materia}</span>
+                                <h4 class="h6 mb-1">${tarea.titulo}</h4>
+                                <span class="badge bg-success-subtle text-success-emphasis mb-2">${tarea.materias.nombre_materia}</span>
+                                <p class="text-muted small mb-0">${tarea.descripcion || 'Sin descripción'}</p>
                             </div>
-                            <a href="#" class="btn btn-outline-secondary btn-sm">Ver Entregas</a>
+                            
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary btn-sm btn-ver-entregas" 
+                                        data-id="${tarea.id_tarea}" 
+                                        data-titulo="${tarea.titulo}" title="Ver Entregas">
+                                    <i class="bi bi-folder2-open"></i> Entregas
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm btn-editar-tarea" 
+                                        data-id="${tarea.id_tarea}" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm btn-eliminar-tarea" 
+                                        data-id="${tarea.id_tarea}" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between align-items-center text-muted small">
@@ -434,40 +473,261 @@ async function loadTareas() {
                 </div>
             `;
         });
+
+        // --- LISTENERS ---
+
+        // 1. Ver Entregas
+        document.querySelectorAll('.btn-ver-entregas').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Usamos currentTarget para asegurar que tomamos el botón y no el icono
+                const id = e.currentTarget.dataset.id;
+                const titulo = e.currentTarget.dataset.titulo;
+                verEntregas(id, titulo);
+            });
+        });
+
+        // 2. Editar Tarea
+        document.querySelectorAll('.btn-editar-tarea').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                abrirModalEditar(id);
+            });
+        });
+
+        // 3. Eliminar Tarea
+        document.querySelectorAll('.btn-eliminar-tarea').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                handleEliminarTarea(id);
+            });
+        });
+
     } else {
         container.innerHTML = '<div class="alert alert-info">No hay tareas asignadas.</div>';
     }
 }
 
-// --- PESTAÑA 4: CALIFICACIONES ---
+// Función para ver las entregas (VERSIÓN SEGURA)
+async function verEntregas(idTarea, tituloTarea) {
+    const modalEl = document.getElementById('modalVerEntregas');
+    const modalTitle = modalEl.querySelector('.modal-title');
+    const tbody = document.getElementById('lista-entregas-body');
+    const loading = document.getElementById('entregas-loading');
+    const empty = document.getElementById('entregas-empty');
 
+    modalTitle.textContent = `Entregas: ${tituloTarea}`;
+    tbody.innerHTML = '';
+    loading.classList.remove('d-none');
+    empty.classList.add('d-none');
+
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    try {
+        const { data: entregas, error } = await supabase
+            .from('entregas')
+            .select(`
+                fecha_entrega,
+                archivo_path,
+                alumno:usuarios (nombre, apellido, email)
+            `)
+            .eq('id_tarea', idTarea)
+            .order('fecha_entrega', { ascending: false });
+
+        loading.classList.add('d-none');
+
+        if (error) throw error;
+
+        if (!entregas || entregas.length === 0) {
+            empty.classList.remove('d-none');
+        } else {
+            // CAMBIO: Usamos for...of para esperar la generación de URLs firmadas
+            for (const entrega of entregas) {
+                let linkDescarga = '<span class="text-muted">Sin archivo</span>';
+
+                if (entrega.archivo_path) {
+                    // Generar URL firmada (válida por 1 hora)
+                    const { data: signedData } = await supabase.storage
+                        .from('materiales')
+                        .createSignedUrl(entrega.archivo_path, 3600);
+
+                    if (signedData) {
+                        linkDescarga = `
+                            <a href="${signedData.signedUrl}" target="_blank" class="btn btn-sm btn-primary">
+                                <i class="bi bi-download"></i> Descargar
+                            </a>
+                        `;
+                    }
+                }
+
+                const nombreAlumno = entrega.alumno ?
+                    `${entrega.alumno.nombre} ${entrega.alumno.apellido}` : 'Alumno desconocido';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="fw-bold">${nombreAlumno}</div>
+                            <div class="small text-muted">${entrega.alumno?.email || ''}</div>
+                        </td>
+                        <td>${new Date(entrega.fecha_entrega).toLocaleString()}</td>
+                        <td>${linkDescarga}</td>
+                    </tr>
+                `;
+            }
+        }
+
+    } catch (error) {
+        console.error(error);
+        loading.classList.add('d-none');
+        tbody.innerHTML = `<tr><td colspan="3" class="text-danger">Error al cargar entregas: ${error.message}</td></tr>`;
+    }
+}
+
+// --- FUNCIONES DE EDICIÓN Y BORRADO ---
+
+// 1. Eliminar Tarea
+async function handleEliminarTarea(idTarea) {
+    if (!confirm("¿Estás seguro de que quieres eliminar esta tarea? Se borrarán también todas las entregas asociadas.")) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('tareas')
+            .delete()
+            .eq('id_tarea', idTarea);
+
+        if (error) throw error;
+
+        showMessage("Tarea eliminada correctamente.", "Éxito");
+        loadTareas(); // Recargar lista
+
+    } catch (error) {
+        console.error(error);
+        showMessage("Error al eliminar: " + error.message, "Error");
+    }
+}
+
+// 2. Abrir Modal de Edición (Carga los datos actuales)
+async function abrirModalEditar(idTarea) {
+    try {
+        // Buscar datos actuales de la tarea
+        const { data, error } = await supabase
+            .from('tareas')
+            .select('*')
+            .eq('id_tarea', idTarea)
+            .single();
+
+        if (error) throw error;
+
+        // Llenar el formulario
+        document.getElementById('edit-id-tarea').value = data.id_tarea;
+        document.getElementById('edit-tareaTitulo').value = data.titulo;
+        document.getElementById('edit-tareaDescripcion').value = data.descripcion;
+        document.getElementById('edit-tareaFecha').value = data.fecha_entrega;
+        document.getElementById('edit-tareaPuntaje').value = data.puntaje_maximo;
+
+        // Mostrar Modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarTarea'));
+        modal.show();
+
+    } catch (error) {
+        console.error(error);
+        showMessage("Error al cargar datos de la tarea.", "Error");
+    }
+}
+
+// 3. Guardar Cambios de Edición
+async function handleGuardarEdicion(e) {
+    e.preventDefault();
+
+    const idTarea = document.getElementById('edit-id-tarea').value;
+    const titulo = document.getElementById('edit-tareaTitulo').value;
+    const descripcion = document.getElementById('edit-tareaDescripcion').value;
+    const fecha = document.getElementById('edit-tareaFecha').value;
+    const puntaje = document.getElementById('edit-tareaPuntaje').value;
+
+    try {
+        const { error } = await supabase
+            .from('tareas')
+            .update({
+                titulo: titulo,
+                descripcion: descripcion,
+                fecha_entrega: fecha,
+                puntaje_maximo: puntaje
+            })
+            .eq('id_tarea', idTarea);
+
+        if (error) throw error;
+
+        showMessage("Tarea actualizada correctamente.", "Éxito");
+
+        // Cerrar modal
+        const modalEl = document.getElementById('modalEditarTarea');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        modalInstance.hide();
+
+        loadTareas(); // Recargar lista
+
+    } catch (error) {
+        console.error(error);
+        showMessage("Error al actualizar: " + error.message, "Error");
+    }
+}
 // --- PESTAÑA 4: CALIFICACIONES ---
 
 async function handleRegistrarCalificacion(e) {
-    e.preventDefault();
-    const form = e.target;
+    e.preventDefault();
+    const form = e.target;
+    const idMateria = form.califMateria.value;
+    const idAlumno = form.califInscripcion.value; // Ahora esto trae el ID del alumno
 
-    // CORREGIDO: Ahora 'periodo' y 'observaciones' se guardan en sus columnas correctas.
-    const { error } = await supabase
-        .from('calificaciones')
-        .insert({
-            id_inscripcion: form.califInscripcion.value,
-            nota: form.califNota.value,
-            tipo_evaluacion: form.califTipo.value,
-            periodo: form.califPeriodo.value, // <-- CORRECCIÓN
-            observaciones: form.califObservaciones.value, // <-- CORRECCIÓN
-            fecha: new Date()
-        });
+    try {
+        // 1. Verificar si existe inscripción
+        let { data: inscripcion, error: errBusqueda } = await supabase
+            .from('inscripciones')
+            .select('id_inscripcion')
+            .eq('id_alumno', idAlumno)
+            .eq('id_materia', idMateria)
+            .maybeSingle(); // maybeSingle no da error si no encuentra nada
 
-    if (error) {
-        showMessage('Error al registrar calificación: ' + error.message, 'Error');
-    } else {
-        showMessage('Calificación registrada exitosamente.', 'Éxito');
-        form.reset();
-        bootstrap.Collapse.getInstance(document.getElementById('collapseRegistrarCalificacion')).hide();
-        // Recargar la lista de calificaciones de esa materia
-        loadCalificaciones(document.getElementById('califSelectMateriaVer').value);
-    }
+        let idInscripcion = inscripcion?.id_inscripcion;
+
+        // 2. Si no existe, crear la inscripción automáticamente
+        if (!idInscripcion) {
+            const { data: nuevaInsc, error: errCrear } = await supabase
+                .from('inscripciones')
+                .insert({ id_alumno: idAlumno, id_materia: idMateria })
+                .select('id_inscripcion')
+                .single();
+
+            if (errCrear) throw errCrear;
+            idInscripcion = nuevaInsc.id_inscripcion;
+        }
+
+        // 3. Guardar la calificación usando el ID de inscripción (existente o nuevo)
+        const { error } = await supabase
+            .from('calificaciones')
+            .insert({
+                id_inscripcion: idInscripcion,
+                nota: form.califNota.value,
+                tipo_evaluacion: form.califTipo.value,
+                periodo: form.califPeriodo.value,
+                observaciones: form.califObservaciones.value,
+                fecha: new Date()
+            });
+
+        if (error) throw error;
+
+        showMessage('Calificación registrada exitosamente.', 'Éxito');
+        form.reset();
+        bootstrap.Collapse.getInstance(document.getElementById('collapseRegistrarCalificacion')).hide();
+        loadCalificaciones(document.getElementById('califSelectMateriaVer').value);
+
+    } catch (error) {
+        console.error(error);
+        showMessage('Error al registrar: ' + error.message, 'Error');
+    }
 }
 
 async function loadCalificaciones(id_materia) {
@@ -476,72 +736,93 @@ async function loadCalificaciones(id_materia) {
         container.innerHTML = '<div class="text-center text-muted">Seleccione una materia para ver las calificaciones.</div>';
         return;
     }
+    
+    container.innerHTML = '<div class="text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando...</div>';
 
-    container.innerHTML = '<div class="text-center text-muted">Cargando calificaciones...</div>';
+    try {
+        // 1. Obtener grado de la materia
+        const { data: materia, error: matError } = await supabase.from('materias').select('id_grado').eq('id_materia', id_materia).single();
+        if (matError) throw matError;
+        
+        // 2. Obtener TODOS los alumnos del grado
+        const { data: alumnos, error } = await supabase
+            .from('alumnos')
+            .select(`
+                id_alumno,
+                usuarios (nombre, apellido, dni),
+                inscripciones (
+                    calificaciones (*),
+                    id_materia
+                )
+            `)
+            .eq('id_grado', materia.id_grado)
+            .eq('inscripciones.id_materia', id_materia); 
 
-    // 1. Obtener inscripciones de esa materia
-    const { data: inscripciones, error } = await supabase
-        .from('inscripciones')
-        .select('id_inscripcion, alumnos(usuarios(nombre, apellido)), calificaciones(*)')
-        .eq('id_materia', id_materia);
+        if (error) throw error;
+        
+        container.innerHTML = '';
+        if (alumnos && alumnos.length > 0) {
+            alumnos.forEach(alum => {  // <--- 'alum' se define aquí
+                // Buscar si tiene inscripción y notas para esta materia
+                const inscripcionCorrecta = alum.inscripciones.find(i => i.id_materia == id_materia);
+                const calificaciones = inscripcionCorrecta ? inscripcionCorrecta.calificaciones : [];
+                
+                // Calcular promedio
+                let total = 0;
+                calificaciones.forEach(c => total += c.nota);
+                const promedio = calificaciones.length > 0 ? (total / calificaciones.length).toFixed(1) : '-';
+                const promedioColor = promedio >= 6 ? 'text-success' : (promedio === '-' ? 'text-muted' : 'text-danger');
 
-    if (error) {
-        container.innerHTML = `<div class="alert alert-danger">Error al cargar calificaciones: ${error.message}</div>`;
-        return;
-    }
-
-    container.innerHTML = '';
-    if (inscripciones && inscripciones.length > 0) {
-        inscripciones.forEach(insc => {
-            const alumno = insc.alumnos.usuarios;
-            const calificaciones = insc.calificaciones;
-
-            // Calcular promedio
-            let total = 0;
-            calificaciones.forEach(c => total += c.nota);
-            const promedio = calificaciones.length > 0 ? (total / calificaciones.length).toFixed(1) : 'N/A';
-            const promedioColor = promedio >= 60 ? 'text-success' : 'text-danger';
-
-            // Renderizar calificaciones individuales
-            let calificacionesHtml = '';
-            if (calificaciones.length > 0) {
-                calificaciones.forEach(c => {
-                    calificacionesHtml += `
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <div class="fw-bold">${c.tipo_evaluacion}</div>
-                                <div class="small text-muted">${new Date(c.fecha).toLocaleDateString()} - ${c.observaciones || ''}</div>
-                            </div>
-                            <span class="badge ${c.nota >= 60 ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis'} fs-5">${c.nota}</span>
-                        </div>
-                    `;
-                });
-            } else {
-                calificacionesHtml = '<div class="small text-muted">Sin calificaciones registradas.</div>';
-            }
-
-            // Renderizar tarjeta del alumno
-            container.innerHTML += `
-                <div class="card mb-3">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center gap-3">
+                // HTML de notas
+                let calificacionesHtml = '';
+                if (calificaciones.length > 0) {
+                    calificaciones.forEach(c => {
+                        calificacionesHtml += `
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
                                 <div>
-                                    <div class="fw-bold fs-5">${alumno.nombre} ${alumno.apellido}</div>
+                                    <div class="fw-bold small">${c.tipo_evaluacion} (${c.periodo || ''})</div>
+                                    <div class="text-muted" style="font-size: 0.75rem">${c.observaciones || '-'}</div>
+                                </div>
+                                <span class="badge ${c.nota >= 6 ? 'bg-success' : 'bg-danger'}">${c.nota}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    calificacionesHtml = '<div class="small text-muted fst-italic">Sin calificaciones aún.</div>';
+                }
+
+                // Verificación de seguridad para usuario
+                const nombreAlumno = alum.usuarios ? alum.usuarios.nombre : 'Usuario';
+                const apellidoAlumno = alum.usuarios ? alum.usuarios.apellido : 'Desconocido';
+                const dniAlumno = alum.usuarios ? alum.usuarios.dni : 'N/A';
+
+                container.innerHTML += `
+                    <div class="card mb-3 border-start border-4 ${promedio >= 6 ? 'border-success' : 'border-secondary'}">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-0">${nombreAlumno} ${apellidoAlumno}</h5>
+                                    <small class="text-muted">DNI: ${dniAlumno}</small>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">Promedio</small>
+                                    <span class="fs-4 fw-bold ${promedioColor}">${promedio}</span>
                                 </div>
                             </div>
-                            <div class="border ${promedioColor} rounded p-2">
-                                <span class="fw-bold fs-5">Promedio: ${promedio}</span>
+                            <div class="bg-light p-2 rounded">
+                                ${calificacionesHtml}
                             </div>
                         </div>
-                        <hr>
-                        ${calificacionesHtml}
                     </div>
-                </div>
-            `;
-        });
-    } else {
-        container.innerHTML = '<div class="alert alert-info">No hay estudiantes inscritos en esta materia.</div>';
+                `;
+            });
+        } else {
+            container.innerHTML = '<div class="alert alert-info">No hay alumnos registrados en este grado.</div>';
+        }
+
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
     }
 }
 
@@ -779,7 +1060,7 @@ async function handleEnviarMensaje(e) {
         // 3. Crear el link "mailto:"
         // Esto abre el cliente de email por defecto del profesor
         const mailtoLink = `mailto:${destinatarioEmail}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(contenido)}`;
-        
+
         // 4. Abrir el link
         window.location.href = mailtoLink;
 
@@ -791,7 +1072,7 @@ async function handleEnviarMensaje(e) {
             contenido: `(Intento de envío a ${destinatarioEmail}) ${contenido}`,
             prioridad: form.msgPrioridad.value
         });
-        
+
         // No mostramos "Email enviado", solo reseteamos el formulario
         form.reset();
         bootstrap.Collapse.getInstance(document.getElementById('collapseRedactarMensaje')).hide();

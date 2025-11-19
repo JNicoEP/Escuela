@@ -33,7 +33,7 @@
             </a>
             <div class="vr mx-2"></div>
             <div class="text-end d-none d-md-block">
-                <div class="fw-bold" id="user-name-display">Dr. Roberto Martínez</div>
+                <div class="fw-bold" id="user-name-display">Nombre del Profesor</div>
                 <div class="small text-muted">Docente</div>
             </div>
             <div class="user-initials" id="user-initials-display">RM</div>
@@ -396,7 +396,79 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="modalVerEntregas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Entregas de la Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Alumno</th>
+                                    <th>Fecha</th>
+                                    <th>Archivo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-entregas-body">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div id="entregas-loading" class="text-center py-3 d-none">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                    <div id="entregas-empty" class="text-center py-3 text-muted d-none">
+                        No hay entregas para esta tarea aún.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="modal fade" id="modalEditarTarea" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="form-editar-tarea">
+                <div class="modal-body">
+                    <input type="hidden" id="edit-id-tarea"> <div class="mb-3">
+                        <label for="edit-tareaTitulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="edit-tareaTitulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-tareaDescripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="edit-tareaDescripcion" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="edit-tareaFecha" class="form-label">Fecha Entrega</label>
+                            <input type="date" class="form-control" id="edit-tareaFecha" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="edit-tareaPuntaje" class="form-label">Puntaje</label>
+                            <input type="number" class="form-control" id="edit-tareaPuntaje" required>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">Nota: Para cambiar el archivo adjunto o la materia, es mejor eliminar la tarea y crear una nueva.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
     <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

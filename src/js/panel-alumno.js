@@ -465,71 +465,145 @@ async function cargarAsistencia() {
     }
 }
 
+
 /**
- * Carga las tareas del alumno desde Supabase
+ * Carga las tareas del alumno (VERSIÓN SEGURA CON SIGNED URL)
  */
 async function cargarTareas() {
     const container = document.getElementById('tareas-container');
-    container.innerHTML = '<div class="list-group-item text-center text-muted">Cargando tareas...</div>';
+    container.innerHTML = '<div class="text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando...</div>';
 
     try {
-        // Pedimos tareas y unimos el nombre de la materia. La RLS filtra por alumno.
+        if (!datosUsuarioActual || !datosUsuarioActual.alumnos) throw new Error("No se identificó al alumno.");
+
         const { data: tareas, error } = await supabase
             .from('tareas')
             .select(`
-                titulo,
-                descripcion,
-                fecha_entrega,
-                puntaje_maximo,
-                archivo_path,
-                materias ( nombre_materia )
+                id_tarea, titulo, descripcion, fecha_entrega, puntaje_maximo, archivo_path,
+                materias ( nombre_materia ),
+                entregas ( id_entrega ) 
             `)
             .order('fecha_entrega', { ascending: true });
 
         if (error) throw error;
 
         if (!tareas || tareas.length === 0) {
-            container.innerHTML = '<div class="list-group-item text-center text-muted">¡No tienes tareas pendientes!</div>';
+            container.innerHTML = '<div class="list-group-item text-center text-muted">¡No tienes tareas pendientes para tu grado!</div>';
             return;
         }
 
         let html = '';
-        tareas.forEach(tarea => {
-            const hoy = new Date();
-            const fechaEntrega = new Date(tarea.fecha_entrega);
-            const isVencida = fechaEntrega < hoy;
+
+        // CAMBIO CLAVE: Usamos un bucle for...of para poder usar 'await' adentro
+        for (const tarea of tareas) {
+            const yaEntrego = tarea.entregas && tarea.entregas.length > 0;
+            
+            const btnEntrega = yaEntrego 
+                ? `<button class="btn btn-success btn-sm" disabled><i class="fas fa-check"></i> Entregado</button>`
+                : `<button class="btn btn-primary btn-sm btn-subir-entrega" data-id="${tarea.id_tarea}">Subir Respuesta</button>`;
+
+            // --- GENERACIÓN DE URL SEGURA ---
+            let btnDescarga = '';
+            if (tarea.archivo_path) {
+                // createSignedUrl genera un link que expira en 1 hora (3600 segundos)
+                const { data: signedData, error: signedError } = await supabase.storage
+                    .from('materiales')
+                    .createSignedUrl(tarea.archivo_path, 3600);
+
+                if (!signedError && signedData) {
+                    btnDescarga = `<a href="${signedData.signedUrl}" target="_blank" class="btn btn-outline-secondary btn-sm me-2"><i class="fas fa-download"></i> Material</a>`;
+                }
+            }
+            // ---------------------------------
 
             html += `
                 <div class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1 fw-bold">${tarea.titulo}</h6>
-                        <small class="text-muted">${tarea.materias.nombre_materia}</small>
+                        <h6 class="mb-1 fw-bold">${tarea.titulo} <span class="badge bg-info text-dark">${tarea.materias?.nombre_materia || 'Materia'}</span></h6>
+                        <small class="text-muted">Vence: ${new Date(tarea.fecha_entrega).toLocaleDateString()}</small>
                     </div>
                     <p class="mb-1 small">${tarea.descripcion || 'Sin descripción.'}</p>
                     <div class="d-flex justify-content-between align-items-center mt-2">
-                        <small>
-                            <strong>Entrega:</strong> 
-                            <span class="${isVencida ? 'text-danger fw-bold' : ''}">
-                                ${fechaEntrega.toLocaleDateString()}
-                            </span>
-                        </small>
-                        <span class="badge bg-primary-soft text-primary rounded-pill">${tarea.puntaje_maximo} pts</span>
+                        <span class="badge bg-light text-dark border">Pts: ${tarea.puntaje_maximo}</span>
+                        <div>
+                            ${btnDescarga}
+                            ${btnEntrega}
+                        </div>
                     </div>
-                    ${tarea.archivo_path ? `
-                        <a href="${supabase.storage.from('materiales').getPublicUrl(tarea.archivo_path).data.publicUrl}" 
-                           target="_blank" class="btn btn-sm btn-outline-primary mt-2">
-                           <i class="fas fa-download me-1"></i> Ver Archivo Adjunto
-                        </a>` : ''}
                 </div>
             `;
-        });
+        }
+
         container.innerHTML = html;
+
+        // Reactivar los botones
+        document.querySelectorAll('.btn-subir-entrega').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                document.getElementById('entrega-id-tarea').value = id;
+                const modal = new bootstrap.Modal(document.getElementById('modalSubirEntrega'));
+                modal.show();
+            });
+        });
+
     } catch (error) {
-        console.error('Error al cargar tareas:', error);
-        container.innerHTML = `<div class="list-group-item text-center text-danger">Error al cargar tareas: ${error.message}</div>`;
+        console.error(error);
+        container.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
     }
 }
 
+// Función para enviar la entrega a Supabase
+async function handleSubirEntrega(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Subiendo...";
+
+    const idTarea = document.getElementById('entrega-id-tarea').value;
+    const archivo = document.getElementById('entrega-archivo').files[0];
+    const comentario = document.getElementById('entrega-comentario').value;
+    const userId = datosUsuarioActual.id_usuario;
+
+    try {
+        let filePath = null;
+        if (archivo) {
+            // Subir archivo: entregas/ID_ALUMNO/ID_TAREA_NOMBRE.ext
+            filePath = `entregas/${userId}/${idTarea}_${Date.now()}_${archivo.name}`;
+            const { error: uploadError } = await supabase.storage
+                .from('materiales')
+                .upload(filePath, archivo);
+            if (uploadError) throw uploadError;
+        }
+
+        const { error: dbError } = await supabase
+            .from('entregas')
+            .insert({
+                id_tarea: idTarea,
+                id_alumno: userId,
+                archivo_path: filePath,
+                comentario_alumno: comentario
+            });
+
+        if (dbError) throw dbError;
+
+        alert('¡Tarea entregada con éxito!');
+
+        // Cerrar modal y recargar
+        const modalEl = document.getElementById('modalSubirEntrega');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+        document.getElementById('form-subir-entrega').reset();
+        cargarTareas();
+
+    } catch (error) {
+        console.error(error);
+        alert('Error al entregar: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
 /**
  * Función principal que se ejecuta cuando el DOM está listo.
  */
@@ -539,6 +613,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const modalEditarPerfil = document.getElementById('modalEditarPerfil');
     const formEditarPerfil = document.getElementById('formEditarPerfil');
+    const formEntrega = document.getElementById('form-subir-entrega');
+    if (formEntrega) {
+        formEntrega.addEventListener('submit', handleSubirEntrega);
+    }
 
     // 1. Rellenar el modal cuando se abre
     if (modalEditarPerfil) {
@@ -600,20 +678,20 @@ document.addEventListener('DOMContentLoaded', () => {
         formEditarPerfil.addEventListener('submit', guardarCambiosPerfil);
     }
 
-// --- Lógica para cargar el horario SÓLO al hacer clic en la pestaña ---
-    const tabHorario = document.getElementById('horario-tab');
-    if (tabHorario) {
-        tabHorario.addEventListener('shown.bs.tab', () => {
-            if (datosUsuarioActual && datosUsuarioActual.alumnos && datosUsuarioActual.alumnos.grado) {
-                const idGrado = datosUsuarioActual.alumnos.grado.id_grado;
-                cargarHorarioGrid(idGrado);
-            } else {
-                console.warn("No se pudieron cargar los datos del alumno para ver el horario.");
-                document.getElementById('contenedor-horario').innerHTML =
-                    '<p class="text-danger p-4">No se pudo identificar tu grado para cargar el horario. <br>Por favor, asigna un grado a este alumno en la pestaña "Perfil".</p>';
-            }
-        }, { once: true });
-    }
+    // --- Lógica para cargar el horario SÓLO al hacer clic en la pestaña ---
+    const tabHorario = document.getElementById('horario-tab');
+    if (tabHorario) {
+        tabHorario.addEventListener('shown.bs.tab', () => {
+            if (datosUsuarioActual && datosUsuarioActual.alumnos && datosUsuarioActual.alumnos.grado) {
+                const idGrado = datosUsuarioActual.alumnos.grado.id_grado;
+                cargarHorarioGrid(idGrado);
+            } else {
+                console.warn("No se pudieron cargar los datos del alumno para ver el horario.");
+                document.getElementById('contenedor-horario').innerHTML =
+                    '<p class="text-danger p-4">No se pudo identificar tu grado para cargar el horario. <br>Por favor, asigna un grado a este alumno en la pestaña "Perfil".</p>';
+            }
+        }, { once: true });
+    }
 
     // --- NUEVO: Listener para Calificaciones ---
     const tabCalificaciones = document.getElementById('calificaciones-tab');
