@@ -101,7 +101,8 @@
                                         <th scope="col">DNI</th>
                                         <th scope="col">Rol</th>
                                         <th scope="col">Fecha de Registro</th>
-                                        <th scope="col" style="width: 150px;">Acciones</th> </tr>
+                                        <th scope="col" style="width: 150px;">Acciones</th>
+                                    </tr>
                                     </tr>
                                     <thead>
                                     <tbody id="auditoria-table-body">
@@ -278,187 +279,356 @@
         </div>
     </div>
     <div class="modal fade" id="modalVerDocente" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg overflow-hidden" style="border-radius: 1rem;">
+
                 <div class="modal-header bg-info-subtle">
-                    <h5 class="modal-title"><i class="fas fa-id-card me-2"></i> Legajo del Docente</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
+                            <i class="fas fa-user-tie fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold text-dark mb-0">Legajo Del Docente</h5>
+                            <small class="text-muted">Información detallada del docente</small>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <h6 class="border-bottom pb-2 text-primary">Datos Personales</h6>
-                            <p class="mb-1"><strong>Nombre:</strong> <span id="view-doc-nombre">--</span></p>
-                            <p class="mb-1"><strong>Email:</strong> <span id="view-doc-email">--</span></p>
-                            <p class="mb-1"><strong>DNI:</strong> <span id="view-doc-dni">--</span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="border-bottom pb-2 text-primary">Datos Profesionales</h6>
-                            <p class="mb-1"><strong>Estado:</strong> <span id="view-doc-estado">--</span></p>
-                            <p class="mb-1"><strong>N° Plaza/Cargo:</strong> <span id="view-doc-plaza">--</span></p>
+
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-lg-4 bg-light border-end">
+                            <div class="p-4">
+                                <div class="text-center mb-4 ">
+                                    <div class="avatar-circle bg-white shadow-sm mb-3 mx-auto d-flex align-items-center justify-content-center"
+                                        style="width: 80px; height: 80px; border-radius: 50%;">
+                                        <i class="fas fa-user fs-1 text-secondary"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-dark mb-1" id="view-doc-nombre">--</h5>
+                                    <p class="text-muted small mb-0 text-break" id="view-doc-email">--</p>
+                                </div>
+
+                                <hr class="my-4 opacity-25">
+                                <h6 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                                    <i class="fas fa-address-card text-primary me-2 "></i> Datos Personales
+                                </h6>
+
+                                <div class="vstack gap-3 mb-0 fw-medium">
+                                    <div>
+                                        <label class="small text-uppercase text-muted fw-bold"
+                                            style="font-size: 0.7rem;">Documento (DNI)</label>
+                                        <div class="fw-medium text-dark" id="view-doc-dni">--</div>
+                                    </div>
+                                    <div>
+                                        <label class="small text-uppercase text-muted fw-bold"
+                                            style="font-size: 0.7rem;">N° Plaza / Cargo</label>
+                                        <div class="fw-medium text-dark" id="view-doc-plaza">--</div>
+                                    </div>
+                                    <div>
+                                        <label class="small text-uppercase text-muted fw-bold"
+                                            style="font-size: 0.7rem;">Estado del Perfil</label>
+                                        <div class="mt-1">
+                                            <span id="view-doc-estado"
+                                                class="badge bg-secondary px-3 py-2 rounded-pill">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="col-12 mt-4">
-                            <h6 class="border-bottom pb-2 text-primary">Documentación Adjunta</h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <ul class="list-group">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Tirilla CUIL
-                                            <a href="#" target="_blank" id="link-view-cuil" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Fotocopia DNI
-                                            <a href="#" target="_blank" id="link-view-dni" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Acta Nacimiento
-                                            <a href="#" target="_blank" id="link-view-acta" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <ul class="list-group">
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Declaración Jurada
-                                            <a href="#" target="_blank" id="link-view-ddjj" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            Título Habilitante
-                                            <a href="#" target="_blank" id="link-view-titulo" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
-                                        </li>
-                                    </ul>
+                        <div class="col-lg-8 bg-white border rounded-3">
+                            <div class="p-4">
+                                <h6 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                                    <i class="fas fa-folder-open text-warning me-2"></i> Documentación Adjunta
+                                </h6>
+
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div
+                                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 hover-shadow transition-all">
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                                                    <i class="fas fa-file-pdf"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium" style="font-size: 0.95rem;">Tirilla CUIL
+                                                    </h6>
+                                                    <small class="text-muted" style="font-size: 0.75rem;">Documento
+                                                        personal</small>
+                                                </div>
+                                            </div>
+                                            <a href="#" target="_blank" id="link-view-cuil"
+                                                class="btn btn-sm btn-info border px-3 rounded-pill fw-medium">Ver</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div
+                                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 hover-shadow transition-all">
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                                                    <i class="fas fa-file-image"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium" style="font-size: 0.95rem;">Fotocopia DNI
+                                                    </h6>
+                                                    <small class="text-muted" style="font-size: 0.75rem;">Documento de
+                                                        identidad</small>
+                                                </div>
+                                            </div>
+                                            <a href="#" target="_blank" id="link-view-dni"
+                                                class="btn btn-sm btn-info border px-3 rounded-pill fw-medium">Ver</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div
+                                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 hover-shadow transition-all">
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                                                    <i class="fas fa-certificate"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium" style="font-size: 0.95rem;">Acta de
+                                                        Nacimiento</h6>
+                                                    <small class="text-muted" style="font-size: 0.75rem;">Legal</small>
+                                                </div>
+                                            </div>
+                                            <a href="#" target="_blank" id="link-view-acta"
+                                                class="btn btn-sm btn-info border px-3 rounded-pill fw-medium">Ver</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div
+                                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 hover-shadow transition-all">
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="icon-box bg-primary bg-opacity-10 text-primary rounded p-2 me-3">
+                                                    <i class="fas fa-file-signature"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium" style="font-size: 0.95rem;">Declaración
+                                                        Jurada</h6>
+                                                    <small class="text-muted"
+                                                        style="font-size: 0.75rem;">Profesional</small>
+                                                </div>
+                                            </div>
+                                            <a href="#" target="_blank" id="link-view-ddjj"
+                                                class="btn btn-sm btn-info border px-3 rounded-pill fw-medium">Ver</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div
+                                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 hover-shadow transition-all">
+                                            <div class="d-flex align-items-center">
+                                                <div
+                                                    class="icon-box bg-primary bg-opacity-10 text-primary rounded p-2 me-3">
+                                                    <i class="fas fa-graduation-cap"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium" style="font-size: 0.95rem;">Título
+                                                        Habilitante</h6>
+                                                    <small class="text-muted"
+                                                        style="font-size: 0.75rem;">Profesional</small>
+                                                </div>
+                                            </div>
+                                            <a href="#" target="_blank" id="link-view-titulo"
+                                                class="btn btn-sm btn-info border px-3 rounded-pill fw-medium">Ver</a>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer border-0 bg-white py-3">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="userDetailsModalLabel">Detalles del Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            
-            <form id="formEditUser">
-                <div class="modal-body p-4">
-                    
-                    <h6><i class="fas fa-user-circle me-2"></i> Datos Principales</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label">Nombre Completo</label>
-                            <input type="text" id="modal-user-nombre" class="form-control" disabled>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="modal-user-email" class="form-control" disabled>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">DNI</label>
-                            <input type="text" id="modal-user-dni" class="form-control" disabled>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="modal-user-rol" class="form-label fw-bold text-primary">Cambiar Rol</label>
-                            <select id="modal-user-rol" class="form-select">
-                                <option value="">Cargando roles...</option>
-                                </select>
-                        </div>
-                    </div>
+    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
 
-                    <div id="modal-alumno-info" style="display: none;">
-                        <h6 class="mt-4 border-top pt-3"><i class="fas fa-user-graduate me-2"></i> Datos del Alumno</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Grado</label>
-                                <input type="text" id="modal-alumno-grado" class="form-control" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Fecha de Nacimiento</label>
-                                <input type="date" id="modal-alumno-fecha" class="form-control" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" id="modal-alumno-telefono" class="form-control" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Dirección</label>
-                                <input type="text" id="modal-alumno-direccion" class="form-control" disabled>
+                <div class="modal-header bg-light py-2 px-3">
+                    <h6 class="modal-title fw-bold text-dark" id="userDetailsModalLabel">
+                        <i class="fas fa-user-cog me-2 text-primary"></i>Gestión de Usuario
+                    </h6>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="formEditUser">
+                    <div class="modal-body p-3">
+
+                        <div class="card bg-light border-0 mb-3">
+                            <div class="card-body p-2">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="small text-muted fw-bold mb-0">Nombre</label>
+                                        <input type="text" id="modal-user-nombre"
+                                            class="form-control form-control-sm bg-white fw-bold" disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small text-muted fw-bold mb-0">Email</label>
+                                        <input type="email" id="modal-user-email"
+                                            class="form-control form-control-sm bg-white" disabled>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="small text-muted fw-bold mb-0">DNI</label>
+                                        <input type="text" id="modal-user-dni"
+                                            class="form-control form-control-sm bg-white" disabled>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="modal-user-rol"
+                                            class="small text-primary fw-bold mb-0 text-center">Asignar Rol</label>
+                                        <select id="modal-user-rol"
+                                            class="form-select form-select-sm border-primary fw-bold">
+                                            <option value="">Cargando...</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <h6 class="mt-4 border-top pt-3"><i class="fas fa-user-shield me-2"></i> Datos del Tutor</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre del Tutor</label>
-                                <input type="text" id="modal-tutor-nombre" class="form-control" disabled>
+                        <div id="modal-alumno-info" style="display: none;">
+                            <h6 class="border-bottom pb-1 mb-2 text-secondary small fw-bold">
+                                <i class="fas fa-user-graduate me-1"></i> Datos Escolares
+                            </h6>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-3">
+                                    <label class="small text-muted mb-0">Grado</label>
+                                    <input type="text" id="modal-alumno-grado" class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted mb-0">Nacimiento</label>
+                                    <input type="date" id="modal-alumno-fecha" class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted mb-0">Teléfono</label>
+                                    <input type="text" id="modal-alumno-telefono" class="form-control form-control-sm"
+                                        disabled>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted mb-0">Dirección</label>
+                                    <input type="text" id="modal-alumno-direccion" class="form-control form-control-sm"
+                                        disabled>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Trabajo del Tutor</label>
-                                <input type="text" id="modal-tutor-trabajo" class="form-control" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Educación del Tutor</label>
-                                <input type="text" id="modal-tutor-educacion" class="form-control" disabled>
+
+                            <div class="card border border-light bg-light mb-0">
+                                <div class="card-body p-2">
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <span class="badge bg-secondary text-white mb-1">Tutor</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" id="modal-tutor-nombre"
+                                                class="form-control form-control-sm bg-white" placeholder="Nombre Tutor"
+                                                disabled>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" id="modal-tutor-trabajo"
+                                                class="form-control form-control-sm bg-white" placeholder="Trabajo"
+                                                disabled>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" id="modal-tutor-educacion"
+                                                class="form-control form-control-sm bg-white" placeholder="Educación"
+                                                disabled>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <div id="modal-docente-info" style="display: none;">
-                        <h6 class="mt-4 border-top pt-3 text-primary"><i class="fas fa-chalkboard-teacher me-2"></i> Datos Profesionales (Docente)</h6>
-                        
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Estado Actual</label>
-                                <input type="text" id="modal-doc-estado" class="form-control" disabled>
+                            <h6 class="border-bottom pb-1 mb-2 text-primary small fw-bold mt-1">
+                                <i class="fas fa-chalkboard-teacher me-1"></i> Perfil Profesional
+                            </h6>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light">Estado</span>
+                                        <input type="text" id="modal-doc-estado" class="form-control fw-bold bg-white"
+                                            disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-light">Plaza</span>
+                                        <input type="text" id="modal-doc-plaza" class="form-control fw-bold bg-white"
+                                            disabled>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">N° Plaza / Cargo</label>
-                                <input type="text" id="modal-doc-plaza" class="form-control" disabled>
+
+                            <label class="small text-muted fw-bold mb-1">Legajo Digital:</label>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <div class="list-group list-group-flush border rounded-1">
+                                        <div
+                                            class="list-group-item d-flex justify-content-between align-items-center py-1 px-2 bg-light">
+                                            <span class="small">Tirilla CUIL</span>
+                                            <a href="#" target="_blank" id="btn-view-cuil"
+                                                class="badge bg-secondary text-decoration-none text-white">Falta</a>
+                                        </div>
+                                        <div
+                                            class="list-group-item d-flex justify-content-between align-items-center py-1 px-2">
+                                            <span class="small">Fotocopia DNI</span>
+                                            <a href="#" target="_blank" id="btn-view-dni"
+                                                class="badge bg-secondary text-decoration-none text-white">Falta</a>
+                                        </div>
+                                        <div
+                                            class="list-group-item d-flex justify-content-between align-items-center py-1 px-2 bg-light">
+                                            <span class="small">Acta Nac.</span>
+                                            <a href="#" target="_blank" id="btn-view-acta"
+                                                class="badge bg-secondary text-decoration-none text-white">Falta</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="list-group list-group-flush border rounded-1">
+                                        <div
+                                            class="list-group-item d-flex justify-content-between align-items-center py-1 px-2 bg-light">
+                                            <span class="small">Decl. Jurada</span>
+                                            <a href="#" target="_blank" id="btn-view-ddjj"
+                                                class="badge bg-secondary text-decoration-none text-white">Falta</a>
+                                        </div>
+                                        <div
+                                            class="list-group-item d-flex justify-content-between align-items-center py-1 px-2">
+                                            <span class="small">Título Hab.</span>
+                                            <a href="#" target="_blank" id="btn-view-titulo"
+                                                class="badge bg-secondary text-decoration-none text-white">Falta</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <label class="form-label fw-bold mb-2">Documentación Adjunta:</label>
-                        <div class="list-group small">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-file-invoice me-2"></i> Tirilla CUIL</span>
-                                <a href="#" target="_blank" id="btn-view-cuil" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-id-card me-2"></i> Fotocopia DNI</span>
-                                <a href="#" target="_blank" id="btn-view-dni" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-birthday-cake me-2"></i> Acta Nacimiento</span>
-                                <a href="#" target="_blank" id="btn-view-acta" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-file-signature me-2"></i> Declaración Jurada</span>
-                                <a href="#" target="_blank" id="btn-view-ddjj" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-graduation-cap me-2"></i> Título Habilitante</span>
-                                <a href="#" target="_blank" id="btn-view-titulo" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
-                            </div>
-                        </div>
                     </div>
-                    </div> </div>
-                <div class="modal-footer border-0">
-                    <input type="hidden" id="modal-user-id">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="modal-guardar-rol-btn">
-                        <i class="fas fa-save me-2"></i> Guardar Cambios de Rol
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer py-2 bg-light border-0">
+                        <input type="hidden" id="modal-user-id">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="modal-guardar-rol-btn">
+                            Guardar Rol
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ...></script>
 

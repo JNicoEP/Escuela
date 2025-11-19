@@ -101,25 +101,46 @@ function setupTabsAndFilters() {
             renderAuditoria(e.currentTarget.dataset.rol); 
         });
     });
+    const btnGuardarRol = document.getElementById('modal-guardar-rol-btn');
+    if (btnGuardarRol) {
+        // Elimina cualquier listener anterior por si acaso (opcional pero seguro)
+        btnGuardarRol.removeEventListener('click', handleUpdateRole); 
+        // Agrega el listener nuevo
+        btnGuardarRol.addEventListener('click', handleUpdateRole);
+    }
 
-    auditoriaTableBody.addEventListener('click', (e) => {
-        const deleteButton = e.target.closest('.delete-user-btn');
-        if (deleteButton) {
-            const userId = deleteButton.dataset.id;
-            const userName = deleteButton.dataset.name;
-            handleSoftDeleteUser(userId, userName);
-        }
+   auditoriaTableBody.addEventListener('click', (e) => {
+        // Botón Ver/Editar
         const editButton = e.target.closest('.edit-user-btn');
         if (editButton) {
             const userId = editButton.dataset.id;
             const user = allUsersData.find(u => u.id_usuario === userId);
             if (user) openUserDetailsModal(user);
         }
-    });
 
-    formEditUser.addEventListener('submit', (e) => {
-        e.preventDefault();
-        handleUpdateRole();
+        // Botón Desactivar (Amarillo)
+        const softDeleteButton = e.target.closest('.soft-delete-user-btn');
+        if (softDeleteButton) {
+            const userId = softDeleteButton.dataset.id;
+            const userName = softDeleteButton.dataset.name;
+            handleSoftDeleteUser(userId, userName, false); // false = desactivar
+        }
+
+        // Botón Reactivar (Verde - Opcional por si quieres volver a activar)
+        const reactivateButton = e.target.closest('.reactivate-user-btn');
+        if (reactivateButton) {
+            const userId = reactivateButton.dataset.id;
+            const userName = reactivateButton.dataset.name;
+            handleSoftDeleteUser(userId, userName, true); // true = activar
+        }
+
+        // Botón Eliminar Físico (Rojo)
+        const hardDeleteButton = e.target.closest('.hard-delete-user-btn');
+        if (hardDeleteButton) {
+            const userId = hardDeleteButton.dataset.id;
+            const userName = hardDeleteButton.dataset.name;
+            handleHardDeleteUser(userId, userName);
+        }
     });
 
     // --- Pestaña Gestión Docentes ---
@@ -147,6 +168,7 @@ function setupTabsAndFilters() {
     adminEnviarMensajeBtn.addEventListener('click', handleSendMensaje);
 }
 
+
 // =================================================================
 // PESTAÑA 1: GESTIÓN DE USUARIOS (AUDITORÍA)
 // =================================================================
@@ -155,8 +177,6 @@ async function renderAuditoria(filtroRol = 'todos') {
     auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Cargando...</td></tr>';
 
     // 1. Construir la consulta
-    // CAMBIO CLAVE: Usamos 'rol:rol!inner' en lugar de 'rol:rol'.
-    // El '!inner' funciona como un filtro estricto: si el usuario no tiene rol (es null), NO lo trae.
     let query = supabase
         .from('usuarios')
         .select(`
@@ -173,17 +193,12 @@ async function renderAuditoria(filtroRol = 'todos') {
                 declaracion_jurada_path, titulo_habilitante_path
             )
         `)
-        .order('fecha_creacion', { ascending: false })
-        .eq('is_active', true);
+        .order('fecha_creacion', { ascending: false });
+        // QUITE EL .eq('is_active', true) PARA QUE PUEDAS VER A LOS DESACTIVADOS TAMBIÉN
 
-    // 2. Aplicar Filtros
     if (filtroRol !== 'todos') {
-        // Si apretas "Ver Docentes" o "Ver Alumnos", filtra solo esos
         query = query.eq('rol.nombre_rol', filtroRol);
     } else {
-        // CAMBIO CLAVE: Si apretas "Ver Todos", filtramos explícitamente
-        // para mostrar SOLO 'alumno' y 'docente'.
-        // Esto oculta a los 'admin' y asegura que no se cuelen otros roles raros.
         query = query.in('rol.nombre_rol', ['alumno', 'docente']);
     }
 
@@ -196,7 +211,7 @@ async function renderAuditoria(filtroRol = 'todos') {
     }
 
     if (!usuarios || usuarios.length === 0) {
-        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No se encontraron usuarios con el rol seleccionado.</td></tr>`;
+        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No se encontraron usuarios.</td></tr>`;
         return;
     }
 
@@ -204,16 +219,21 @@ async function renderAuditoria(filtroRol = 'todos') {
     let html = '';
 
     usuarios.forEach(user => {
-        const userRoleName = user.rol.nombre_rol; // Ya sabemos que existe por el !inner
-        let badgeClass = 'bg-secondary';
+        const userRoleName = user.rol.nombre_rol;
         
+        // Estilos visuales
+        let badgeClass = 'bg-secondary';
         if (userRoleName === 'docente') badgeClass = 'bg-primary text-white';
         if (userRoleName === 'alumno') badgeClass = 'bg-success text-white';
+        
+        // Si está desactivado, ponemos la fila gris
+        const rowClass = !user.is_active ? 'table-secondary text-muted' : '';
+        const estadoTexto = !user.is_active ? '<span class="badge bg-danger ms-2">INACTIVO</span>' : '';
 
         html += `
-            <tr>
+            <tr class="${rowClass}">
                 <td>
-                    <div class="fw-bold">${user.nombre} ${user.apellido}</div>
+                    <div class="fw-bold">${user.nombre} ${user.apellido} ${estadoTexto}</div>
                 </td>
                 <td>${user.email}</td>
                 <td>${user.dni || '-'}</td>
@@ -221,15 +241,32 @@ async function renderAuditoria(filtroRol = 'todos') {
                 <td>${new Date(user.fecha_creacion).toLocaleDateString()}</td>
                 <td>
                     <div class="d-flex gap-1">
-                        <button class="btn btn-outline-primary btn-sm edit-user-btn me-1" 
-                                data-id="${user.id_usuario}" title="Ver Detalles">
+                        <button class="btn btn-outline-primary btn-sm edit-user-btn" 
+                                data-id="${user.id_usuario}" title="Ver Detalles / Cambiar Rol">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-outline-danger btn-sm delete-user-btn" 
-                                 data-id="${user.id_usuario}" 
-                                 data-name="${user.nombre} ${user.apellido}" title="Desactivar">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        
+                        ${userRoleName !== 'admin' ? `
+                            ${user.is_active ? `
+                                <button class="btn btn-outline-warning btn-sm soft-delete-user-btn" 
+                                        data-id="${user.id_usuario}" 
+                                        data-name="${user.nombre} ${user.apellido}" title="Desactivar acceso">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            ` : `
+                                <button class="btn btn-outline-success btn-sm reactivate-user-btn" 
+                                        data-id="${user.id_usuario}" 
+                                        data-name="${user.nombre} ${user.apellido}" title="Reactivar acceso">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            `}
+
+                            <button class="btn btn-outline-danger btn-sm hard-delete-user-btn" 
+                                     data-id="${user.id_usuario}" 
+                                     data-name="${user.nombre} ${user.apellido}" title="ELIMINAR DEFINITIVAMENTE">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        ` : ''}
                     </div>
                 </td>
             </tr>
@@ -239,35 +276,6 @@ async function renderAuditoria(filtroRol = 'todos') {
     auditoriaTableBody.innerHTML = html;
 }
 
-/**
- * Desactiva un usuario (Borrado Lógico).
- * @param {string} userId - El ID (uuid) del usuario a borrar.
- * @param {string} userName - El nombre del usuario (para el confirm).
- */
-async function handleSoftDeleteUser(userId, userName) {
-    if (!confirm(`¿Estás seguro de que quieres desactivar al usuario "${userName}"? El usuario no podrá iniciar sesión.`)) {
-        return;
-    }
-
-    try {
-        const { error } = await supabase
-            .from('usuarios')
-            .update({ is_active: false }) // <-- LA ACCIÓN DE BORRADO!
-            .eq('id_usuario', userId);
-
-        if (error) throw error;
-
-        showMessage('Usuario desactivado con éxito.', 'Éxito');
-        
-        // Recarga la lista (obteniendo el filtro activo)
-        const activeFilter = document.querySelector('#auditoria-tab-pane .btn-success-soft.active').dataset.rol;
-        await renderAuditoria(activeFilter);
-
-    } catch (error) {
-        console.error('Error al desactivar usuario:', error);
-        showMessage('Error al desactivar el usuario: ' + error.message, 'Error');
-    }
-}
 
 /**
  * Carga todos los roles (alumno, docente, admin) en una variable global.
@@ -303,158 +311,255 @@ function populateRoleDropdown(currentRoleId) {
     selectEl.value = currentRoleId;
 }
 
+
 /**
  * Abre y rellena el modal de Detalles de Usuario.
  */
+/**
+ * Abre y rellena el modal de Detalles de Usuario con la lógica de Alumno/Docente.
+ */
 async function openUserDetailsModal(user) {
-    // Guardar el ID en el modal
-    document.getElementById('modal-user-id').value = user.id_usuario;
+    console.log("Abriendo detalles del usuario:", user);
 
-    // Rellenar datos de USUARIO
+    // 1. Llenar Datos Básicos (Siempre visibles)
+    document.getElementById('modal-user-id').value = user.id_usuario;
     document.getElementById('modal-user-nombre').value = `${user.nombre} ${user.apellido}`;
     document.getElementById('modal-user-email').value = user.email;
-    document.getElementById('modal-user-dni').value = user.dni || 'N/A';
+    document.getElementById('modal-user-dni').value = user.dni || 'Sin DNI';
 
-    // Rellenar dropdown de rol
+    // 2. Rellenar dropdown de rol
     const currentRoleId = user.rol ? user.rol.id_rol : null;
-    populateRoleDropdown(currentRoleId);
+    const currentRoleName = user.rol ? user.rol.nombre_rol : ''; 
+    populateRoleDropdown(currentRoleId); // Tu función auxiliar existente
 
-    // --- LÓGICA ALUMNO ---
+    // 3. Referencias a las secciones ocultas
     const divAlumno = document.getElementById('modal-alumno-info');
-    if (user.alumnos) { // user.alumnos es un objeto si es single, o array si no
-        const alumno = Array.isArray(user.alumnos) ? user.alumnos[0] : user.alumnos;
-        if (alumno) {
-            document.getElementById('modal-alumno-grado').value = alumno.grado ? alumno.grado.nombre_grado : 'N/A';
-            document.getElementById('modal-alumno-fecha').value = alumno.fecha_nacimiento || '';
-            document.getElementById('modal-alumno-telefono').value = alumno.telefono || 'N/A';
-            document.getElementById('modal-alumno-direccion').value = alumno.direccion || 'N/A';
-            document.getElementById('modal-tutor-nombre').value = alumno.tutor_nombre || 'N/A';
-            document.getElementById('modal-tutor-trabajo').value = alumno.tutor_trabajo || 'N/A';
-            document.getElementById('modal-tutor-educacion').value = alumno.tutor_educacion || 'N/A';
-            divAlumno.style.display = 'block';
-        } else {
-            divAlumno.style.display = 'none';
-        }
-    } else {
-        divAlumno.style.display = 'none';
-    }
-
-    // --- LÓGICA DOCENTE (NUEVO) ---
     const divDocente = document.getElementById('modal-docente-info');
-    
-    // Verificamos si tiene datos de docente
-    // Nota: Supabase devuelve un array si la relación es hasMany o un objeto si es single. 
-    // En tu consulta 'auditoria', 'docentes' suele venir como objeto o array dependiendo de la definición.
-    // Asumiremos array o objeto seguro:
-    const docenteData = Array.isArray(user.docentes) ? user.docentes[0] : user.docentes;
 
-    if (docenteData) {
-        divDocente.style.display = 'block';
+    // Ocultar ambas por defecto para empezar limpio
+    divAlumno.style.display = 'none';
+    divDocente.style.display = 'none';
+
+    // =========================================================
+    // LÓGICA PARA ALUMNOS
+    // =========================================================
+    if (currentRoleName === 'alumno') {
+        divAlumno.style.display = 'block'; // Mostrar sección alumno
         
-        document.getElementById('modal-doc-estado').value = docenteData.estado?.toUpperCase() || 'PENDIENTE';
-        document.getElementById('modal-doc-plaza').value = docenteData.plaza || 'No asignada';
+        // Supabase suele devolver 'alumnos' como un array si es una relación 1:N
+        // Intentamos obtener el primer elemento
+        const alumnoData = Array.isArray(user.alumnos) ? user.alumnos[0] : user.alumnos;
 
-        // Helper para configurar botones de archivo
-        const setupFileBtn = async (path, btnId) => {
-            const btn = document.getElementById(btnId);
-            if (path) {
-                // Generar link firmado (seguro)
-                const { data: urlData } = await supabase.storage
-                    .from('materiales')
-                    .createSignedUrl(path, 3600); // 1 hora de validez
+        if (alumnoData) {
+            // Datos Escolares
+            const nombreGrado = alumnoData.grado ? alumnoData.grado.nombre_grado : 'Sin Grado';
+            document.getElementById('modal-alumno-grado').value = nombreGrado;
+            document.getElementById('modal-alumno-fecha').value = alumnoData.fecha_nacimiento || '';
+            document.getElementById('modal-alumno-telefono').value = alumnoData.telefono || '';
+            document.getElementById('modal-alumno-direccion').value = alumnoData.direccion || '';
 
-                if (urlData) {
-                    btn.href = urlData.signedUrl;
-                    btn.classList.remove('disabled', 'btn-outline-secondary');
-                    btn.classList.add('btn-primary');
-                    btn.innerHTML = '<i class="fas fa-download"></i> Ver Archivo';
-                    return;
-                }
-            }
-            // Si no hay archivo o falla
-            btn.href = '#';
-            btn.classList.add('disabled', 'btn-outline-secondary');
-            btn.classList.remove('btn-primary');
-            btn.textContent = 'No subido';
-        };
-
-        // Cargar los 5 archivos en paralelo
-        await Promise.all([
-            setupFileBtn(docenteData.tirilla_cuil_path, 'btn-view-cuil'),
-            setupFileBtn(docenteData.fotocopia_dni_path, 'btn-view-dni'),
-            setupFileBtn(docenteData.acta_nacimiento_path, 'btn-view-acta'),
-            setupFileBtn(docenteData.declaracion_jurada_path, 'btn-view-ddjj'),
-            setupFileBtn(docenteData.titulo_habilitante_path, 'btn-view-titulo')
-        ]);
-
-    } else {
-        divDocente.style.display = 'none';
+            // Datos del Tutor
+            document.getElementById('modal-tutor-nombre').value = alumnoData.tutor_nombre || '';
+            document.getElementById('modal-tutor-trabajo').value = alumnoData.tutor_trabajo || '';
+            document.getElementById('modal-tutor-educacion').value = alumnoData.tutor_educacion || '';
+        } else {
+            // Si tiene el rol pero no el perfil creado aún
+            console.warn("El usuario es alumno pero no tiene perfil en tabla 'alumnos'");
+            document.getElementById('modal-alumno-grado').value = "Perfil incompleto";
+        }
     }
 
-    // Abrir el modal
+    // =========================================================
+    // LÓGICA PARA DOCENTES
+    // =========================================================
+    else if (currentRoleName === 'docente') {
+        divDocente.style.display = 'block'; // Mostrar sección docente
+        
+        const docenteData = Array.isArray(user.docentes) ? user.docentes[0] : user.docentes;
+
+        if (docenteData) {
+            // Textos
+            const estado = docenteData.estado?.toUpperCase() || 'PENDIENTE';
+            document.getElementById('modal-doc-estado').value = estado;
+            document.getElementById('modal-doc-plaza').value = docenteData.plaza || 'Sin asignar';
+
+            // Colores del estado
+            const inputEstado = document.getElementById('modal-doc-estado');
+            if (estado === 'APROBADO') inputEstado.style.color = '#198754'; // Verde
+            else if (estado === 'RECHAZADO') inputEstado.style.color = '#dc3545'; // Rojo
+            else inputEstado.style.color = '#ffc107'; // Amarillo
+
+            // Helper para los botones de archivos
+            const setupFileBtn = async (path, btnId) => {
+                const btn = document.getElementById(btnId);
+                // Resetear estilos
+                btn.className = 'badge text-decoration-none text-white'; 
+                
+                if (path) {
+                    // Generar URL firmada
+                    const { data: urlData } = await supabase.storage
+                        .from('materiales') // O el bucket que uses para legajos
+                        .createSignedUrl(path, 3600);
+
+                    if (urlData) {
+                        btn.href = urlData.signedUrl;
+                        btn.classList.add('bg-primary');
+                        btn.textContent = 'Ver Archivo';
+                        btn.target = "_blank";
+                        return;
+                    }
+                }
+                // Si no hay archivo
+                btn.href = '#';
+                btn.classList.add('bg-secondary');
+                btn.textContent = 'Falta';
+                btn.removeAttribute('target');
+            };
+
+            // Cargar los 5 archivos
+            await Promise.all([
+                setupFileBtn(docenteData.tirilla_cuil_path, 'btn-view-cuil'),
+                setupFileBtn(docenteData.fotocopia_dni_path, 'btn-view-dni'),
+                setupFileBtn(docenteData.acta_nacimiento_path, 'btn-view-acta'),
+                setupFileBtn(docenteData.declaracion_jurada_path, 'btn-view-ddjj'),
+                setupFileBtn(docenteData.titulo_habilitante_path, 'btn-view-titulo')
+            ]);
+        }
+    }
+
+    // 4. Mostrar el Modal
+    // Asegúrate de que 'userDetailsModal' esté definido globalmente al inicio de tu archivo
+    // const userDetailsModal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
     userDetailsModal.show();
 }
 
-/**
- * Lee el nuevo rol del modal, lo actualiza en la DB y crea el perfil necesario.
- */
+
 async function handleUpdateRole() {
+    console.clear(); // Limpiamos consola para ver limpio
+    console.log("🚀 INICIANDO CAMBIO DE ROL...");
+
     const userId = document.getElementById('modal-user-id').value;
     const newRoleId = document.getElementById('modal-user-rol').value;
 
-    // Encontrar el nombre del rol seleccionado basado en el ID
-    // (Usamos la variable global allRolesData que ya cargaste)
-    const selectedRoleObj = allRolesData.find(r => r.id_rol == newRoleId);
-    const roleName = selectedRoleObj ? selectedRoleObj.nombre_rol : '';
+    if (!userId || !newRoleId) return;
 
-    if (!userId || !newRoleId) {
-        showMessage('Error, no se pudo identificar al usuario o al rol.', 'Error');
-        return;
+    const btnGuardar = document.getElementById('modal-guardar-rol-btn');
+    // Aseguramos que no sea submit por si se te olvidó cambiar el HTML
+    if (event) event.preventDefault(); 
+
+    if (btnGuardar) {
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
     }
 
-    const btnGuardar = document.getElementById('modal-guardar-rol-btn'); // Asegúrate de que tu botón tenga este ID en el HTML si quieres efecto de carga
-    if(btnGuardar) btnGuardar.disabled = true;
-
     try {
-        // 1. Actualizar la tabla USUARIOS
+        // 1. Obtener Rol Anterior
+        const { data: userData } = await supabase
+            .from('usuarios')
+            .select('rol(nombre_rol)')
+            .eq('id_usuario', userId)
+            .single();
+        
+        const oldRoleName = userData?.rol?.nombre_rol;
+        
+        const selectedRoleObj = allRolesData.find(r => r.id_rol == newRoleId);
+        const newRoleName = selectedRoleObj ? selectedRoleObj.nombre_rol : '';
+
+        console.log(`🔄 Cambio: ${oldRoleName} -> ${newRoleName}`);
+
+        // 2. Actualizar Rol en USUARIOS
         const { error: userError } = await supabase
             .from('usuarios')
             .update({ id_rol: newRoleId })
             .eq('id_usuario', userId);
         
         if (userError) throw userError;
+        console.log("✅ Tabla 'usuarios' actualizada.");
 
-        // 2. Crear el perfil correspondiente (Docente o Alumno) si no existe
-        if (roleName === 'docente') {
-            // Intentamos insertar. Si ya existe, no pasa nada (onConflict ignore)
-            const { error: docError } = await supabase
-                .from('docentes')
-                .upsert({ id_docente: userId, estado: 'pendiente' }, { onConflict: 'id_docente', ignoreDuplicates: true });
+        // 3. INTENTO DE LIMPIEZA (Con manejo de FK)
+        
+        // CASO: Era Docente -> Ahora No
+        if (oldRoleName === 'docente' && newRoleName !== 'docente') {
+            console.log("🧹 Intentando borrar perfil de Docente...");
+            const { error } = await supabase.from('docentes').delete().eq('id_docente', userId);
             
-            if (docError) console.error('Error creando perfil docente:', docError);
-
-        } else if (roleName === 'alumno') {
-             // Intentamos insertar perfil de alumno
-             const { error: alumError } = await supabase
-                .from('alumnos')
-                .upsert({ id_alumno: userId, estatus_inscripcion: 'activo' }, { onConflict: 'id_alumno', ignoreDuplicates: true });
-
-            if (alumError) console.error('Error creando perfil alumno:', alumError);
+            if (error) {
+                // Código 23503 es violación de llave foránea (tiene materias/tareas)
+                if (error.code === '23503') {
+                    console.warn("⚠️ NO SE PUDO BORRAR EL PERFIL DOCENTE: El usuario tiene materias o tareas asignadas.");
+                    alert("Aviso: Se cambió el rol, pero no se eliminó el legajo docente porque tiene materias o historial asociado.");
+                } else {
+                    console.error("❌ Error borrando docente:", error);
+                }
+            } else {
+                console.log("🗑️ Perfil docente eliminado limpiamente.");
+            }
         }
 
-        showMessage('Rol actualizado y perfil generado con éxito.', 'Éxito');
-        userDetailsModal.hide(); // Ocultar modal
+        // CASO: Era Alumno -> Ahora No
+        if (oldRoleName === 'alumno' && newRoleName !== 'alumno') {
+            console.log("🧹 Intentando borrar perfil de Alumno...");
+            const { error } = await supabase.from('alumnos').delete().eq('id_alumno', userId);
+            
+            if (error) {
+                if (error.code === '23503') {
+                    console.warn("⚠️ NO SE PUDO BORRAR EL PERFIL ALUMNO: Tiene inscripciones o notas.");
+                    alert("Aviso: Se cambió el rol, pero queda el historial académico del alumno.");
+                } else {
+                    console.error("❌ Error borrando alumno:", error);
+                }
+            } else {
+                console.log("🗑️ Perfil alumno eliminado limpiamente.");
+            }
+        }
+
+        // 4. Crear Nuevo Perfil
+        if (newRoleName === 'docente') {
+            await supabase.from('docentes')
+                .upsert({ id_docente: userId, estado: 'pendiente' }, { onConflict: 'id_docente', ignoreDuplicates: true });
+            console.log("✨ Perfil docente creado/verificado.");
+        }
+        if (newRoleName === 'alumno') {
+            await supabase.from('alumnos')
+                .upsert({ id_alumno: userId, estatus_inscripcion: 'activo' }, { onConflict: 'id_alumno', ignoreDuplicates: true });
+            console.log("✨ Perfil alumno creado/verificado.");
+        }
+
+       showMessage('Rol actualizado correctamente.', 'Éxito');
+        userDetailsModal.hide(); 
+
+        // ============================================================
+        // 5. RECARGAS VISUALES (CON PEQUEÑA PAUSA)
+        // ============================================================
+        console.log("⏳ Esperando confirmación de BD para recargar tablas...");
         
-        // Recargar la tabla
-        const activeFilterBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
-        const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.rol : 'todos';
-        await renderAuditoria(activeFilter);
+        // Limpiamos visualmente antes para que se note que está cargando
+        const auditoriaTableBody = document.getElementById('auditoria-table-body');
+        if(auditoriaTableBody) auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Actualizando vista...</td></tr>';
+
+        // Usamos setTimeout para dar 500ms (medio segundo) a la BD antes de leer
+        setTimeout(async () => {
+            console.log("🔄 Recargando tablas ahora...");
+            
+            // Recargar Auditoría
+            const activeBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
+            const activeFilter = activeBtn ? activeBtn.dataset.rol : 'todos';
+            await renderAuditoria(activeFilter);
+
+            // Recargar Docentes (si aplica)
+            if (newRoleName === 'docente' || oldRoleName === 'docente') {
+                await renderDocentes(currentDocenteFilter);
+            }
+        }, 500); // <--- ESTOS 500ms SON LA CLAVE
 
     } catch (error) {
-        console.error('Error al actualizar rol:', error);
-        showMessage('Error al actualizar el rol: ' + error.message, 'Error');
+        console.error(error);
+        showMessage('Error crítico: ' + error.message, 'Error');
     } finally {
-        if(btnGuardar) btnGuardar.disabled = false;
+        if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.innerHTML = '<i class="fas fa-save me-2"></i> Guardar Rol';
+        }
     }
 }
 
@@ -835,6 +940,63 @@ async function populateGradoFilter() {
     }
 }
 
+/**
+ * Cambia el estado activo/inactivo (Borrado Lógico - X Amarilla)
+ */
+async function handleSoftDeleteUser(userId, userName, isActive) {
+    const accion = isActive ? "reactivar" : "desactivar";
+    if (!confirm(`¿Seguro que quieres ${accion} al usuario "${userName}"?`)) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('usuarios')
+            .update({ is_active: isActive })
+            .eq('id_usuario', userId);
+
+        if (error) throw error;
+
+        showMessage(`Usuario ${isActive ? 'reactivado' : 'desactivado'} con éxito.`, 'Éxito');
+        
+        // Recargar tabla manteniendo el filtro actual
+        const activeBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
+        const activeFilter = activeBtn ? activeBtn.dataset.rol : 'todos';
+        await renderAuditoria(activeFilter);
+
+    } catch (error) {
+        console.error(error);
+        showMessage('Error: ' + error.message, 'Error');
+    }
+}
+
+/**
+ * Elimina el registro de la base de datos (Borrado Físico - Basura Roja)
+ */
+async function handleHardDeleteUser(userId, userName) {
+    if (!confirm(`⚠️ ¡PELIGRO! ⚠️\n\n¿Estás seguro de ELIMINAR DEFINITIVAMENTE a "${userName}"?\n\nSe borrarán sus notas, asistencias y documentos. Esta acción NO se puede deshacer.`)) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('usuarios')
+            .delete()
+            .eq('id_usuario', userId);
+
+        if (error) throw error;
+
+        showMessage('Usuario eliminado permanentemente.', 'Éxito');
+        
+        const activeBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
+        const activeFilter = activeBtn ? activeBtn.dataset.rol : 'todos';
+        await renderAuditoria(activeFilter);
+
+    } catch (error) {
+        console.error(error);
+        showMessage('Error al eliminar: ' + error.message, 'Error');
+    }
+}
 
 // =================================================================
 // PESTAÑA 4: MENSAJERÍA

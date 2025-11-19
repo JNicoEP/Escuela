@@ -82,7 +82,16 @@ body {
 .table-row-selected td {
     font-weight: 500;
 }
-
+/* Efecto hover suave para las filas de documentos */
+.hover-shadow:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
 /* Badges de Estado (para Gestión Docentes) */
 .badge.bg-warning-soft {
     background-color: rgba(255, 193, 7, 0.1);
