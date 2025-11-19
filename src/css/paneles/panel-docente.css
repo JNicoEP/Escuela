@@ -226,3 +226,140 @@ body {
     color: #6c757d;
     margin-top: 0.5rem;
 }
+
+/* ================================================= */
+/* == REGLAS DE IMPRESIÓN (Historial Docente) == */
+/* ================================================= */
+
+@media print {
+
+    /* 1. Configuración de página */
+    @page {
+        size: portrait; /* Vertical suele ser mejor para listas largas */
+        margin: 1cm;
+    }
+
+    /* 2. Ocultar elementos generales de la interfaz */
+    body > header, 
+    body > nav, 
+    .sidebar, 
+    footer, 
+    .modal,
+    .btn, /* Ocultar TODOS los botones por defecto */
+    #btn-notificaciones {
+        display: none !important;
+    }
+
+    /* 3. Ocultar otras pestañas y el formulario de "Tomar Asistencia" */
+    .tab-pane:not(#asistencia) {
+        display: none !important;
+    }
+    #form-control-asistencia {
+        display: none !important;
+    }
+
+    /* 4. Resetear contenedores principales */
+    html, body, main, #mainTabsContent, #asistencia, .card, .card-body {
+        visibility: visible !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #fff !important;
+        box-shadow: none !important;
+        border: none !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* 5. TITULO DEL REPORTE (Los filtros) */
+    /* Hacemos visible el contenedor de los filtros pero ocultamos el botón de buscar */
+    #asistencia .card-body .row.g-3.mb-4 {
+        display: flex !important;
+        border-bottom: 2px solid #000;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Ocultar etiquetas (labels) para que quede más limpio */
+    #asistencia .card-body .row.g-3.mb-4 label {
+        display: none !important;
+    }
+
+    /* Ocultar la columna del botón "Buscar" */
+    #asistencia .card-body .row.g-3.mb-4 .col-md-3 {
+        display: none !important;
+    }
+
+    /* Estilizar el SELECT de Materia para que parezca un Título */
+    #historialMateria {
+        display: block !important;
+        border: none !important;
+        background: transparent !important;
+        font-size: 1.5rem !important; /* Grande como título */
+        font-weight: bold !important;
+        color: #000 !important;
+        padding: 0 !important;
+        -webkit-appearance: none; /* Quitar flechita del select */
+        appearance: none;
+    }
+
+    /* Estilizar el INPUT de Fecha para que parezca texto */
+    #historialFecha {
+        display: block !important;
+        border: none !important;
+        background: transparent !important;
+        font-size: 1.2rem !important;
+        color: #333 !important;
+        padding: 0 !important;
+        text-align: right;
+    }
+
+    /* Ajustar anchos de columnas de los filtros */
+    #asistencia .card-body .row.g-3.mb-4 .col-md-5 { width: 60% !important; }
+    #asistencia .card-body .row.g-3.mb-4 .col-md-4 { width: 40% !important; text-align: right; }
+
+
+    /* 6. LA TABLA (#tabla-historial-asistencia) */
+    #tabla-historial-asistencia {
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    #tabla-historial-asistencia th,
+    #tabla-historial-asistencia td {
+        border: 1px solid #000 !important;
+        padding: 8px;
+        color: #000 !important;
+    }
+
+    #tabla-historial-asistencia thead {
+        background-color: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* 7. EL RESUMEN (#resumen-estadistico) */
+    #resumen-estadistico {
+        display: flex !important;
+        visibility: visible !important;
+        justify-content: space-between;
+        margin-top: 30px;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+    }
+    
+    #resumen-estadistico .col-4 {
+        width: 30% !important; /* Forzar ancho para que queden en línea */
+        flex: 0 0 30% !important;
+    }
+
+    /* 8. Forzar impresión de colores de fondo (Badges) */
+    .badge, .bg-success-subtle, .bg-danger-subtle, .bg-warning-subtle {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        border: 1px solid #000 !important; /* Añadir borde por si la impresora es ByN */
+    }
+}

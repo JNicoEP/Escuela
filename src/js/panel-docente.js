@@ -44,9 +44,10 @@ async function checkUserSession() {
     currentDocenteId = currentUser.id; // Asumiendo que el auth.user.id es el id_docente
 
     // Actualizar la UI del header
-    const userEmail = currentUser.email;
-    document.getElementById('user-name-display').textContent = currentUser.user_metadata?.nombre || userEmail;
+    const nombreCompleto = `${currentUser.user_metadata?.nombre || ''} ${currentUser.user_metadata?.apellido || ''}`.trim();
 
+    // Si no hay nombre, mostramos "Docente" o lo dejamos vacío, pero NO el email.
+    document.getElementById('user-name-display').textContent = nombreCompleto || 'Docente';
     const initials = (currentUser.user_metadata?.nombre?.[0] || '') + (currentUser.user_metadata?.apellido?.[0] || '');
     document.getElementById('user-initials-display').textContent = initials || userEmail[0].toUpperCase();
 }
@@ -89,8 +90,12 @@ function setupTabLogic() {
 function setupEventListeners() {
     // NUEVO: Listener para el formulario de edición
     const formEditar = document.getElementById('form-editar-tarea');
+    const btnBuscarHistorial = document.getElementById('btn-buscar-historial');
     if (formEditar) {
         formEditar.addEventListener('submit', handleGuardarEdicion);
+    }
+    if (btnBuscarHistorial) {
+        btnBuscarHistorial.addEventListener('click', buscarHistorialAsistencia);
     }
     // Botón de Logout
     document.getElementById('btn-logout').addEventListener('click', handleLogout);
@@ -221,7 +226,9 @@ async function loadAllSelects() {
         .eq('id_docente', currentDocenteId);
 
     if (materias) {
-        const selects = document.querySelectorAll('#tareaMateria, #califMateria, #asistenciaMateria, #califSelectMateriaVer');
+        // Agregamos 'historialMateria' a la lista de selects a rellenar
+        const selects = document.querySelectorAll('#tareaMateria, #califMateria, #asistenciaMateria, #califSelectMateriaVer, #historialMateria'); // <-- AÑADIDO #historialMateria
+
         selects.forEach(select => {
             select.innerHTML = '<option value="">Seleccione una materia</option>';
             materias.forEach(materia => {
@@ -252,8 +259,11 @@ async function loadAllSelects() {
  * @param {string} selectId - El ID del <select> a poblar.
  */
 async function loadEstudiantesParaSelect(id_materia, selectId) {
+    console.log("--- INICIANDO CARGA DE ESTUDIANTES ---");
+    console.log("Materia ID:", id_materia);
+
     const selectEstudiante = document.getElementById(selectId);
-    
+
     if (!id_materia) {
         selectEstudiante.innerHTML = '<option value="">Seleccione una materia primero</option>';
         selectEstudiante.disabled = true;
@@ -267,8 +277,12 @@ async function loadEstudiantesParaSelect(id_materia, selectId) {
             .select('id_grado')
             .eq('id_materia', id_materia)
             .single();
-            
-        if (errMat) throw errMat;
+
+        if (errMat) {
+            console.error("Error buscando grado de la materia:", errMat);
+            throw errMat;
+        }
+        console.log("Grado encontrado ID:", materia.id_grado);
 
         // 2. Buscar TODOS los alumnos de ese grado
         const { data: alumnos, error: errAlum } = await supabase
@@ -276,31 +290,142 @@ async function loadEstudiantesParaSelect(id_materia, selectId) {
             .select('id_alumno, usuarios(nombre, apellido)')
             .eq('id_grado', materia.id_grado);
 
-        if (errAlum) throw errAlum;
+        if (errAlum) {
+            console.error("Error buscando alumnos:", errAlum);
+            throw errAlum;
+        }
+
+        console.log("Alumnos encontrados:", alumnos);
 
         // 3. Llenar el select
         if (alumnos && alumnos.length > 0) {
             selectEstudiante.innerHTML = '<option value="">Seleccione un estudiante</option>';
             alumnos.forEach(alum => {
-                // BLINDAJE AQUÍ: Chequeamos si alum.usuarios existe
                 if (alum.usuarios) {
                     selectEstudiante.innerHTML += `<option value="${alum.id_alumno}">
                         ${alum.usuarios.nombre} ${alum.usuarios.apellido}
                     </option>`;
                 } else {
-                     console.warn('Alumno con datos de usuario faltantes:', alum.id_alumno);
+                    console.warn("Alumno sin usuario asociado:", alum);
                 }
             });
             selectEstudiante.disabled = false;
         } else {
+            console.log("La consulta no devolvió alumnos.");
             selectEstudiante.innerHTML = '<option value="">No hay estudiantes en este grado</option>';
             selectEstudiante.disabled = true;
         }
 
     } catch (error) {
-        console.error(error);
+        console.error("Error GENERAL:", error);
         showMessage('Error cargando estudiantes: ' + error.message, 'Error');
     }
+}
+// ==========================================
+// === NUEVA LÓGICA: HISTORIAL DE ASISTENCIA ===
+// ==========================================
+
+// 1. Función para buscar y mostrar el historial
+async function buscarHistorialAsistencia() {
+    const idMateria = document.getElementById('historialMateria').value;
+    const fecha = document.getElementById('historialFecha').value;
+    const tbody = document.getElementById('historial-asistencia-body');
+    const resumenDiv = document.getElementById('resumen-estadistico');
+
+    if (!idMateria) {
+        showMessage('Por favor, selecciona una materia para ver el historial.', 'Aviso');
+        return;
+    }
+
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Buscando registros...</td></tr>';
+    resumenDiv.classList.add('d-none');
+
+    try {
+        // Construir la consulta
+        let query = supabase
+            .from('asistencias')
+            .select(`
+                fecha,
+                estado,
+                inscripciones!inner (
+                    id_materia,
+                    alumnos (
+                        usuarios (nombre, apellido, dni)
+                    )
+                )
+            `)
+            .eq('inscripciones.id_materia', idMateria)
+            .order('fecha', { ascending: false }); // Más reciente primero
+
+        // Si seleccionó fecha, filtramos por esa fecha específica
+        if (fecha) {
+            query = query.eq('fecha', fecha);
+        }
+
+        const { data: registros, error } = await query;
+
+        if (error) throw error;
+
+        if (!registros || registros.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No se encontraron registros de asistencia con esos filtros.</td></tr>';
+            return;
+        }
+
+        // Renderizar tabla y calcular totales
+        let html = '';
+        let presentes = 0, ausentes = 0, tardes = 0;
+
+        registros.forEach(reg => {
+            const alumno = reg.inscripciones.alumnos.usuarios;
+            const nombreCompleto = `${alumno.nombre} ${alumno.apellido}`;
+            const estado = reg.estado;
+            const fechaFmt = new Date(reg.fecha).toLocaleDateString();
+
+            // Contadores
+            if (estado === 'presente') presentes++;
+            if (estado === 'ausente') ausentes++;
+            if (estado === 'tarde') tardes++;
+
+            // Estilos de badge
+            let badgeClass = 'bg-secondary';
+            if (estado === 'presente') badgeClass = 'bg-success';
+            if (estado === 'ausente') badgeClass = 'bg-danger';
+            if (estado === 'tarde') badgeClass = 'bg-warning text-dark';
+
+            html += `
+                <tr>
+                    <td>
+                        <div class="fw-bold">${nombreCompleto}</div>
+                        <small class="text-muted">DNI: ${alumno.dni || 'N/A'}</small>
+                    </td>
+                    <td><span class="badge ${badgeClass}">${estado.toUpperCase()}</span></td>
+                    <td>${fechaFmt}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+
+        // Actualizar resumen
+        document.getElementById('count-presentes').textContent = presentes;
+        document.getElementById('count-ausentes').textContent = ausentes;
+        document.getElementById('count-tardes').textContent = tardes;
+        resumenDiv.classList.remove('d-none');
+
+    } catch (error) {
+        console.error(error);
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    }
+}
+
+// 2. Función auxiliar para llenar el select del historial (se llama al inicio)
+async function poblarSelectHistorial() {
+    const selectHistorial = document.getElementById('historialMateria');
+    // Reutilizamos la consulta de materias que ya hicimos en loadAllSelects, 
+    // pero como esa es asíncrona y compleja, hacemos una simple aquí o copiamos el HTML.
+
+    // Lo más fácil: Copiar las opciones del select de "Tomar Asistencia" cuando carguen
+    // Usamos un MutationObserver o simplemente lo llamamos dentro de loadAllSelects
 }
 
 // --- PESTAÑA 2: MIS CURSOS ---
@@ -736,14 +861,14 @@ async function loadCalificaciones(id_materia) {
         container.innerHTML = '<div class="text-center text-muted">Seleccione una materia para ver las calificaciones.</div>';
         return;
     }
-    
+
     container.innerHTML = '<div class="text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando...</div>';
 
     try {
         // 1. Obtener grado de la materia
         const { data: materia, error: matError } = await supabase.from('materias').select('id_grado').eq('id_materia', id_materia).single();
         if (matError) throw matError;
-        
+
         // 2. Obtener TODOS los alumnos del grado
         const { data: alumnos, error } = await supabase
             .from('alumnos')
@@ -756,17 +881,17 @@ async function loadCalificaciones(id_materia) {
                 )
             `)
             .eq('id_grado', materia.id_grado)
-            .eq('inscripciones.id_materia', id_materia); 
+            .eq('inscripciones.id_materia', id_materia);
 
         if (error) throw error;
-        
+
         container.innerHTML = '';
         if (alumnos && alumnos.length > 0) {
             alumnos.forEach(alum => {  // <--- 'alum' se define aquí
                 // Buscar si tiene inscripción y notas para esta materia
                 const inscripcionCorrecta = alum.inscripciones.find(i => i.id_materia == id_materia);
                 const calificaciones = inscripcionCorrecta ? inscripcionCorrecta.calificaciones : [];
-                
+
                 // Calcular promedio
                 let total = 0;
                 calificaciones.forEach(c => total += c.nota);
@@ -838,75 +963,96 @@ async function loadEstudiantesParaAsistencia(id_materia, fecha) {
 
     container.innerHTML = '<div class="p-3 text-center text-muted">Cargando estudiantes...</div>';
 
-    // 1. Obtener estudiantes inscritos
-    const { data: inscripciones, error: errorInsc } = await supabase
-        .from('inscripciones')
-        .select('id_inscripcion, alumnos(usuarios(nombre, apellido)))')
-        .eq('id_materia', id_materia);
+    try {
+        // 1. Obtener el grado de la materia
+        const { data: materia, error: errMat } = await supabase
+            .from('materias')
+            .select('id_grado')
+            .eq('id_materia', id_materia)
+            .single();
 
-    if (errorInsc) {
-        container.innerHTML = `<div class="p-3 alert alert-danger">Error: ${errorInsc.message}</div>`;
-        return;
-    }
+        if (errMat) throw errMat;
 
-    if (!inscripciones || inscripciones.length === 0) {
-        container.innerHTML = '<div class="p-3 alert alert-info">No hay estudiantes en esta materia.</div>';
-        return;
-    }
+        // 2. Obtener TODOS los alumnos de ese grado
+        const { data: alumnos, error: errAlum } = await supabase
+            .from('alumnos')
+            .select('id_alumno, usuarios(nombre, apellido)')
+            .eq('id_grado', materia.id_grado);
 
-    // 2. Obtener asistencias YA registradas para esa fecha
-    const idsInscripcion = inscripciones.map(i => i.id_inscripcion);
-    const { data: asistencias, error: errorAsis } = await supabase
-        .from('asistencias')
-        .select('id_inscripcion, estado')
-        .eq('fecha', fecha)
-        .in('id_inscripcion', idsInscripcion);
+        if (errAlum) throw errAlum;
 
-    // Mapear asistencias para búsqueda rápida
-    const mapaAsistencias = new Map();
-    if (asistencias) {
-        asistencias.forEach(a => mapaAsistencias.set(a.id_inscripcion, a.estado));
-    }
+        if (!alumnos || alumnos.length === 0) {
+            container.innerHTML = '<div class="p-3 alert alert-info">No hay estudiantes en este grado.</div>';
+            return;
+        }
 
-    // 3. Renderizar lista
-    container.innerHTML = '';
-    document.getElementById('asistencia-conteo-alumnos').textContent = `${inscripciones.length} estudiantes`;
+        // 3. Obtener asistencias YA registradas (usando una consulta compleja para vincular por alumno)
+        // Nota: Aquí hacemos un truco. Buscamos en 'asistencias' uniendo con 'inscripciones' 
+        // y filtramos por la materia y fecha.
+        const { data: asistencias, error: errAsis } = await supabase
+            .from('asistencias')
+            .select('estado, inscripciones(id_alumno)')
+            .eq('fecha', fecha)
+            .eq('inscripciones.id_materia', id_materia); // Filtro clave
 
-    inscripciones.forEach(insc => {
-        const alumno = insc.alumnos.usuarios;
-        const id_insc = insc.id_inscripcion;
-        const estadoActual = mapaAsistencias.get(id_insc);
+        // Mapear asistencias para búsqueda rápida por ID de alumno
+        const mapaAsistencias = new Map();
+        if (asistencias) {
+            asistencias.forEach(a => {
+                if (a.inscripciones) {
+                    mapaAsistencias.set(a.inscripciones.id_alumno, a.estado);
+                }
+            });
+        }
 
-        container.innerHTML += `
-            <div class="student-attendance-row" data-id-inscripcion="${id_insc}">
-                <div class="d-flex align-items-center gap-3">
-                    <div>
-                        <div class="fw-bold">${alumno.nombre} ${alumno.apellido}</div>
+        // 4. Renderizar lista
+        container.innerHTML = '';
+        document.getElementById('asistencia-conteo-alumnos').textContent = `${alumnos.length} estudiantes`;
+
+        alumnos.forEach(alum => {
+            const id_alumno = alum.id_alumno;
+            // Usamos ?. para evitar errores si usuario es null
+            const nombre = alum.usuarios ? alum.usuarios.nombre : 'Usuario';
+            const apellido = alum.usuarios ? alum.usuarios.apellido : 'Desconocido';
+            const estadoActual = mapaAsistencias.get(id_alumno);
+
+            container.innerHTML += `
+                <div class="student-attendance-row" data-id-alumno="${id_alumno}">
+                    <div class="d-flex align-items-center gap-3">
+                        <div>
+                            <div class="fw-bold">${nombre} ${apellido}</div>
+                        </div>
+                    </div>
+                    <div class="btn-group attendance-status-buttons" role="group">
+                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-p-${id_alumno}" value="presente" ${estadoActual === 'presente' ? 'checked' : ''}>
+                        <label class="btn btn-outline-success" for="status-p-${id_alumno}"><i class="bi bi-check-circle"></i> Presente</label>
+
+                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-a-${id_alumno}" value="ausente" ${estadoActual === 'ausente' ? 'checked' : ''}>
+                        <label class="btn btn-outline-danger" for="status-a-${id_alumno}"><i class="bi bi-x-circle"></i> Ausente</label>
+
+                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-t-${id_alumno}" value="tarde" ${estadoActual === 'tarde' ? 'checked' : ''}>
+                        <label class="btn btn-outline-warning" for="status-t-${id_alumno}"><i class="bi bi-clock"></i> Tarde</label>
+
+                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-j-${id_alumno}" value="justificado" ${estadoActual === 'justificado' ? 'checked' : ''}>
+                        <label class="btn btn-outline-info" for="status-j-${id_alumno}"><i class="bi bi-info-circle"></i> Justificado</label>
                     </div>
                 </div>
-                <div class="btn-group attendance-status-buttons" role="group">
-                    <input type="radio" class="btn-check" name="status-${id_insc}" id="status-p-${id_insc}" value="presente" ${estadoActual === 'presente' ? 'checked' : ''}>
-                    <label class="btn btn-outline-success" for="status-p-${id_insc}"><i class="bi bi-check-circle"></i> Presente</label>
+            `;
+        });
 
-                    <input type="radio" class="btn-check" name="status-${id_insc}" id="status-a-${id_insc}" value="ausente" ${estadoActual === 'ausente' ? 'checked' : ''}>
-                    <label class="btn btn-outline-danger" for="status-a-${id_insc}"><i class="bi bi-x-circle"></i> Ausente</label>
-
-                    <input type="radio" class="btn-check" name="status-${id_insc}" id="status-t-${id_insc}" value="tarde" ${estadoActual === 'tarde' ? 'checked' : ''}>
-                    <label class="btn btn-outline-warning" for="status-t-${id_insc}"><i class="bi bi-clock"></i> Tarde</label>
-
-                    <input type="radio" class="btn-check" name="status-${id_insc}" id="status-j-${id_insc}" value="justificado" ${estadoActual === 'justificado' ? 'checked' : ''}>
-                    <label class="btn btn-outline-info" for="status-j-${id_insc}"><i class="bi bi-info-circle"></i> Justificado</label>
-                </div>
-            </div>
-        `;
-    });
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = `<div class="p-3 alert alert-danger">Error: ${error.message}</div>`;
+    }
 }
 
 async function handleGuardarAsistencia(e) {
     e.preventDefault();
     const fecha = document.getElementById('asistenciaFecha').value;
-    if (!fecha) {
-        showMessage('Por favor, seleccione una fecha.', 'Error');
+    const idMateria = document.getElementById('asistenciaMateria').value;
+
+    if (!fecha || !idMateria) {
+        showMessage('Por favor, seleccione una materia y una fecha.', 'Error');
         return;
     }
 
@@ -916,39 +1062,65 @@ async function handleGuardarAsistencia(e) {
         return;
     }
 
-    const registrosParaGuardar = [];
+    try {
+        let guardados = 0;
 
-    filas.forEach(fila => {
-        const id_inscripcion = fila.dataset.idInscripcion;
-        const radioChecked = fila.querySelector(`input[name="status-${id_inscripcion}"]:checked`);
+        // Procesamos alumno por alumno (es más seguro para crear inscripciones)
+        for (const fila of filas) {
+            const idAlumno = fila.dataset.idAlumno;
+            const radioChecked = fila.querySelector(`input[name="status-${idAlumno}"]:checked`);
 
-        if (radioChecked) {
-            registrosParaGuardar.push({
-                id_inscripcion: id_inscripcion,
-                fecha: fecha,
-                estado: radioChecked.value
-            });
+            if (radioChecked) {
+                const estado = radioChecked.value;
+
+                // 1. Buscar o Crear Inscripción
+                let { data: inscripcion } = await supabase
+                    .from('inscripciones')
+                    .select('id_inscripcion')
+                    .eq('id_alumno', idAlumno)
+                    .eq('id_materia', idMateria)
+                    .maybeSingle();
+
+                let idInscripcion = inscripcion?.id_inscripcion;
+
+                if (!idInscripcion) {
+                    const { data: nuevaInsc, error: errCrear } = await supabase
+                        .from('inscripciones')
+                        .insert({ id_alumno: idAlumno, id_materia: idMateria })
+                        .select('id_inscripcion')
+                        .single();
+
+                    if (errCrear) throw errCrear;
+                    idInscripcion = nuevaInsc.id_inscripcion;
+                }
+
+                // 2. Guardar Asistencia (Upsert)
+                const { error: errAsis } = await supabase
+                    .from('asistencias')
+                    .upsert(
+                        { id_inscripcion: idInscripcion, fecha: fecha, estado: estado },
+                        { onConflict: 'id_inscripcion, fecha' }
+                    );
+
+                if (errAsis) throw errAsis;
+                guardados++;
+            }
         }
-    });
 
-    if (registrosParaGuardar.length === 0) {
-        showMessage('No se ha marcado ninguna asistencia.', 'Aviso');
-        return;
-    }
+        if (guardados > 0) {
+            showMessage(`Se guardó la asistencia de ${guardados} alumnos correctamente.`, 'Éxito');
+        } else {
+            showMessage('No seleccionaste ningún estado (Presente/Ausente) para guardar.', 'Aviso');
+        }
 
-    // Usar 'upsert' para insertar o actualizar si ya existe (por si modifican la asistencia)
-    const { error } = await supabase
-        .from('asistencias')
-        .upsert(registrosParaGuardar, { onConflict: 'id_inscripcion, fecha' }); // Asume una restricción UNIQUE(id_inscripcion, fecha)
-
-    if (error) {
+    } catch (error) {
+        console.error(error);
         showMessage('Error al guardar asistencia: ' + error.message, 'Error');
-    } else {
-        showMessage('Asistencia guardada exitosamente.', 'Éxito');
     }
 }
 
 function marcarTodosAsistencia(estado) {
+    // Buscamos inputs que tengan ese valor dentro del contenedor de lista
     const radios = document.querySelectorAll(`#asistencia-lista-alumnos input[value="${estado}"]`);
     radios.forEach(radio => radio.checked = true);
 }
