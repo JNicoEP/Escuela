@@ -106,6 +106,12 @@ function setupEventListeners() {
     }
     // Botón de Logout
     document.getElementById('btn-logout').addEventListener('click', handleLogout);
+    
+    // Formulario Editar Perfil Docente
+    const formPerfilDocente = document.getElementById('form-editar-perfil-docente');
+    if (formPerfilDocente) {
+        formPerfilDocente.addEventListener('submit', handleGuardarPerfilDocente);
+    }
 
     // Formulario: Agregar Materia (NUEVO)
     document.getElementById('form-agregar-materia').addEventListener('submit', handleAgregarMateria);
@@ -183,6 +189,7 @@ async function loadDashboardData() {
         .select('tipo_evaluacion, fecha, inscripciones(materias(nombre_materia))')
         .limit(3)
         .order('fecha', { ascending: false }); // Faltaría filtrar por docente
+    await loadDocenteProfileInfo();
 
     const container = document.getElementById('actividad-reciente-container');
     container.innerHTML = '';
@@ -202,7 +209,132 @@ async function loadDashboardData() {
         container.innerHTML = '<div class="list-group-item text-muted">No hay actividad reciente.</div>';
     }
 }
+// ==========================================
+// === LÓGICA DE PERFIL DOCENTE (DASHBOARD) ===
+// ==========================================
 
+/**
+ * Carga la información del perfil y documentos en el Dashboard
+ */
+async function loadDocenteProfileInfo() {
+    try {
+        // Traer datos de usuario y datos extendidos de docente
+        const { data, error } = await supabase
+            .from('docentes')
+            .select(`
+                plaza, 
+                declaracion_jurada_path, 
+                titulo_habilitante_path,
+                tirilla_cuil_path, 
+                fotocopia_dni_path, 
+                acta_nacimiento_path,
+                usuarios (nombre, apellido, dni)
+            `)
+            .eq('id_docente', currentDocenteId)
+            .single();
+
+        if (error) throw error;
+
+        // Llenar Textos
+        document.getElementById('dash-nombre').textContent = `${data.usuarios.nombre} ${data.usuarios.apellido}`;
+        document.getElementById('dash-dni').textContent = data.usuarios.dni || 'No registrado';
+        document.getElementById('dash-plaza').textContent = data.plaza || 'Sin asignar';
+
+        // Pre-llenar el modal de edición
+        document.getElementById('edit-doc-nombre').value = data.usuarios.nombre;
+        document.getElementById('edit-doc-apellido').value = data.usuarios.apellido;
+        document.getElementById('edit-doc-dni').value = data.usuarios.dni || '';
+        document.getElementById('edit-doc-plaza').value = data.plaza || '';
+
+        // Helper para mostrar botones de descarga
+        const renderFileBadge = (path, elementId) => {
+            const el = document.getElementById(elementId);
+            if (path) {
+                // Obtener URL firmada o publica (asumiendo bucket privado 'materiales')
+                const { data: urlData } = supabase.storage.from('materiales').getPublicUrl(path);
+                // Nota: Si usas 'createSignedUrl' cámbialo aquí. Por simplicidad uso PublicUrl si el bucket es mixto.
+                
+                el.innerHTML = `<a href="${urlData.publicUrl}" target="_blank" class="badge bg-success text-white text-decoration-none"><i class="bi bi-eye-fill"></i> Ver Documento</a>`;
+                el.classList.remove('bg-light', 'text-dark', 'border');
+            } else {
+                el.innerHTML = 'Pendiente';
+                el.className = 'badge bg-light text-dark border';
+            }
+        };
+
+        renderFileBadge(data.tirilla_cuil_path, 'link-cuil');
+        renderFileBadge(data.fotocopia_dni_path, 'link-dni-copy');
+        renderFileBadge(data.acta_nacimiento_path, 'link-acta');
+        renderFileBadge(data.declaracion_jurada_path, 'link-ddjj');
+        renderFileBadge(data.titulo_habilitante_path, 'link-titulo');
+
+    } catch (error) {
+        console.error("Error cargando perfil docente:", error);
+    }
+}
+
+/**
+ * Maneja la actualización del perfil y subida de archivos
+ */
+async function handleGuardarPerfilDocente(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
+
+    const dni = document.getElementById('edit-doc-dni').value;
+    const plaza = document.getElementById('edit-doc-plaza').value;
+
+    // Archivos
+    const files = {
+        tirilla_cuil: document.getElementById('file-cuil').files[0],
+        fotocopia_dni: document.getElementById('file-dni').files[0],
+        acta_nacimiento: document.getElementById('file-acta').files[0],
+        declaracion_jurada: document.getElementById('file-ddjj').files[0],
+        titulo_habilitante: document.getElementById('file-titulo').files[0]
+    };
+
+    try {
+        // 1. Actualizar datos de texto (DNI en usuarios, Plaza en docentes)
+        await supabase.from('usuarios').update({ dni: dni }).eq('id_usuario', currentDocenteId);
+        
+        const updateData = { plaza: plaza };
+
+        // 2. Subir archivos si existen y guardar sus rutas
+        for (const [key, file] of Object.entries(files)) {
+            if (file) {
+                const filePath = `docentes/${currentDocenteId}/${key}_${Date.now()}.${file.name.split('.').pop()}`;
+                const { error: uploadError } = await supabase.storage
+                    .from('materiales')
+                    .upload(filePath, file);
+                
+                if (uploadError) throw uploadError;
+                
+                // Agregar la ruta al objeto de actualización (ej: tirilla_cuil_path)
+                updateData[`${key}_path`] = filePath;
+            }
+        }
+
+        // 3. Actualizar tabla docentes
+        const { error: updateError } = await supabase
+            .from('docentes')
+            .update(updateData)
+            .eq('id_docente', currentDocenteId);
+
+        if (updateError) throw updateError;
+
+        showMessage('Perfil actualizado correctamente.', 'Éxito');
+        bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfilDocente')).hide();
+        loadDocenteProfileInfo(); // Recargar datos en pantalla
+
+    } catch (error) {
+        console.error(error);
+        showMessage('Error al actualizar: ' + error.message, 'Error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
+    }
+}
 /**
  * Carga todos los dropdowns (selects) de los formularios.
  */

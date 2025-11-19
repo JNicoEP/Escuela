@@ -9,10 +9,10 @@ import { supabase, showMessage } from '../js/supabaseClient.js';
 
 // --- Referencias al DOM ---
 const welcomeAlert = document.getElementById('welcome-alert');
-let currentUser = null; // Para guardar el usuario admin
-let currentDocenteFilter = 'pendiente'; // Estado del filtro de docentes
-let allUsersData = []; // Para guardar los datos de los usuarios
-let allRolesData = []; // Para guardar los roles (1, 2, 3)
+let currentUser = null; 
+let currentDocenteFilter = 'pendiente';
+let allUsersData = [];
+let allRolesData = []; 
 
 // Pestaña Auditoría
 const auditoriaTableBody = document.getElementById('auditoria-table-body');
@@ -45,12 +45,8 @@ const userDetailsModal = new bootstrap.Modal(userDetailsModalEl);
 const formEditUser = document.getElementById('formEditUser');
 const modalAlumnoInfo = document.getElementById('modal-alumno-info');
 
-
-/**
- * Función principal que se ejecuta cuando el DOM está listo.
- */
+// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- Lógica para desvanecer el saludo ---
     if (welcomeAlert) {
         setTimeout(() => {
             welcomeAlert.classList.add('fade-out');
@@ -60,18 +56,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 5000);
     }
 
-    // --- Carga de Datos y Autenticación ---
     await loadPanelData();
-
-    // Configurar los listeners de los filtros
     setupTabsAndFilters();
 });
 
-/**
- * Verifica la sesión, el rol del usuario y carga los datos iniciales.
- */
 async function loadPanelData() {
-    // 1. Obtener y verificar el usuario
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         window.location.href = "/index.html";
@@ -79,7 +68,7 @@ async function loadPanelData() {
     }
     currentUser = user;
 
-    // 2. Verificar que el usuario sea un admin
+    // Verificar admin
     const { data, error } = await supabase
         .from('usuarios')
         .select('rol:rol(nombre_rol)')
@@ -93,9 +82,8 @@ async function loadPanelData() {
         return;
     }
 
-    // 3. Carga inicial de datos para todas las pestañas
-    await loadAllRoles(); // Carga los roles para el dropdown
-    await renderAuditoria('todos'); // "Ver Todos" por defecto
+    await loadAllRoles();
+    await renderAuditoria('todos'); // Carga inicial: TODOS
     await renderDocentes(currentDocenteFilter);
     await renderDocumentos();
     await renderMensajesAdmin();
@@ -103,40 +91,32 @@ async function loadPanelData() {
     await populateGradoFilter();
 }
 
-/**
- * Configura todos los event listeners para los botones de filtro y acciones.
- */
 function setupTabsAndFilters() {
-
     // --- Pestaña Auditoría/Usuarios ---
     auditoriaFilterButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             auditoriaFilterButtons.forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
-            renderAuditoria(e.currentTarget.dataset.rol);
+            // El dataset.rol debe ser 'todos', 'docente' o 'alumno'
+            renderAuditoria(e.currentTarget.dataset.rol); 
         });
     });
 
     auditoriaTableBody.addEventListener('click', (e) => {
-        // Botón Borrar
         const deleteButton = e.target.closest('.delete-user-btn');
         if (deleteButton) {
             const userId = deleteButton.dataset.id;
             const userName = deleteButton.dataset.name;
             handleSoftDeleteUser(userId, userName);
         }
-        // Botón Ver/Editar
         const editButton = e.target.closest('.edit-user-btn');
         if (editButton) {
             const userId = editButton.dataset.id;
             const user = allUsersData.find(u => u.id_usuario === userId);
-            if (user) {
-                openUserDetailsModal(user);
-            }
+            if (user) openUserDetailsModal(user);
         }
     });
 
-    // Listener para el formulario del modal de edición
     formEditUser.addEventListener('submit', (e) => {
         e.preventDefault();
         handleUpdateRole();
@@ -161,44 +141,49 @@ function setupTabsAndFilters() {
 
     bulkApplyBtn.addEventListener('click', handleBulkUpdate);
 
-    // --- Pestaña Documentación ---
+    // --- Otras Pestañas ---
     filtroGrado.addEventListener('change', renderDocumentos);
     filtroProfesor.addEventListener('input', renderDocumentos);
-
-    // --- Pestaña Mensajería ---
     adminEnviarMensajeBtn.addEventListener('click', handleSendMensaje);
 }
 
 // =================================================================
-// PESTAÑA 1: GESTIÓN DE USUARIOS (antes Auditoría)
+// PESTAÑA 1: GESTIÓN DE USUARIOS (AUDITORÍA)
 // =================================================================
 
-/**
- * Renderiza la tabla de Gestión de Usuarios
- */
-/**
- * Renderiza la tabla de Gestión de Usuarios
- */
 async function renderAuditoria(filtroRol = 'todos') {
-    auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center">Cargando...</td></tr>';
+    auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Cargando...</td></tr>';
 
+    // 1. Construir la consulta
+    // CAMBIO CLAVE: Usamos 'rol:rol!inner' en lugar de 'rol:rol'.
+    // El '!inner' funciona como un filtro estricto: si el usuario no tiene rol (es null), NO lo trae.
     let query = supabase
         .from('usuarios')
         .select(`
             id_usuario, nombre, apellido, email, dni, fecha_creacion, is_active,
-            rol:rol ( id_rol, nombre_rol ),
+            rol:rol!inner ( id_rol, nombre_rol ),
             alumnos (
                 fecha_nacimiento, direccion, telefono,
                 tutor_nombre, tutor_educacion, tutor_trabajo,
                 grado ( nombre_grado )
+            ),
+            docentes (
+                estado, plaza,
+                tirilla_cuil_path, fotocopia_dni_path, acta_nacimiento_path,
+                declaracion_jurada_path, titulo_habilitante_path
             )
         `)
         .order('fecha_creacion', { ascending: false })
-        .eq('is_active', true); // Solo usuarios activos
+        .eq('is_active', true);
 
+    // 2. Aplicar Filtros
     if (filtroRol !== 'todos') {
+        // Si apretas "Ver Docentes" o "Ver Alumnos", filtra solo esos
         query = query.eq('rol.nombre_rol', filtroRol);
     } else {
+        // CAMBIO CLAVE: Si apretas "Ver Todos", filtramos explícitamente
+        // para mostrar SOLO 'alumno' y 'docente'.
+        // Esto oculta a los 'admin' y asegura que no se cuelen otros roles raros.
         query = query.in('rol.nombre_rol', ['alumno', 'docente']);
     }
 
@@ -206,46 +191,51 @@ async function renderAuditoria(filtroRol = 'todos') {
 
     if (error) {
         console.error('Error fetching usuarios:', error);
-        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar usuarios.</td></tr>`;
+        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error al cargar usuarios: ${error.message}</td></tr>`;
         return;
     }
 
-    if (usuarios.length === 0) {
-        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No hay usuarios para este filtro.</td></tr>`;
+    if (!usuarios || usuarios.length === 0) {
+        auditoriaTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No se encontraron usuarios con el rol seleccionado.</td></tr>`;
         return;
     }
 
-    allUsersData = usuarios; // Guardamos los datos globalmente
+    allUsersData = usuarios;
     let html = '';
 
     usuarios.forEach(user => {
-        const userRoleName = user.rol ? user.rol.nombre_rol : 'Sin rol';
+        const userRoleName = user.rol.nombre_rol; // Ya sabemos que existe por el !inner
         let badgeClass = 'bg-secondary';
-        if (userRoleName === 'docente') badgeClass = 'bg-primary-soft';
-        if (userRoleName === 'alumno') badgeClass = 'bg-success-soft';
+        
+        if (userRoleName === 'docente') badgeClass = 'bg-primary text-white';
+        if (userRoleName === 'alumno') badgeClass = 'bg-success text-white';
 
         html += `
             <tr>
-                <td>${user.nombre} ${user.apellido}</td>
-                <td>${user.email}</td>
-                <td>${user.dni || 'N/A'}</td>
-                <td><span class="badge ${badgeClass} fs-6">${userRoleName}</span></td>
-                <td>${new Date(user.fecha_creacion).toLocaleDateString()}</td>
-                
                 <td>
-                    <button class="btn btn-primary btn-sm edit-user-btn" 
-                            data-id="${user.id_usuario}" 
-                            title="Editar Rol"> <i class="fas fa-pencil-alt"></i> </button>
-                    ${userRoleName !== 'admin' ? 
-                    `<button class="btn btn-danger btn-sm delete-user-btn" 
-                             data-id="${user.id_usuario}" 
-                             data-name="${user.nombre} ${user.apellido}" title="Borrar">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>` : ''}
+                    <div class="fw-bold">${user.nombre} ${user.apellido}</div>
+                </td>
+                <td>${user.email}</td>
+                <td>${user.dni || '-'}</td>
+                <td><span class="badge ${badgeClass}">${userRoleName.toUpperCase()}</span></td>
+                <td>${new Date(user.fecha_creacion).toLocaleDateString()}</td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-outline-primary btn-sm edit-user-btn me-1" 
+                                data-id="${user.id_usuario}" title="Ver Detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm delete-user-btn" 
+                                 data-id="${user.id_usuario}" 
+                                 data-name="${user.nombre} ${user.apellido}" title="Desactivar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
     });
+    
     auditoriaTableBody.innerHTML = html;
 }
 
@@ -315,10 +305,9 @@ function populateRoleDropdown(currentRoleId) {
 
 /**
  * Abre y rellena el modal de Detalles de Usuario.
- * @param {object} user - El objeto de usuario completo (con 'alumnos' y 'rol').
  */
-function openUserDetailsModal(user) {
-    // Guardar el ID en el modal para usarlo al guardar
+async function openUserDetailsModal(user) {
+    // Guardar el ID en el modal
     document.getElementById('modal-user-id').value = user.id_usuario;
 
     // Rellenar datos de USUARIO
@@ -326,36 +315,80 @@ function openUserDetailsModal(user) {
     document.getElementById('modal-user-email').value = user.email;
     document.getElementById('modal-user-dni').value = user.dni || 'N/A';
 
-    // =============================================
-    //              ¡LA CORRECCIÓN!
-    //   Verificamos si user.rol existe ANTES de usarlo
-    // =============================================
-    
-    // 1. Obtenemos el ID del rol de forma segura
+    // Rellenar dropdown de rol
     const currentRoleId = user.rol ? user.rol.id_rol : null;
-
-    // 2. Rellenamos el dropdown y le pasamos el ID (que puede ser null)
     populateRoleDropdown(currentRoleId);
 
-    // =============================================
-    //            FIN DE LA CORRECCIÓN
-    // =============================================
-
-    // Rellenar datos de ALUMNO (si existe)
-    if (user.alumnos) {
-        // Corrección: user.alumnos es un objeto, no un array
-        const alumno = user.alumnos; 
-        document.getElementById('modal-alumno-grado').value = alumno.grado ? alumno.grado.nombre_grado : 'N/A';
-        document.getElementById('modal-alumno-fecha').value = alumno.fecha_nacimiento || '';
-        document.getElementById('modal-alumno-telefono').value = alumno.telefono || 'N/A';
-        document.getElementById('modal-alumno-direccion').value = alumno.direccion || 'N/A';
-        document.getElementById('modal-tutor-nombre').value = alumno.tutor_nombre || 'N/A';
-        document.getElementById('modal-tutor-trabajo').value = alumno.tutor_trabajo || 'N/A';
-        document.getElementById('modal-tutor-educacion').value = alumno.tutor_educacion || 'N/A';
-        
-        modalAlumnoInfo.style.display = 'block'; // Mostrar la sección de alumno
+    // --- LÓGICA ALUMNO ---
+    const divAlumno = document.getElementById('modal-alumno-info');
+    if (user.alumnos) { // user.alumnos es un objeto si es single, o array si no
+        const alumno = Array.isArray(user.alumnos) ? user.alumnos[0] : user.alumnos;
+        if (alumno) {
+            document.getElementById('modal-alumno-grado').value = alumno.grado ? alumno.grado.nombre_grado : 'N/A';
+            document.getElementById('modal-alumno-fecha').value = alumno.fecha_nacimiento || '';
+            document.getElementById('modal-alumno-telefono').value = alumno.telefono || 'N/A';
+            document.getElementById('modal-alumno-direccion').value = alumno.direccion || 'N/A';
+            document.getElementById('modal-tutor-nombre').value = alumno.tutor_nombre || 'N/A';
+            document.getElementById('modal-tutor-trabajo').value = alumno.tutor_trabajo || 'N/A';
+            document.getElementById('modal-tutor-educacion').value = alumno.tutor_educacion || 'N/A';
+            divAlumno.style.display = 'block';
+        } else {
+            divAlumno.style.display = 'none';
+        }
     } else {
-        modalAlumnoInfo.style.display = 'none'; // Ocultar si es docente
+        divAlumno.style.display = 'none';
+    }
+
+    // --- LÓGICA DOCENTE (NUEVO) ---
+    const divDocente = document.getElementById('modal-docente-info');
+    
+    // Verificamos si tiene datos de docente
+    // Nota: Supabase devuelve un array si la relación es hasMany o un objeto si es single. 
+    // En tu consulta 'auditoria', 'docentes' suele venir como objeto o array dependiendo de la definición.
+    // Asumiremos array o objeto seguro:
+    const docenteData = Array.isArray(user.docentes) ? user.docentes[0] : user.docentes;
+
+    if (docenteData) {
+        divDocente.style.display = 'block';
+        
+        document.getElementById('modal-doc-estado').value = docenteData.estado?.toUpperCase() || 'PENDIENTE';
+        document.getElementById('modal-doc-plaza').value = docenteData.plaza || 'No asignada';
+
+        // Helper para configurar botones de archivo
+        const setupFileBtn = async (path, btnId) => {
+            const btn = document.getElementById(btnId);
+            if (path) {
+                // Generar link firmado (seguro)
+                const { data: urlData } = await supabase.storage
+                    .from('materiales')
+                    .createSignedUrl(path, 3600); // 1 hora de validez
+
+                if (urlData) {
+                    btn.href = urlData.signedUrl;
+                    btn.classList.remove('disabled', 'btn-outline-secondary');
+                    btn.classList.add('btn-primary');
+                    btn.innerHTML = '<i class="fas fa-download"></i> Ver Archivo';
+                    return;
+                }
+            }
+            // Si no hay archivo o falla
+            btn.href = '#';
+            btn.classList.add('disabled', 'btn-outline-secondary');
+            btn.classList.remove('btn-primary');
+            btn.textContent = 'No subido';
+        };
+
+        // Cargar los 5 archivos en paralelo
+        await Promise.all([
+            setupFileBtn(docenteData.tirilla_cuil_path, 'btn-view-cuil'),
+            setupFileBtn(docenteData.fotocopia_dni_path, 'btn-view-dni'),
+            setupFileBtn(docenteData.acta_nacimiento_path, 'btn-view-acta'),
+            setupFileBtn(docenteData.declaracion_jurada_path, 'btn-view-ddjj'),
+            setupFileBtn(docenteData.titulo_habilitante_path, 'btn-view-titulo')
+        ]);
+
+    } else {
+        divDocente.style.display = 'none';
     }
 
     // Abrir el modal
@@ -363,34 +396,65 @@ function openUserDetailsModal(user) {
 }
 
 /**
- * Lee el nuevo rol del modal y lo actualiza en la DB.
+ * Lee el nuevo rol del modal, lo actualiza en la DB y crea el perfil necesario.
  */
 async function handleUpdateRole() {
     const userId = document.getElementById('modal-user-id').value;
     const newRoleId = document.getElementById('modal-user-rol').value;
+
+    // Encontrar el nombre del rol seleccionado basado en el ID
+    // (Usamos la variable global allRolesData que ya cargaste)
+    const selectedRoleObj = allRolesData.find(r => r.id_rol == newRoleId);
+    const roleName = selectedRoleObj ? selectedRoleObj.nombre_rol : '';
 
     if (!userId || !newRoleId) {
         showMessage('Error, no se pudo identificar al usuario o al rol.', 'Error');
         return;
     }
 
+    const btnGuardar = document.getElementById('modal-guardar-rol-btn'); // Asegúrate de que tu botón tenga este ID en el HTML si quieres efecto de carga
+    if(btnGuardar) btnGuardar.disabled = true;
+
     try {
-        const { error } = await supabase
+        // 1. Actualizar la tabla USUARIOS
+        const { error: userError } = await supabase
             .from('usuarios')
             .update({ id_rol: newRoleId })
             .eq('id_usuario', userId);
         
-        if (error) throw error;
+        if (userError) throw userError;
 
-        showMessage('Rol de usuario actualizado con éxito.', 'Éxito');
+        // 2. Crear el perfil correspondiente (Docente o Alumno) si no existe
+        if (roleName === 'docente') {
+            // Intentamos insertar. Si ya existe, no pasa nada (onConflict ignore)
+            const { error: docError } = await supabase
+                .from('docentes')
+                .upsert({ id_docente: userId, estado: 'pendiente' }, { onConflict: 'id_docente', ignoreDuplicates: true });
+            
+            if (docError) console.error('Error creando perfil docente:', docError);
+
+        } else if (roleName === 'alumno') {
+             // Intentamos insertar perfil de alumno
+             const { error: alumError } = await supabase
+                .from('alumnos')
+                .upsert({ id_alumno: userId, estatus_inscripcion: 'activo' }, { onConflict: 'id_alumno', ignoreDuplicates: true });
+
+            if (alumError) console.error('Error creando perfil alumno:', alumError);
+        }
+
+        showMessage('Rol actualizado y perfil generado con éxito.', 'Éxito');
         userDetailsModal.hide(); // Ocultar modal
         
-        const activeFilter = document.querySelector('#auditoria-tab-pane .btn-success-soft.active').dataset.rol;
+        // Recargar la tabla
+        const activeFilterBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
+        const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.rol : 'todos';
         await renderAuditoria(activeFilter);
 
     } catch (error) {
         console.error('Error al actualizar rol:', error);
         showMessage('Error al actualizar el rol: ' + error.message, 'Error');
+    } finally {
+        if(btnGuardar) btnGuardar.disabled = false;
     }
 }
 
@@ -412,13 +476,8 @@ async function renderDocentes(filtroEstado) {
     const { data: docentes, error } = await supabase
         .from('docentes')
         .select(`
-            id_docente,
-            estado,
-            usuario:usuarios (
-                email,
-                nombre,
-                apellido
-            )
+            id_docente, estado,
+            usuario:usuarios ( email, nombre, apellido )
         `)
         .eq('estado', filtroEstado);
 
@@ -440,9 +499,9 @@ async function renderDocentes(filtroEstado) {
 
         const fullName = `${usuario.nombre} ${usuario.apellido}`;
         const badgeClass = {
-            'pendiente': 'bg-warning-soft',
-            'aprobado': 'bg-success-soft',
-            'rechazado': 'bg-danger-soft'
+            'pendiente': 'bg-warning text-dark',
+            'aprobado': 'bg-success text-white',
+            'rechazado': 'bg-danger text-white'
         }[docente.estado];
 
         html += `
@@ -452,23 +511,20 @@ async function renderDocentes(filtroEstado) {
                 </td>
                 <td>${fullName}</td>
                 <td>${usuario.email}</td>
+                <td><span class="badge ${badgeClass}">${docente.estado.toUpperCase()}</span></td>
                 <td>
-                    <span class="badge ${badgeClass} fs-6">${docente.estado}</span>
-                </td>
-                <td>
+                    <button class="btn btn-info btn-sm btn-ver-detalles me-1" title="Ver Legajo Completo">
+                        <i class="fas fa-eye text-white"></i>
+                    </button>
+
                     ${docente.estado !== 'aprobado' ? `
                         <button class="btn btn-success btn-sm btn-accion" data-accion="aprobado" title="Aprobar">
                             <i class="fas fa-check"></i>
-                        </button>,
+                        </button>
                     ` : ''}
                     ${docente.estado !== 'rechazado' ? `
                         <button class="btn btn-danger btn-sm btn-accion" data-accion="rechazado" title="Rechazar">
                             <i class="fas fa-times"></i>
-                        </button>
-                    ` : ''}
-                    ${docente.estado !== 'pendiente' ? `
-                        <button class="btn btn-warning btn-sm btn-accion" data-accion="pendiente" title="Poner en Pendiente">
-                            <i class="fas fa-clock"></i>
                         </button>
                     ` : ''}
                 </td>
@@ -484,23 +540,95 @@ async function renderDocentes(filtroEstado) {
  * Añade listeners a los botones de acción individuales y checkboxes.
  */
 function addDocenteActionListeners() {
+    // Listener para Botones de Aprobar/Rechazar
     docentesTableBody.querySelectorAll('.btn-accion').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const docenteId = e.currentTarget.closest('tr').dataset.id;
             const nuevaAccion = e.currentTarget.dataset.accion;
             
-            if (confirm(`¿Está seguro de que desea cambiar el estado de este docente a "${nuevaAccion}"?`)) {
+            if (confirm(`¿Está seguro de que desea cambiar el estado a "${nuevaAccion}"?`)) {
                 await updateDocenteEstado([docenteId], nuevaAccion);
                 await renderDocentes(currentDocenteFilter);
             }
         });
     });
 
+    // NUEVO: Listener para el botón "Ver Detalles" (Ojito)
+    docentesTableBody.querySelectorAll('.btn-ver-detalles').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const docenteId = e.currentTarget.closest('tr').dataset.id;
+            verDetallesDocente(docenteId);
+        });
+    });
+
+    // Listener para Checkboxes
     docentesTableBody.querySelectorAll('.docente-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             updateBulkActionsUI();
         });
     });
+}
+/**
+ * Abre el modal con toda la info y documentos del docente
+ */
+async function verDetallesDocente(idDocente) {
+    // 1. Buscar datos completos
+    const { data, error } = await supabase
+        .from('docentes')
+        .select(`
+            *,
+            usuario:usuarios ( nombre, apellido, email, dni )
+        `)
+        .eq('id_docente', idDocente)
+        .single();
+
+    if (error) {
+        showMessage('Error al cargar detalles: ' + error.message, 'Error');
+        return;
+    }
+
+    // 2. Rellenar Textos
+    document.getElementById('view-doc-nombre').textContent = `${data.usuario.nombre} ${data.usuario.apellido}`;
+    document.getElementById('view-doc-email').textContent = data.usuario.email;
+    document.getElementById('view-doc-dni').textContent = data.usuario.dni || 'N/A';
+    document.getElementById('view-doc-estado').textContent = data.estado.toUpperCase();
+    document.getElementById('view-doc-plaza').textContent = data.plaza || 'No asignada';
+
+    // 3. Configurar botones de descarga (Helper function)
+    const setupLink = async (path, elementId) => {
+        const btn = document.getElementById(elementId);
+        if (path) {
+            // Generar URL firmada (segura)
+            const { data: urlData } = await supabase.storage
+                .from('materiales')
+                .createSignedUrl(path, 3600); // Válido por 1 hora
+
+            if (urlData) {
+                btn.href = urlData.signedUrl;
+                btn.classList.remove('disabled', 'btn-outline-secondary');
+                btn.classList.add('btn-primary');
+                btn.innerHTML = '<i class="fas fa-download me-1"></i> Ver/Descargar';
+            }
+        } else {
+            btn.href = '#';
+            btn.classList.add('disabled', 'btn-outline-secondary');
+            btn.classList.remove('btn-primary');
+            btn.innerHTML = 'No subido';
+        }
+    };
+
+    // Configurar los 5 documentos
+    await Promise.all([
+        setupLink(data.tirilla_cuil_path, 'link-view-cuil'),
+        setupLink(data.fotocopia_dni_path, 'link-view-dni'),
+        setupLink(data.acta_nacimiento_path, 'link-view-acta'),
+        setupLink(data.declaracion_jurada_path, 'link-view-ddjj'),
+        setupLink(data.titulo_habilitante_path, 'link-view-titulo')
+    ]);
+
+    // 4. Mostrar Modal
+    const modal = new bootstrap.Modal(document.getElementById('modalVerDocente'));
+    modal.show();
 }
 
 /**
@@ -571,84 +699,140 @@ async function updateDocenteEstado(ids, estado) {
 /**
  * Renderiza la lista de Documentación (Materiales)
  */
+/**
+ * Renderiza la lista de Tareas con Archivos (Documentación)
+ */
 async function renderDocumentos() {
-    documentacionList.innerHTML = '<p class="text-center text-muted">Cargando documentos...</p>';
+    const documentacionList = document.getElementById('documentacion-list');
+    const filtroGrado = document.getElementById('filtro-grado');
+    const filtroProfesorInput = document.getElementById('filtro-profesor');
+
+    documentacionList.innerHTML = '<div class="text-center text-muted p-4"><span class="spinner-border spinner-border-sm"></span> Cargando documentación...</div>';
     
-    const gradoFiltro = filtroGrado.value;
-    const profesorFiltro = filtroProfesor.value;
+    const gradoId = filtroGrado.value;
+    const textoProfesor = filtroProfesorInput.value.toLowerCase().trim();
 
-    let query = supabase
-        .from('materiales')
-        .select(`
-            nombre_archivo,
-            ubicacion_archivo,
-            docente:docentes (
-                usuario:usuarios (nombre, apellido)
-            ),
-            grado:grado (id_grado, nombre_grado),
-            materia:materias (nombre_materia)
-        `)
-        .order('fecha_subida', { ascending: false });
+    try {
+        // 1. Construir consulta a la tabla TAREAS
+        // Usamos !inner en materia para poder filtrar por grado si es necesario
+        let query = supabase
+            .from('tareas')
+            .select(`
+                id_tarea,
+                titulo,
+                archivo_path,
+                fecha_creacion,
+                docente:docentes (
+                    usuario:usuarios (nombre, apellido)
+                ),
+                materia:materias!inner (
+                    nombre_materia,
+                    grado:grado (id_grado, nombre_grado)
+                )
+            `)
+            .not('archivo_path', 'is', null) // Solo tareas con archivo
+            .order('fecha_creacion', { ascending: false });
 
-    if (gradoFiltro) {
-        query = query.eq('id_grado', gradoFiltro);
-    }
-    if (profesorFiltro.length > 2) {
-        query = query.ilike('docente.usuario.nombre', `%${profesorFiltro}%`);
-    }
+        // 2. Filtros Server-Side (Base de datos)
+        if (gradoId) {
+            // Filtramos las tareas cuya materia pertenezca al grado seleccionado
+            query = query.eq('materia.id_grado', gradoId);
+        }
 
-    const { data: materiales, error } = await query;
+        const { data: tareas, error } = await query;
 
-    if (error) {
-        console.error('Error fetching documentos:', error);
-        documentacionList.innerHTML = '<p class="text-center text-danger">Error al cargar documentos.</p>';
-        return;
-    }
+        if (error) throw error;
 
-    if (materiales.length === 0) {
-        documentacionList.innerHTML = '<p class="text-center text-muted">No hay documentos que coincidan con los filtros.</p>';
-        return;
-    }
+        // 3. Filtros Client-Side (JavaScript) - Para el nombre del profesor
+        const documentosFiltrados = tareas.filter(tarea => {
+            if (!textoProfesor) return true;
+            const nombre = tarea.docente?.usuario?.nombre?.toLowerCase() || '';
+            const apellido = tarea.docente?.usuario?.apellido?.toLowerCase() || '';
+            return nombre.includes(textoProfesor) || apellido.includes(textoProfesor);
+        });
 
-    let html = '';
-    materiales.forEach(doc => {
-        const profesor = doc.docente?.usuario ? `${doc.docente.usuario.nombre} ${doc.docente.usuario.apellido}` : 'Desconocido';
-        const grado = doc.grado?.nombre_grado || 'N/A';
-        const materia = doc.materia?.nombre_materia || 'General';
+        if (documentosFiltrados.length === 0) {
+            documentacionList.innerHTML = '<div class="text-center text-muted p-4">No se encontraron archivos con esos filtros.</div>';
+            return;
+        }
 
-        html += `
-            <a href="${doc.ubicacion_archivo}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center document-item">
-                <div class="d-flex align-items-center">
-                    <div class="icon me-3">
-                        <i class="fas fa-file-pdf"></i>
+        // 4. Generar HTML
+        let html = '';
+        
+        for (const doc of documentosFiltrados) {
+            const profesor = doc.docente?.usuario ? `${doc.docente.usuario.nombre} ${doc.docente.usuario.apellido}` : 'Desconocido';
+            const materiaNombre = doc.materia?.nombre_materia || 'Sin materia';
+            const gradoNombre = doc.materia?.grado?.nombre_grado || 'Sin grado';
+            const fecha = new Date(doc.fecha_creacion).toLocaleDateString();
+            const nombreArchivo = doc.archivo_path.split('/').pop(); // Obtener nombre real del archivo
+
+            // Generar enlace de descarga seguro
+            let botonDescarga = '<button class="btn btn-sm btn-outline-secondary disabled">Error</button>';
+            
+            if (doc.archivo_path) {
+                const { data: urlData } = await supabase.storage
+                    .from('materiales')
+                    .createSignedUrl(doc.archivo_path, 3600);
+
+                if (urlData?.signedUrl) {
+                    botonDescarga = `
+                        <a href="${urlData.signedUrl}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download me-1"></i> Descargar
+                        </a>
+                    `;
+                }
+            }
+
+            html += `
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon me-3 fs-4 text-primary">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">${doc.titulo}</h6>
+                            <div class="small text-muted mb-1">Arch: ${nombreArchivo}</div>
+                            <div class="small text-muted">
+                                <span class="badge bg-light text-dark border me-1"><i class="fas fa-chalkboard-teacher"></i> ${profesor}</span>
+                                <span class="badge bg-light text-dark border me-1"><i class="fas fa-layer-group"></i> ${gradoNombre}</span>
+                                <span class="badge bg-light text-dark border"><i class="fas fa-book"></i> ${materiaNombre}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="info">
-                        <h6 class="mb-0">${doc.nombre_archivo}</h6>
-                        <span class="profesor">${profesor}</span> | 
-                        <span class="grado">${grado} / ${materia}</span>
+                    <div class="text-end">
+                        <div class="small text-muted mb-1">${fecha}</div>
+                        ${botonDescarga}
                     </div>
                 </div>
-                <button class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-download me-1"></i> Ver/Descargar
-                </button>
-            </a>
-        `;
-    });
-    documentacionList.innerHTML = html;
+            `;
+        }
+
+        documentacionList.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error rendering documentos:', error);
+        documentacionList.innerHTML = `<div class="text-center text-danger p-4">Error al cargar documentos: ${error.message}</div>`;
+    }
 }
 
 /**
  * Llena el <select> de filtro de grados.
  */
 async function populateGradoFilter() {
-    const { data, error } = await supabase.from('grado').select('id_grado, nombre_grado');
-    if (error) {
+    const filtroGrado = document.getElementById('filtro-grado');
+    if (!filtroGrado) return;
+
+    try {
+        const { data, error } = await supabase.from('grado').select('id_grado, nombre_grado').order('id_grado');
+        if (error) throw error;
+
+        filtroGrado.innerHTML = '<option value="">Filtrar por Grado...</option>';
+        data.forEach(grado => {
+            filtroGrado.innerHTML += `<option value="${grado.id_grado}">${grado.nombre_grado}</option>`;
+        });
+    } catch (error) {
         console.error("Error cargando grados:", error);
-        return;
     }
-    data.forEach(grado => {
-        filtroGrado.innerHTML += `<option value="${grado.id_grado}">${grado.nombre_grado}</option>`;
-    });
 }
 
 

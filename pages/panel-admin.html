@@ -27,7 +27,7 @@
                 <i class="fas fa-shield-alt me-2"></i>
                 Panel de Administración
             </h4>
-            <a href="/index.html" class="btn btn-success-soft" id="ir-inicio-btn">
+            <a href="/index.html" class="btn btn-success" id="ir-inicio-btn">
                 <i class="fas fa-home me-2"></i> Ir al Inicio
             </a>
         </div>
@@ -277,6 +277,68 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalVerDocente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info-subtle">
+                    <h5 class="modal-title"><i class="fas fa-id-card me-2"></i> Legajo del Docente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2 text-primary">Datos Personales</h6>
+                            <p class="mb-1"><strong>Nombre:</strong> <span id="view-doc-nombre">--</span></p>
+                            <p class="mb-1"><strong>Email:</strong> <span id="view-doc-email">--</span></p>
+                            <p class="mb-1"><strong>DNI:</strong> <span id="view-doc-dni">--</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2 text-primary">Datos Profesionales</h6>
+                            <p class="mb-1"><strong>Estado:</strong> <span id="view-doc-estado">--</span></p>
+                            <p class="mb-1"><strong>N° Plaza/Cargo:</strong> <span id="view-doc-plaza">--</span></p>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <h6 class="border-bottom pb-2 text-primary">Documentación Adjunta</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Tirilla CUIL
+                                            <a href="#" target="_blank" id="link-view-cuil" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Fotocopia DNI
+                                            <a href="#" target="_blank" id="link-view-dni" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Acta Nacimiento
+                                            <a href="#" target="_blank" id="link-view-acta" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Declaración Jurada
+                                            <a href="#" target="_blank" id="link-view-ddjj" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Título Habilitante
+                                            <a href="#" target="_blank" id="link-view-titulo" class="btn btn-sm btn-outline-secondary disabled">Ver Archivo</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
@@ -347,6 +409,44 @@
                                 <input type="text" id="modal-tutor-educacion" class="form-control" disabled>
                             </div>
                         </div>
+                        <div id="modal-docente-info" style="display: none;">
+                        <h6 class="mt-4 border-top pt-3 text-primary"><i class="fas fa-chalkboard-teacher me-2"></i> Datos Profesionales (Docente)</h6>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Estado Actual</label>
+                                <input type="text" id="modal-doc-estado" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">N° Plaza / Cargo</label>
+                                <input type="text" id="modal-doc-plaza" class="form-control" disabled>
+                            </div>
+                        </div>
+
+                        <label class="form-label fw-bold mb-2">Documentación Adjunta:</label>
+                        <div class="list-group small">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-file-invoice me-2"></i> Tirilla CUIL</span>
+                                <a href="#" target="_blank" id="btn-view-cuil" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-id-card me-2"></i> Fotocopia DNI</span>
+                                <a href="#" target="_blank" id="btn-view-dni" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-birthday-cake me-2"></i> Acta Nacimiento</span>
+                                <a href="#" target="_blank" id="btn-view-acta" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-file-signature me-2"></i> Declaración Jurada</span>
+                                <a href="#" target="_blank" id="btn-view-ddjj" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-graduation-cap me-2"></i> Título Habilitante</span>
+                                <a href="#" target="_blank" id="btn-view-titulo" class="btn btn-sm btn-outline-secondary disabled">No subido</a>
+                            </div>
+                        </div>
+                    </div>
                     </div> </div>
                 <div class="modal-footer border-0">
                     <input type="hidden" id="modal-user-id">

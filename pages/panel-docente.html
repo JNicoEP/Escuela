@@ -85,6 +85,7 @@
 
         <section class="tab-pane active" id="dashboard" role="tabpanel">
             <h2 class="h4 mb-4">Bienvenido, Profesor</h2>
+
             <div class="row g-4 mb-4">
                 <div class="col-lg-3 col-md-6">
                     <div class="summary-card bg-card-cursos shadow-sm">
@@ -119,6 +120,76 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary"><i class="bi bi-person-lines-fill me-2"></i> Mi Perfil Profesional
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#modalEditarPerfilDocente">
+                        <i class="bi bi-pencil-square me-1"></i> Editar / Subir Documentos
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6 border-end">
+                            <h6 class="text-uppercase text-muted mb-3 fw-bold small">Datos Personales</h6>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Nombre Completo</small>
+                                <span class="fw-medium" id="dash-nombre">Cargando...</span>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">DNI</small>
+                                <span class="fw-medium" id="dash-dni">Cargando...</span>
+                            </div>
+
+                            <div class="mt-3">
+                                <p class="mb-1 small fw-bold">Documentación Personal:</p>
+                                <ul class="list-unstyled small">
+                                    <li class="mb-1 d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-file-earmark-person me-2"></i> Tirilla CUIL</span>
+                                        <span id="link-cuil" class="badge bg-light text-dark border">Pendiente</span>
+                                    </li>
+                                    <li class="mb-1 d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-card-heading me-2"></i> Fotocopia DNI</span>
+                                        <span id="link-dni-copy"
+                                            class="badge bg-light text-dark border">Pendiente</span>
+                                    </li>
+                                    <li class="mb-1 d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-file-text me-2"></i> Acta Nacimiento</span>
+                                        <span id="link-acta" class="badge bg-light text-dark border">Pendiente</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 ps-md-4">
+                            <h6 class="text-uppercase text-muted mb-3 fw-bold small">Datos Profesionales</h6>
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Plaza (N° Cargo)</small>
+                                <span class="fw-medium fs-5 text-dark" id="dash-plaza">--</span>
+                            </div>
+
+                            <div class="mt-3">
+                                <p class="mb-1 small fw-bold">Legajo y Títulos:</p>
+                                <ul class="list-unstyled small">
+                                    <li class="mb-1 d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-file-earmark-check me-2"></i> Declaración Jurada</span>
+                                        <span id="link-ddjj" class="badge bg-light text-dark border">Pendiente</span>
+                                    </li>
+                                    <li class="mb-1 d-flex justify-content-between align-items-center">
+                                        <span><i class="bi bi-mortarboard me-2"></i> Título Habilitante</span>
+                                        <span id="link-titulo" class="badge bg-light text-dark border">Pendiente</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header"><i class="bi bi-activity me-2"></i> Actividad Reciente</div>
                 <div id="actividad-reciente-container" class="list-group list-group-flush">
@@ -188,7 +259,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="tareaPuntaje" class="form-label">Puntaje Máximo</label>
-                                <input type="number" class="form-control" id="tareaPuntaje" value="100" required>
+                                <input type="number" class="form-control" id="tareaPuntaje" value="10" required>
                             </div>
                             <div class="col-12 text-end">
                                 <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="collapse"
@@ -380,11 +451,13 @@
                 <div class="row mt-3 text-center d-none" id="resumen-estadistico">
                     <div class="col-4">
                         <div class="p-2 bg-success-subtle rounded border border-success text-success fw-bold">Presentes:
-                            <span id="count-presentes">0</span></div>
+                            <span id="count-presentes">0</span>
+                        </div>
                     </div>
                     <div class="col-4">
                         <div class="p-2 bg-danger-subtle rounded border border-danger text-danger fw-bold">Ausentes:
-                            <span id="count-ausentes">0</span></div>
+                            <span id="count-ausentes">0</span>
+                        </div>
                     </div>
                     <div class="col-4">
                         <div class="p-2 bg-warning-subtle rounded border border-warning text-warning-emphasis fw-bold">
@@ -592,6 +665,68 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalEditarPerfilDocente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Actualizar Legajo Docente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="form-editar-perfil-docente">
+                    <div class="modal-body">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nombre</label>
+                                <input type="text" class="form-control" id="edit-doc-nombre" readonly disabled>
+                                <div class="form-text">Para cambiar nombre contacte a administración.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Apellido</label>
+                                <input type="text" class="form-control" id="edit-doc-apellido" readonly disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">DNI</label>
+                                <input type="text" class="form-control" id="edit-doc-dni">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">N° Plaza / Cargo</label>
+                                <input type="text" class="form-control" id="edit-doc-plaza" placeholder="Ej: 40552">
+                            </div>
+                        </div>
+
+                        <h6 class="border-bottom pb-2 mb-3 text-primary">Carga de Documentación (PDF o Foto)</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tirilla de CUIL</label>
+                            <input type="file" class="form-control" id="file-cuil" accept=".pdf,image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fotocopia DNI (Frente y Dorso)</label>
+                            <input type="file" class="form-control" id="file-dni" accept=".pdf,image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Acta de Nacimiento</label>
+                            <input type="file" class="form-control" id="file-acta" accept=".pdf,image/*">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Declaración Jurada</label>
+                            <input type="file" class="form-control" id="file-ddjj" accept=".pdf,image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Título Habilitante</label>
+                            <input type="file" class="form-control" id="file-titulo" accept=".pdf,image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
