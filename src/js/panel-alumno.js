@@ -222,8 +222,11 @@ async function cargarDatosEstudiante() {
         const alumnoInfo = data.alumnos || {};
         const gradoInfo = alumnoInfo.grado || {};
         const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`;
+        const userNameDisplay = document.getElementById('user-name-display');
+    if (userNameDisplay) {
+        userNameDisplay.textContent = nombreCompleto;
+    }
 
-        fillData('nav-matricula', 'N/A');
         fillData('stat-promedio-valor', 'N/A');
         fillData('stat-asistencia-valor', 'N/A');
         fillData('stat-cursos-valor', 'N/A');
@@ -243,7 +246,7 @@ async function cargarDatosEstudiante() {
         fillData('info-tutor-trabajo', alumnoInfo.tutor_trabajo);
         fillData('info-tutor-educacion', alumnoInfo.tutor_educacion);
         fillData('print-title-alumno', nombreCompleto);
-
+        
 
         // --- NUEVO CAMPO CUD ---
         fillData('info-cud-diagnostico', alumnoInfo.cud_diagnostico);
@@ -252,6 +255,7 @@ async function cargarDatosEstudiante() {
         fillData('summary-mejor-materia-val', 'N/A');
         fillData('summary-mejor-materia-label', 'N/A');
         fillData('summary-materias', 'N/A');
+        cargarEstadisticasResumen();
 
     } catch (e) {
         console.error("Error al rellenar los datos en el DOM:", e);
@@ -260,8 +264,15 @@ async function cargarDatosEstudiante() {
 }
 
 /**
- * Función para guardar los cambios del perfil
+ * Cierra la sesión del usuario y redirige al inicio.
  */
+async function handleLogout() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error('Error al salir:', error);
+    }
+    window.location.href = '/index.html';
+}
 /**
  * Función para guardar los cambios del perfil
  */
@@ -464,6 +475,110 @@ async function cargarAsistencia() {
         container.innerHTML = `<p class="text-center text-danger">Error al cargar asistencias: ${error.message}</p>`;
     }
 }
+/**
+ * Calcula y muestra las estadísticas en las tarjetas superiores y el resumen inferior
+ */
+async function cargarEstadisticasResumen() {
+    if (!datosUsuarioActual) return;
+    const idAlumno = datosUsuarioActual.id_usuario;
+    const idGrado = datosUsuarioActual.alumnos.grado.id_grado;
+
+    try {
+        // 1. CALCULAR CANTIDAD DE MATERIAS
+        const { count: cantidadMaterias } = await supabase
+            .from('materias')
+            .select('*', { count: 'exact', head: true })
+            .eq('id_grado', idGrado);
+
+        const elMaterias = document.getElementById('stat-cursos-valor');
+        if (elMaterias) elMaterias.textContent = cantidadMaterias || 0;
+        // También actualiza el resumen de abajo
+        const elMateriasResumen = document.getElementById('summary-materias');
+        if (elMateriasResumen) elMateriasResumen.textContent = cantidadMaterias || 0;
+
+
+        // 2. CALCULAR PROMEDIO GENERAL
+        // Traemos todas las calificaciones del alumno
+        const { data: notas } = await supabase
+            .from('calificaciones')
+            .select('nota')
+            // La RLS ya filtra por el usuario logueado, pero aseguramos el join si es necesario
+            // o confiamos en la RLS que creamos: "Alumnos ven sus propias calificaciones"
+            ; 
+
+        let promedioTexto = 'N/A';
+        let mejorMateriaNota = 0; 
+
+        if (notas && notas.length > 0) {
+            const suma = notas.reduce((acc, curr) => acc + curr.nota, 0);
+            const promedio = (suma / notas.length).toFixed(1); // 1 decimal
+            promedioTexto = promedio;
+        }
+
+        const elPromedio = document.getElementById('stat-promedio-valor');
+        if (elPromedio) elPromedio.textContent = promedioTexto;
+        // Resumen de abajo
+        const elPromedioResumen = document.getElementById('summary-promedio');
+        if (elPromedioResumen) elPromedioResumen.textContent = promedioTexto;
+
+
+        // 3. CALCULAR PORCENTAJE DE ASISTENCIA
+        // Traemos todas las asistencias del alumno
+        const { data: asistencias } = await supabase
+            .from('asistencias')
+            .select('estado');
+
+        let asistenciaTexto = 'N/A';
+
+        if (asistencias && asistencias.length > 0) {
+            const totalClases = asistencias.length;
+            // Contamos cuántas veces dice 'presente'
+            const totalPresentes = asistencias.filter(a => a.estado === 'presente').length;
+            
+            // Regla de 3 simple
+            const porcentaje = Math.round((totalPresentes / totalClases) * 100);
+            asistenciaTexto = `${porcentaje}%`;
+        }
+
+        const elAsistencia = document.getElementById('stat-asistencia-valor');
+        if (elAsistencia) elAsistencia.textContent = asistenciaTexto;
+
+
+        // 4. CALCULAR TAREAS PENDIENTES
+        // Traemos tareas del grado y verificamos si NO están entregadas
+        const { data: tareas } = await supabase
+            .from('tareas')
+            .select('id_tarea, entregas(id_entrega)')
+             // La RLS "Alumnos ven tareas por su grado" se encarga del filtro
+            ; 
+
+        let tareasPendientes = 0;
+        if (tareas) {
+            // Contamos las que tienen el array de entregas vacío
+            tareasPendientes = tareas.filter(t => !t.entregas || t.entregas.length === 0).length;
+        }
+
+        const elTareas = document.getElementById('stat-tareas-valor');
+        if (elTareas) elTareas.textContent = tareasPendientes;
+
+
+        // 5. EXTRA: MEJOR MATERIA (Para el resumen de abajo)
+        // Esto requeriría una consulta más compleja agrupando por materia,
+        // por ahora podemos poner un guion o calcularlo si traemos las inscripciones.
+        // Para simplificar y que no falle, dejaremos un valor por defecto o calcularemos simple.
+        
+        // Lógica rápida para Mejor Materia:
+        // (Requeriría traer notas con materia, lo omitimos por simplicidad para no sobrecargar, 
+        // pero actualizamos el DOM para que no diga N/A feo)
+        const elMejorMateria = document.getElementById('summary-mejor-materia-val');
+        if (elMejorMateria && promedioTexto !== 'N/A') {
+             elMejorMateria.textContent = "-"; // O puedes poner "Ver Boleta"
+        }
+
+    } catch (error) {
+        console.error("Error calculando estadísticas:", error);
+    }
+}
 
 
 /**
@@ -614,6 +729,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalEditarPerfil = document.getElementById('modalEditarPerfil');
     const formEditarPerfil = document.getElementById('formEditarPerfil');
     const formEntrega = document.getElementById('form-subir-entrega');
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', handleLogout);
+    }
     if (formEntrega) {
         formEntrega.addEventListener('submit', handleSubirEntrega);
     }

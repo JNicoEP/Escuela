@@ -34,22 +34,29 @@ async function checkUserSession() {
     }
 
     if (!session) {
-        // No hay sesión, redirigir a la página de login
-        // Cambia '/index.html' por tu página de inicio de sesión
         window.location.href = '/index.html';
         return;
     }
 
     currentUser = session.user;
-    currentDocenteId = currentUser.id; // Asumiendo que el auth.user.id es el id_docente
+    currentDocenteId = currentUser.id; 
 
-    // Actualizar la UI del header
-    const nombreCompleto = `${currentUser.user_metadata?.nombre || ''} ${currentUser.user_metadata?.apellido || ''}`.trim();
+    // --- CORRECCIÓN AQUÍ ---
+    // 1. Definimos el email porque lo necesitamos para las iniciales de respaldo
+    const userEmail = currentUser.email;
 
-    // Si no hay nombre, mostramos "Docente" o lo dejamos vacío, pero NO el email.
+    // 2. Obtenemos nombre y apellido
+    const nombre = currentUser.user_metadata?.nombre || '';
+    const apellido = currentUser.user_metadata?.apellido || '';
+    const nombreCompleto = `${nombre} ${apellido}`.trim();
+
+    // 3. Mostramos SOLO el nombre (o 'Docente' si no tiene). NO el email.
     document.getElementById('user-name-display').textContent = nombreCompleto || 'Docente';
-    const initials = (currentUser.user_metadata?.nombre?.[0] || '') + (currentUser.user_metadata?.apellido?.[0] || '');
-    document.getElementById('user-initials-display').textContent = initials || userEmail[0].toUpperCase();
+
+    // 4. Calculamos iniciales para el avatar
+    // Si tiene nombre y apellido, usa sus iniciales. Si no, usa la primera letra del email.
+    const initials = (nombre?.[0] || '') + (apellido?.[0] || '');
+    document.getElementById('user-initials-display').textContent = (initials || userEmail[0] || 'D').toUpperCase();
 }
 
 /**
