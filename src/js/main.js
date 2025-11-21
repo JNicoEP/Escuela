@@ -27,8 +27,8 @@ import '../css/modal/modal.css';
 import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
 import footerHtml from '../components/footer/footer.html?raw';
-import { setupSidebarToggle } from './sidebarToggle.js';
-import { initHistoriaGallery } from './historia.js';
+import { setupSidebarToggle } from './components/sidebarToggle.js';
+import { initHistoriaGallery } from './pages/historia.js';
 
 
 /**
@@ -104,19 +104,29 @@ async function bootstrapApp() {
         setupSidebarToggle();
     }
 
-    //  Iniciar la carga de scripts DE FORMA ASÍNCRONA
+    // 4. Carga de scripts asíncronos y lógica específica
     const loadScripts = async () => {
         try {
-            console.log("Intentando cargar modal.js...");
-            await import('./modal.js');
-            console.log("OK: modal.js cargado.");
-            
-            /*console.log("Intentando cargar auth.js...");
-            await import('./auth.js'); // <-- AÑADE ESTA LÍNEA
-            console.log("OK: auth.js cargado.");*/
+            // A. Cargar Componentes globales
+            await import('./components/modal.js'); 
+
+            // B. Lógica de LOGIN (Condicional)
+            // Solo importamos login.js si existe el formulario de login en la página
+            if (document.getElementById('loginForm') || document.getElementById('authModal')) {
+                // Importamos dinámicamente
+                const { initLogin } = await import('./pages/login.js');
+                // Ejecutamos la función manualmente
+                initLogin(); 
+            }
+
+            // C. Lógica de HISTORIA (Ya la tienes, pero asegúrate que use el mismo patrón)
+            if (document.querySelector('.expanding-gallery-container')) {
+                 const { initHistoriaGallery } = await import('./pages/historia.js');
+                 initHistoriaGallery();
+            }
             
         } catch (error) {
-            console.error('Error al cargar los scripts de la página:', error);
+            console.error('Error al cargar los scripts dinámicos:', error);
         }
     };
     //  Crear una promesa de tiempo mínimo (1000ms = 1 segundo)

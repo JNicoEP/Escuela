@@ -4,8 +4,10 @@
 ---------------------------------- */
 'use strict';
 
-// 1. IMPORTAR SUPABASE
-import { supabase } from '../../src/js/supabaseClient.js';
+// 1. Importas la conexión a la Base de Datos (Configuración)
+import { supabase } from '../config/supabaseClient.js';
+
+
 
 let datosUsuarioActual = null;
 

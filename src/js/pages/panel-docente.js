@@ -1,6 +1,8 @@
-// Importar el cliente de Supabase y la función de mensajes
-// Asegúrate que la ruta a tu archivo 'supabaseClient.js' sea correcta
-import { supabase, showMessage } from './supabaseClient.js';
+// 1. Importas la conexión a la Base de Datos (Configuración)
+import { supabase } from '../config/supabaseClient.js';
+
+// 2. Importas la herramienta visual de Alertas (Utilidad)
+import { showMessage } from '../utils/notifications.js';
 
 // --- VARIABLES GLOBALES ---
 let currentUser = null; // Guardará el objeto 'user' de Supabase Auth

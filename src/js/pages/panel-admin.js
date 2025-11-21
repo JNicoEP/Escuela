@@ -4,8 +4,11 @@
 ---------------------------------- */
 'use strict';
 
-// 1. IMPORTAR SUPABASE
-import { supabase, showMessage } from '../js/supabaseClient.js';
+// 1. Importas la conexión a la Base de Datos (Configuración)
+import { supabase } from '../config/supabaseClient.js';
+
+// 2. Importas la herramienta visual de Alertas (Utilidad)
+import { showMessage } from '../utils/notifications.js';
 
 // --- Referencias al DOM ---
 const welcomeAlert = document.getElementById('welcome-alert');
