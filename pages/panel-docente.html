@@ -190,10 +190,12 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header"><i class="bi bi-activity me-2"></i> Actividad Reciente</div>
-                <div id="actividad-reciente-container" class="list-group list-group-flush">
-                    <div class="list-group-item text-muted">No hay actividad reciente.</div>
+
+                <div id="actividad-reciente-container" class="list-group list-group-flush"
+                    style="max-height: 400px; overflow-y: auto;">
+                    <div class="list-group-item text-muted">Cargando...</div>
                 </div>
             </div>
         </section>
@@ -348,8 +350,12 @@
         </section>
 
         <section class="tab-pane" id="asistencia" role="tabpanel">
-            <h2 class="h4 mb-4">Control de Asistencia</h2>
-
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0">Control de Asistencia</h2>
+                <button class="btn btn-info text-white" id="btn-ver-certificados">
+                    <i class="bi bi-file-medical-fill me-2"></i> Revisar Justificativos
+                </button>
+            </div>
             <form id="form-control-asistencia" class="mb-5">
                 <div class="card card-body mb-4 border-primary border-opacity-25" style="background-color: #f8fbff;">
                     <h5 class="card-title text-primary mb-3"><i class="bi bi-pen-fill me-2"></i> Registrar Nueva
@@ -727,6 +733,43 @@
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalRevisarCertificados" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="bi bi-file-medical me-2"></i> Justificativos Pendientes</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="certificados-loading" class="text-center py-3">
+                        <div class="spinner-border text-info" role="status"></div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="tabla-certificados">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Alumno</th>
+                                    <th>Fechas</th>
+                                    <th>Archivo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-certificados-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="certificados-empty" class="text-center py-3 text-muted d-none">
+                        No hay certificados pendientes de revisión.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>

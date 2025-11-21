@@ -6,7 +6,7 @@ import { showMessage } from '../utils/notifications.js';
 let currentSelectedRole = 'alumno';
 
 export function initLogin() {
-    console.log(' initLogin ejecutado: Configurando eventos del Login...');
+    console.log('Iniciando Login: Configurando eventos del Login...');
 
     const loginModalTitle = document.getElementById('authModalLabel');
     const roleSelectButtons = document.querySelectorAll('.role-select-btn');

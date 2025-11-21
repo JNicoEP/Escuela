@@ -59,7 +59,7 @@ function loadModals() {
         modals.forEach(modal => {
             document.body.appendChild(modal);
         });
-        console.log('Modals inyectados (desde import ?raw).');
+        console.log('Modals inyectados.');
     } catch (error) {
         console.error('Error al INYECTAR los modals:', error);
     }

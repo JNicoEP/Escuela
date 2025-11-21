@@ -41,7 +41,7 @@ async function checkUserSession() {
     }
 
     currentUser = session.user;
-    currentDocenteId = currentUser.id; 
+    currentDocenteId = currentUser.id;
 
     // --- CORRECCIÓN AQUÍ ---
     // 1. Definimos el email porque lo necesitamos para las iniciales de respaldo
@@ -97,54 +97,71 @@ function setupTabLogic() {
 // --- CONFIGURACIÓN DE EVENT LISTENERS ---
 
 function setupEventListeners() {
-    // NUEVO: Listener para el formulario de edición
-    const formEditar = document.getElementById('form-editar-tarea');
-    const btnBuscarHistorial = document.getElementById('btn-buscar-historial');
-    if (formEditar) {
-        formEditar.addEventListener('submit', handleGuardarEdicion);
+    console.log("Configurando Event Listeners...");
+
+    // --- Helper para agregar eventos de forma segura ---
+    // Esto evita el error "Cannot read properties of null"
+    const safeAddListener = (id, eventType, handler) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener(eventType, handler);
+        } else {
+            // Opcional: Comentar esto si molesta en la consola, pero ayuda a saber qué falta
+            console.warn(`Elemento HTML no encontrado: '${id}'. Verifica que el ID exista en el HTML.`);
+        }
+    };
+
+    // 1. Botones Generales
+    safeAddListener('btn-logout', 'click', handleLogout);
+
+    // NUEVO: Botón para revisar certificados (si lo agregaste en el paso anterior)
+    safeAddListener('btn-ver-certificados', 'click', abrirModalCertificados);
+
+    // 2. Formularios de Edición y Búsqueda
+    safeAddListener('form-editar-tarea', 'submit', handleGuardarEdicion);
+    safeAddListener('btn-buscar-historial', 'click', buscarHistorialAsistencia);
+
+    // 3. Formulario Editar Perfil Docente
+    safeAddListener('form-editar-perfil-docente', 'submit', handleGuardarPerfilDocente);
+
+    // 4. Formulario: Agregar Materia
+    safeAddListener('form-agregar-materia', 'submit', handleAgregarMateria);
+
+    // 5. Formulario: Crear Tarea
+    safeAddListener('form-crear-tarea', 'submit', handleCrearTarea);
+
+    // 6. Formulario: Registrar Calificación
+    safeAddListener('form-registrar-calificacion', 'submit', handleRegistrarCalificacion);
+
+    // 7. Formulario: Guardar Asistencia
+    safeAddListener('form-control-asistencia', 'submit', handleGuardarAsistencia);
+
+    // 8. Formulario: Enviar Mensaje
+    safeAddListener('form-redactar-mensaje', 'submit', handleEnviarMensaje);
+
+    // 9. Selects dinámicos (Logica de carga)
+    const califMateria = document.getElementById('califMateria');
+    if (califMateria) {
+        califMateria.addEventListener('change', (e) => loadEstudiantesParaSelect(e.target.value, 'califInscripcion'));
     }
-    if (btnBuscarHistorial) {
-        btnBuscarHistorial.addEventListener('click', buscarHistorialAsistencia);
-    }
-    // Botón de Logout
-    document.getElementById('btn-logout').addEventListener('click', handleLogout);
-    
-    // Formulario Editar Perfil Docente
-    const formPerfilDocente = document.getElementById('form-editar-perfil-docente');
-    if (formPerfilDocente) {
-        formPerfilDocente.addEventListener('submit', handleGuardarPerfilDocente);
+
+    const califSelectMateriaVer = document.getElementById('califSelectMateriaVer');
+    if (califSelectMateriaVer) {
+        califSelectMateriaVer.addEventListener('change', (e) => loadCalificaciones(e.target.value));
     }
 
-    // Formulario: Agregar Materia (NUEVO)
-    document.getElementById('form-agregar-materia').addEventListener('submit', handleAgregarMateria);
-
-    // Formulario: Crear Tarea
-    // ! VER NOTA IMPORTANTE AL FINAL SOBRE LA TABLA 'tareas'
-    document.getElementById('form-crear-tarea').addEventListener('submit', handleCrearTarea);
-
-    // Formulario: Registrar Calificación
-    document.getElementById('form-registrar-calificacion').addEventListener('submit', handleRegistrarCalificacion);
-
-    // Formulario: Guardar Asistencia
-    document.getElementById('form-control-asistencia').addEventListener('submit', handleGuardarAsistencia);
-
-    // Formulario: Enviar Mensaje
-    document.getElementById('form-redactar-mensaje').addEventListener('submit', handleEnviarMensaje);
-
-    // Selects dinámicos (que cargan otros selects)
-    document.getElementById('califMateria').addEventListener('change', (e) => loadEstudiantesParaSelect(e.target.value, 'califInscripcion'));
-
-    // Selects que cargan listas
-    document.getElementById('califSelectMateriaVer').addEventListener('change', (e) => loadCalificaciones(e.target.value));
-
+    // 10. Lógica de Asistencia (Materia y Fecha)
     const asistenciaMateria = document.getElementById('asistenciaMateria');
     const asistenciaFecha = document.getElementById('asistenciaFecha');
-    asistenciaMateria.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
-    asistenciaFecha.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
 
-    // Botones "Marcar Todos" en Asistencia
-    document.getElementById('btn-marcar-presente').addEventListener('click', () => marcarTodosAsistencia('presente'));
-    document.getElementById('btn-marcar-ausente').addEventListener('click', () => marcarTodosAsistencia('ausente'));
+    if (asistenciaMateria && asistenciaFecha) {
+        asistenciaMateria.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
+        asistenciaFecha.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
+    }
+
+    // 11. Botones "Marcar Todos" en Asistencia
+    safeAddListener('btn-marcar-presente', 'click', () => marcarTodosAsistencia('presente'));
+    safeAddListener('btn-marcar-ausente', 'click', () => marcarTodosAsistencia('ausente'));
 }
 
 // --- CARGA DE DATOS INICIAL ---
@@ -160,6 +177,141 @@ async function loadAllData() {
     loadMensajes(); // Cargar mensajes recibidos y enviados
     loadAllSelects(); // Cargar opciones de todos los dropdowns
 }
+/**
+ * Abre el modal y carga los certificados pendientes
+ */
+async function abrirModalCertificados() {
+    const modal = new bootstrap.Modal(document.getElementById('modalRevisarCertificados'));
+    modal.show();
+
+    const tbody = document.getElementById('lista-certificados-body');
+    const loading = document.getElementById('certificados-loading');
+    const empty = document.getElementById('certificados-empty');
+    const tabla = document.getElementById('tabla-certificados');
+
+    tbody.innerHTML = '';
+    loading.classList.remove('d-none');
+    tabla.classList.add('d-none');
+    empty.classList.add('d-none');
+
+    try {
+        // CORRECCIÓN: Relacionamos directamente con 'usuarios' porque así está la FK en tu BD
+        const { data: certificados, error } = await supabase
+            .from('certificados_medicos')
+            .select(`
+                id_certificado,
+                fecha_inicio,
+                fecha_fin,
+                archivo_path,
+                comentario,
+                usuarios (
+                    nombre, 
+                    apellido, 
+                    dni
+                )
+            `)
+            .eq('estado', 'pendiente')
+            .order('created_at', { ascending: false });
+
+        loading.classList.add('d-none');
+
+        if (error) throw error;
+
+        if (!certificados || certificados.length === 0) {
+            empty.classList.remove('d-none');
+            return;
+        }
+
+        tabla.classList.remove('d-none');
+
+        // Usamos for...of para poder usar await con las URLs firmadas
+        for (const cert of certificados) {
+            // CORRECCIÓN: Ahora los datos del alumno están en 'cert.usuarios'
+            const alumno = cert.usuarios;
+            const nombreFull = alumno ? `${alumno.nombre} ${alumno.apellido}` : 'Desconocido';
+
+            // Generar Link de descarga
+            let btnArchivo = '<span class="text-muted small">Sin archivo</span>';
+            if (cert.archivo_path) {
+                // Intenta crear URL firmada
+                const { data: signedData } = await supabase.storage
+                    .from('materiales')
+                    .createSignedUrl(cert.archivo_path, 3600);
+
+                if (signedData) {
+                    btnArchivo = `
+                        <a href="${signedData.signedUrl}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver Documento">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                    `;
+                }
+            }
+
+            tbody.innerHTML += `
+                <tr id="fila-cert-${cert.id_certificado}">
+                    <td>
+                        <div class="fw-bold">${nombreFull}</div>
+                        <small class="text-muted">DNI: ${alumno?.dni || '-'}</small>
+                        ${cert.comentario ? `<div class="small text-info mt-1 fst-italic">"${cert.comentario}"</div>` : ''}
+                    </td>
+                    <td>
+                        <div class="small">Desde: ${new Date(cert.fecha_inicio + 'T00:00:00').toLocaleDateString()}</div>
+                        <div class="small">Hasta: ${new Date(cert.fecha_fin + 'T00:00:00').toLocaleDateString()}</div>
+                    </td>
+                    <td>${btnArchivo}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-success" onclick="gestionarCertificado(${cert.id_certificado}, 'aprobado')">
+                                <i class="bi bi-check-lg"></i> Aprobar
+                            </button>
+                            <button class="btn btn-danger" onclick="gestionarCertificado(${cert.id_certificado}, 'rechazado')">
+                                <i class="bi bi-x-lg"></i> Rechazar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+    } catch (error) {
+        console.error(error);
+        loading.classList.add('d-none');
+        tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Error: ${error.message}</td></tr>`;
+        tabla.classList.remove('d-none');
+    }
+}
+
+// Hacemos la función global para poder llamarla desde el onclick del HTML inyectado
+window.gestionarCertificado = async (idCertificado, nuevoEstado) => {
+    if (!confirm(`¿Estás seguro de marcar este certificado como ${nuevoEstado.toUpperCase()}?`)) return;
+
+    try {
+        const { error } = await supabase
+            .from('certificados_medicos')
+            .update({ estado: nuevoEstado })
+            .eq('id_certificado', idCertificado);
+
+        if (error) throw error;
+
+        showMessage(`Certificado ${nuevoEstado} correctamente.`, 'Éxito');
+        registrarActividad('certificado', `Has ${nuevoEstado} un certificado médico.`);
+
+        // Eliminar fila visualmente
+        const fila = document.getElementById(`fila-cert-${idCertificado}`);
+        if (fila) fila.remove();
+
+        // Si no quedan filas, mostrar mensaje vacío
+        const tbody = document.getElementById('lista-certificados-body');
+        if (tbody.children.length === 0) {
+            document.getElementById('certificados-empty').classList.remove('d-none');
+            document.getElementById('tabla-certificados').classList.add('d-none');
+        }
+
+    } catch (error) {
+        console.error(error);
+        showMessage('Error al actualizar certificado: ' + error.message, 'Error');
+    }
+};
 
 /**
  * Carga los datos de resumen del Dashboard.
@@ -192,6 +344,7 @@ async function loadDashboardData() {
         .limit(3)
         .order('fecha', { ascending: false }); // Faltaría filtrar por docente
     await loadDocenteProfileInfo();
+    await loadActividadReciente();
 
     const container = document.getElementById('actividad-reciente-container');
     container.innerHTML = '';
@@ -255,7 +408,7 @@ async function loadDocenteProfileInfo() {
                 // Obtener URL firmada o publica (asumiendo bucket privado 'materiales')
                 const { data: urlData } = supabase.storage.from('materiales').getPublicUrl(path);
                 // Nota: Si usas 'createSignedUrl' cámbialo aquí. Por simplicidad uso PublicUrl si el bucket es mixto.
-                
+
                 el.innerHTML = `<a href="${urlData.publicUrl}" target="_blank" class="badge bg-success text-white text-decoration-none"><i class="bi bi-eye-fill"></i> Ver Documento</a>`;
                 el.classList.remove('bg-light', 'text-dark', 'border');
             } else {
@@ -299,7 +452,7 @@ async function handleGuardarPerfilDocente(e) {
     try {
         // 1. Actualizar datos de texto (DNI en usuarios, Plaza en docentes)
         await supabase.from('usuarios').update({ dni: dni }).eq('id_usuario', currentDocenteId);
-        
+
         const updateData = { plaza: plaza };
 
         // 2. Subir archivos si existen y guardar sus rutas
@@ -309,9 +462,9 @@ async function handleGuardarPerfilDocente(e) {
                 const { error: uploadError } = await supabase.storage
                     .from('materiales')
                     .upload(filePath, file);
-                
+
                 if (uploadError) throw uploadError;
-                
+
                 // Agregar la ruta al objeto de actualización (ej: tirilla_cuil_path)
                 updateData[`${key}_path`] = filePath;
             }
@@ -633,6 +786,7 @@ async function handleAgregarMateria(e) {
         showMessage('Error al agregar materia: ' + error.message, 'Error');
     } else {
         showMessage('Materia agregada exitosamente.', 'Éxito');
+        registrarActividad('materia', `Creaste la materia: ${nombre}.`);
         form.reset();
         bootstrap.Modal.getInstance(document.getElementById('modalAgregarMateria')).hide();
         loadCursosYMaterias(); // Recargar la lista de cursos
@@ -986,6 +1140,8 @@ async function handleRegistrarCalificacion(e) {
         if (error) throw error;
 
         showMessage('Calificación registrada exitosamente.', 'Éxito');
+        const tipoEval = form.califTipo.value; // Ej: Examen
+        registrarActividad('calificacion', `Subiste notas de: ${tipoEval}.`);
         form.reset();
         bootstrap.Collapse.getInstance(document.getElementById('collapseRegistrarCalificacion')).hide();
         loadCalificaciones(document.getElementById('califSelectMateriaVer').value);
@@ -1094,6 +1250,9 @@ async function loadCalificaciones(id_materia) {
 
 // --- PESTAÑA 5: ASISTENCIA ---
 
+/**
+ * VERSIÓN ASISTENCIA: Detecta certificados médicos activos
+ */
 async function loadEstudiantesParaAsistencia(id_materia, fecha) {
     const container = document.getElementById('asistencia-lista-alumnos');
     if (!id_materia || !fecha) {
@@ -1102,80 +1261,92 @@ async function loadEstudiantesParaAsistencia(id_materia, fecha) {
         return;
     }
 
-    container.innerHTML = '<div class="p-3 text-center text-muted">Cargando estudiantes...</div>';
+    container.innerHTML = '<div class="p-3 text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando estudiantes y verificando certificados...</div>';
 
     try {
-        // 1. Obtener el grado de la materia
-        const { data: materia, error: errMat } = await supabase
-            .from('materias')
-            .select('id_grado')
-            .eq('id_materia', id_materia)
-            .single();
+        // 1. Obtener grado
+        const { data: materia } = await supabase.from('materias').select('id_grado').eq('id_materia', id_materia).single();
+        if (!materia) throw new Error("Materia no encontrada");
 
-        if (errMat) throw errMat;
-
-        // 2. Obtener TODOS los alumnos de ese grado
-        const { data: alumnos, error: errAlum } = await supabase
+        // 2. Obtener alumnos
+        const { data: alumnos } = await supabase
             .from('alumnos')
             .select('id_alumno, usuarios(nombre, apellido)')
-            .eq('id_grado', materia.id_grado);
-
-        if (errAlum) throw errAlum;
+            .eq('id_grado', materia.id_grado)
+            .order('id_alumno'); // Orden constante
 
         if (!alumnos || alumnos.length === 0) {
             container.innerHTML = '<div class="p-3 alert alert-info">No hay estudiantes en este grado.</div>';
             return;
         }
 
-        // 3. Obtener asistencias YA registradas (usando una consulta compleja para vincular por alumno)
-        // Nota: Aquí hacemos un truco. Buscamos en 'asistencias' uniendo con 'inscripciones' 
-        // y filtramos por la materia y fecha.
-        const { data: asistencias, error: errAsis } = await supabase
+        // 3. Obtener asistencias ya registradas
+        const { data: asistencias } = await supabase
             .from('asistencias')
             .select('estado, inscripciones(id_alumno)')
             .eq('fecha', fecha)
-            .eq('inscripciones.id_materia', id_materia); // Filtro clave
+            .eq('inscripciones.id_materia', id_materia);
 
-        // Mapear asistencias para búsqueda rápida por ID de alumno
         const mapaAsistencias = new Map();
         if (asistencias) {
-            asistencias.forEach(a => {
-                if (a.inscripciones) {
-                    mapaAsistencias.set(a.inscripciones.id_alumno, a.estado);
-                }
-            });
+            asistencias.forEach(a => { if (a.inscripciones) mapaAsistencias.set(a.inscripciones.id_alumno, a.estado); });
         }
 
-        // 4. Renderizar lista
+        // 4. NUEVO: Buscar Certificados Médicos Válidos para esa fecha
+        // Buscamos certificados aprobados donde la fecha seleccionada esté dentro del rango
+        const { data: certificados } = await supabase
+            .from('certificados_medicos')
+            .select('id_alumno')
+            .eq('estado', 'aprobado') // Solo los aprobados cuentan para justificar
+            .lte('fecha_inicio', fecha) // Inicio <= fecha
+            .gte('fecha_fin', fecha);   // Fin >= fecha
+
+        const setCertificados = new Set();
+        if (certificados) {
+            certificados.forEach(c => setCertificados.add(c.id_alumno));
+        }
+
+        // 5. Renderizar
         container.innerHTML = '';
         document.getElementById('asistencia-conteo-alumnos').textContent = `${alumnos.length} estudiantes`;
 
         alumnos.forEach(alum => {
-            const id_alumno = alum.id_alumno;
-            // Usamos ?. para evitar errores si usuario es null
-            const nombre = alum.usuarios ? alum.usuarios.nombre : 'Usuario';
-            const apellido = alum.usuarios ? alum.usuarios.apellido : 'Desconocido';
-            const estadoActual = mapaAsistencias.get(id_alumno);
+            const id = alum.id_alumno;
+            const nombre = alum.usuarios ? `${alum.usuarios.nombre} ${alum.usuarios.apellido}` : 'Desconocido';
+
+            // Estado previo de la BD
+            let estado = mapaAsistencias.get(id);
+
+            // Si no hay estado guardado, pero tiene certificado médico, sugerimos "Justificado"
+            let tieneCertificado = setCertificados.has(id);
+            if (!estado && tieneCertificado) {
+                estado = 'justificado';
+            }
+
+            // Badge visual de certificado
+            const badgeCertificado = tieneCertificado
+                ? `<span class="badge bg-info text-white ms-2" title="Certificado Médico Activo"><i class="bi bi-file-medical"></i> Con Certificado</span>`
+                : '';
 
             container.innerHTML += `
-                <div class="student-attendance-row" data-id-alumno="${id_alumno}">
-                    <div class="d-flex align-items-center gap-3">
-                        <div>
-                            <div class="fw-bold">${nombre} ${apellido}</div>
+                <div class="student-attendance-row border-bottom py-2" data-id-alumno="${id}">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold">
+                            ${nombre} ${badgeCertificado}
                         </div>
                     </div>
-                    <div class="btn-group attendance-status-buttons" role="group">
-                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-p-${id_alumno}" value="presente" ${estadoActual === 'presente' ? 'checked' : ''}>
-                        <label class="btn btn-outline-success" for="status-p-${id_alumno}"><i class="bi bi-check-circle"></i> Presente</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="status-${id}" id="status-p-${id}" value="presente" ${estado === 'presente' ? 'checked' : ''}>
+                        <label class="btn btn-outline-success btn-sm" for="status-p-${id}">Presente</label>
 
-                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-a-${id_alumno}" value="ausente" ${estadoActual === 'ausente' ? 'checked' : ''}>
-                        <label class="btn btn-outline-danger" for="status-a-${id_alumno}"><i class="bi bi-x-circle"></i> Ausente</label>
+                        <input type="radio" class="btn-check" name="status-${id}" id="status-a-${id}" value="ausente" ${estado === 'ausente' ? 'checked' : ''}>
+                        <label class="btn btn-outline-danger btn-sm" for="status-a-${id}">Ausente</label>
 
-                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-t-${id_alumno}" value="tarde" ${estadoActual === 'tarde' ? 'checked' : ''}>
-                        <label class="btn btn-outline-warning" for="status-t-${id_alumno}"><i class="bi bi-clock"></i> Tarde</label>
+                        <input type="radio" class="btn-check" name="status-${id}" id="status-t-${id}" value="tarde" ${estado === 'tarde' ? 'checked' : ''}>
+                        <label class="btn btn-outline-warning btn-sm" for="status-t-${id}">Tarde</label>
 
-                        <input type="radio" class="btn-check" name="status-${id_alumno}" id="status-j-${id_alumno}" value="justificado" ${estadoActual === 'justificado' ? 'checked' : ''}>
-                        <label class="btn btn-outline-info" for="status-j-${id_alumno}"><i class="bi bi-info-circle"></i> Justificado</label>
+                        <input type="radio" class="btn-check" name="status-${id}" id="status-j-${id}" value="justificado" ${estado === 'justificado' ? 'checked' : ''}>
+                        <label class="btn btn-outline-info btn-sm" for="status-j-${id}">Justif.</label>
                     </div>
                 </div>
             `;
@@ -1250,6 +1421,9 @@ async function handleGuardarAsistencia(e) {
 
         if (guardados > 0) {
             showMessage(`Se guardó la asistencia de ${guardados} alumnos correctamente.`, 'Éxito');
+            // Obtenemos el nombre de la materia del select para que quede bonito
+            const nombreMateria = document.getElementById('asistenciaMateria').selectedOptions[0].text;
+            registrarActividad('asistencia', `Registraste asistencia en ${nombreMateria}.`);
         } else {
             showMessage('No seleccionaste ningún estado (Presente/Ausente) para guardar.', 'Aviso');
         }
@@ -1266,6 +1440,81 @@ function marcarTodosAsistencia(estado) {
     radios.forEach(radio => radio.checked = true);
 }
 
+
+/**
+ * Registra una acción en la bitácora del docente
+ * @param {string} tipo - 'asistencia', 'calificacion', 'certificado', 'materia'
+ * @param {string} descripcion - Texto corto explicativo
+ */
+async function registrarActividad(tipo, descripcion) {
+    try {
+        const { error } = await supabase
+            .from('actividad_docente')
+            .insert({
+                id_docente: currentDocenteId,
+                tipo: tipo,
+                descripcion: descripcion
+            });
+
+        if (error) console.error("Error guardando actividad:", error);
+
+        // Actualizar el dashboard visualmente si estamos en él
+        loadActividadReciente();
+    } catch (e) {
+        console.error(e);
+    }
+}
+/**
+ * Carga y renderiza la lista de actividad reciente desde la tabla nueva
+ */
+async function loadActividadReciente() {
+    const container = document.getElementById('actividad-reciente-container');
+    // Si no estamos en la pestaña dashboard, quizas no exista el contenedor, validamos:
+    if (!container) return;
+
+    const { data: actividades, error } = await supabase
+        .from('actividad_docente')
+        .select('*')
+        .eq('id_docente', currentDocenteId)
+        .order('created_at', { ascending: false })
+        .limit(20); // Mostrar las últimas 10
+
+    container.innerHTML = '';
+
+    if (error || !actividades || actividades.length === 0) {
+        container.innerHTML = '<div class="list-group-item text-muted">No hay actividad reciente registrada.</div>';
+        return;
+    }
+
+    // Mapa de iconos y colores según el tipo
+    const config = {
+        'asistencia': { icon: 'bi-calendar-check', color: 'text-success', bg: 'bg-success-subtle' },
+        'calificacion': { icon: 'bi-pencil-square', color: 'text-primary', bg: 'bg-primary-subtle' },
+        'certificado': { icon: 'bi-file-medical', color: 'text-info', bg: 'bg-info-subtle' },
+        'materia': { icon: 'bi-book', color: 'text-warning', bg: 'bg-warning-subtle' },
+        'tarea': { icon: 'bi-list-task', color: 'text-secondary', bg: 'bg-secondary-subtle' } // Por si agregas tareas
+    };
+
+    actividades.forEach(act => {
+        const cfg = config[act.tipo] || { icon: 'bi-activity', color: 'text-dark', bg: 'bg-light' };
+        const fecha = new Date(act.created_at).toLocaleString();
+
+        container.innerHTML += `
+            <div class="list-group-item d-flex align-items-start gap-3 py-3">
+                <div class="rounded-circle ${cfg.bg} ${cfg.color} p-2 d-flex justify-content-center align-items-center flex-shrink-0" style="width: 40px; height: 40px;">
+                    <i class="bi ${cfg.icon} fs-5"></i>
+                </div>
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-1 fw-bold text-capitalize">${act.tipo}</h6>
+                        <small class="text-muted" style="font-size: 0.75em;">${fecha}</small>
+                    </div>
+                    <p class="mb-0 text-muted small">${act.descripcion}</p>
+                </div>
+            </div>
+        `;
+    });
+}
 
 // --- PESTAÑA 6: MENSAJERÍA ---
 
