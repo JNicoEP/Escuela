@@ -6,13 +6,7 @@ export function setupSidebarToggle() {
     // Referencia el ID correcto del aside y el botón
     const sidebar = document.getElementById('sidebar_proyecto'); 
     const toggleBtn = document.getElementById('sidebar-toggle'); 
-
-    // 📢 LÍNEA DE DEBUG 1: Para ver qué encontró
-    console.log("DEBUG SIDEBAR: Sidebar encontrado:", !!sidebar, " | Botón encontrado:", !!toggleBtn);
-
     if (sidebar && toggleBtn) {
-        // 📢 LÍNEA DE DEBUG 2: Para saber si el listener se adjunta
-        console.log("DEBUG SIDEBAR: Listener de click ATTACHED.");
         toggleBtn.addEventListener('click', () => {
             // Alterna la clase 'active' para mostrar/ocultar el sidebar
             sidebar.classList.toggle('active');

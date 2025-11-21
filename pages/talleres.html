@@ -4,278 +4,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia - Escuela Mariano Ariza</title>
+    <title>Talleres - Escuela Mariano Ariza</title>
     <link rel="icon" href="/favicon.ico.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
+
     <div id="navbar-container"></div>
     <div id="modal-container"></div>
 
-    
+    <div class="container-fluid p-0">
 
-    <div class="floating-sidebar ">
-        <h4 class="text-center">Talleres</h4>
-        <ul class="list-group">
-            <li class="list-group-item"><a href="#cocina" class="text-decoration-none">Cocina</a></li>
-            <li class="list-group-item"><a href="#TeatroyArte" class="text-decoration-none">Teatro y Arte</a></li>
-            <li class="list-group-item"><a href="#Matematicas" class="text-decoration-none">Matemáticas</a></li>
-            <li class="list-group-item"><a href="#DeporteySalud" class="text-decoration-none">Deporte y Salud</a></li>
-            <li class="list-group-item"><a href="#Reciclado" class="text-decoration-none">Reciclado</a></li>
-            <li class="list-group-item"><a href="#folklore" class="text-decoration-none">Folklore</a></li>
-        </ul>
-    </div>
+        <aside class="floating-sidebar shadow-sm" id="sidebar_proyecto">
+            <div class="sidebar-header p-3">
+                <h5 class="text-center fw-bold mb-0"><i class="fas fa-shapes me-2"></i>Talleres</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="#cocina"><i
+                            class="fas fa-utensils me-2 text-warning"></i>Cocina</a></li>
+                <li class="list-group-item"><a href="#ajedrez"><i
+                            class="fas fa-chess-knight me-2 text-dark"></i>Ajedrez</a></li>
+                <li class="list-group-item"><a href="#Matematicas"><i
+                            class="fas fa-calculator me-2 text-primary"></i>Matemáticas</a></li>
+                <li class="list-group-item"><a href="#DeporteySalud"><i
+                            class="fas fa-volleyball-ball me-2 text-success"></i>Deporte y Salud</a></li>
+                <li class="list-group-item"><a href="#Reciclado"><i
+                            class="fas fa-recycle me-2 text-success"></i>Reciclado</a></li>
+                <li class="list-group-item"><a href="#folklore"><i class="fas fa-guitar me-2 text-info"></i>Folklore</a>
+                </li>
+            </ul>
+        </aside>
 
-    <!-- Contenido principal -->
-    <div class="col-md-9 text-center">
-        <section class="container my-6">
-            <section id="cocina" class="talleres">
-                <h1 class="titulo-seccion text-center">COCINA</h1>
+        <div class="toggle-btn" id="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
 
-                <section class="container my-5">
-                    <div id="carousel-talleres" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="css/img/talleres/cocina1.jpeg" class="d-block w-100 carousel-img"
-                                    alt="Imagen 1">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="css/img/talleres/cocina2.jpeg" class="d-block w-100 carousel-img"
-                                    alt="Imagen 2">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="css/img/talleres/cocina3.jpeg" class="d-block w-100 carousel-img"
-                                    alt="Imagen 3">
+        <main class="main-content">
+
+            <header class="py-5 text-center bg-light mb-5">
+                <div class="container">
+                    <h1 class="display-4 fw-bold text-dark">Nuestros Talleres</h1>
+                    <p class="lead text-muted">Espacios de aprendizaje, creatividad y desarrollo integral.</p>
+                </div>
+            </header>
+
+            <section id="cocina" class="proyecto-section py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 order-lg-1 mb-4 mb-lg-0">
+                            <div class="content-box">
+                                <h2 class="fw-bold text-warning mb-3"><i class="fas fa-utensils me-2"></i>Cocina</h2>
+                                <p class="text-muted">
+                                    Cocinar es una actividad completa y divertida que favorece la incorporación de
+                                    hábitos de nutrición y salud. Es un recurso educativo valioso que permite trabajar
+                                    contenidos de diversas materias de forma práctica.
+                                </p>
+                                <h5 class="mt-4 fw-bold">Objetivos:</h5>
+                                <ul class="list-unstyled custom-list">
+                                    <li><i class="fas fa-check text-warning me-2"></i>Identificar recetas instructivas.
+                                    </li>
+                                    <li><i class="fas fa-check text-warning me-2"></i>Clasificar frutas y verduras.</li>
+                                    <li><i class="fas fa-check text-warning me-2"></i>Realizar medidas de peso y
+                                        capacidad.</li>
+                                    <li><i class="fas fa-check text-warning me-2"></i>Normas de higiene y seguridad.
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        <button id="btn-taller-prev" class="carousel-control-prev" type="button"
-                            data-bs-target="#carousel-talleres" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </button>
-                        <button id="btn-taller-next" class="carousel-control-next" type="button"
-                            data-bs-target="#carousel-talleres" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Siguiente</span>
-                        </button>
+                        <div class="col-lg-6 order-lg-2">
+                            <div id="carousel-talleres" class="carousel slide shadow-lg rounded-4 overflow-hidden"
+                                data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="/img/talleres/cocina1.jpeg" class="d-block w-100 img-cover"
+                                            alt="Cocina 1">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="/img/talleres/cocina2.jpeg" class="d-block w-100 img-cover"
+                                            alt="Cocina 2">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="/img/talleres/cocina3.jpeg" class="d-block w-100 img-cover"
+                                            alt="Cocina 3">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-talleres"
+                                    data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-talleres"
+                                    data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </section>
-
-                <!-- Sección de Cocina -->
-
-                <h3 class="fundamentos">Fundamentos</h3>
-                <p class="descripcion"> Cocinar es una actividad tan completa, atractiva y divertida para los niños que
-                    se
-                    nos brinda como valioso recurso educativo. <br> Se trata de una deliciosa manera de favorecer la
-                    incorporacion de habitos y conocimientos acerca de la nutricion, salud y alimentacion. La tematica
-                    de un
-                    taller de cocina para niños y niñas favorece la interdisiplnariedad permitiendo asi transpasar a la
-                    practica contenidos curriculares de casi todas las materias. Se puede conocer mucho acerca del mundo
-                    y
-                    de los hombres a traves de la comida y las constumbres alimenticias. Otro aspecto de enorme interes,
-                    es
-                    la posibilidad de ofrecer una actividad recreativa, favoreciendo el dialogo, la participacion y la
-                    ayuda
-                    mutua. </p>
-                <ul class="listado">Objetivos Generales:
-                    <li> Identificar los textos instructivos recetas de cocina.</li>
-                    <li> Relalizar algunas recetas sencillas.</li>
-                    <li> Clasificar las frutas y verduras.</li>
-                    <li> Realizar medidas de peso y capacidad con instrumentos de medicion acorde a cada magnitud.</li>
-                    <li> Diferenciar entre utensillos y electrodomesticos.</li>
-                    <li> Conocer las normas de higiene y seguridad necesarias para el trabajo de la cocina.</li>
-                    <li> Trabajar en equipo y de forma colaborativa.</li>
-                </ul>
+                </div>
             </section>
 
-            <!-- Sección de Teatro y Arte -->
-            <section id="TeatroyArte" class="talleres">
-                <h2 class="titulo-seccion text-center">Teatro y Arte</h2>
-                <h3 class="fundamentos">Fundamentos</h3>
-                <p class="descripcion"> Se intenta que por medio del trabajo de inclusion en el arte y la educacion vial
-                    aprender sobre el uso de la educacion vial en la vida diaria, implementando tecnicas de pintura,
-                    promover la destreza manual, imaginacion y desenvolvimiento artistico, mediante la compresion y el
-                    respeto por las señales viales. <br> el placer y el encanto que tiene para un niño pequeño por
-                    explorar
-                    diferentes materiales y herramientas para dibujar y pintar, estan cargadas de significado, el niño
-                    se
-                    siente feliz al ver plasmadas sus ideas y sentimientos. La practica repetida en el uso de
-                    determinadas
-                    herramientas e independencia en sus producciones. A través del abordaje del área de expresión
-                    plástica
-                    se amplía su imaginacion y fantasia y se desarrolla la motricidad de su cuerpo. <br>
-                    Pero su funcionamiento en este proyecto se focalizara las diferentes emociones, sentimientos y
-                    vivencias
-                    que despierten en los chicos el abordaje del arte plastico como vehículo de comunicación en el
-                    grupo.
-                </p>
-                <ul class="listado">OBJETIVOS QUE EL NIÑO LOGRE:
-                    <li> Aprender sobre el uso de la educacion vial en la vida diaria.</li>
-                    <li> Reconocer y distrufar de las representaciones plasticas.</li>
-                    <li> Explorar variedad de herramientas y materiales.</li>
-                    <li> Conocer y apreciar las obras de diferentes artistas plasticos y reconocer la multiplicidad de
-                        resoluciones plasticas posibles.</li>
-                    <li> Valorar sus producciones y la de sus pares *Trabajar en pequeños grupos.</li>
-                    <li> Explorar texturas táctiles y visuales.</li>
-                </ul>
-            </section>
-            <!-- Sección de Matematicas -->
-            <section id="Matematicas" class="talleres">
-                <h2 class="titulo-seccion text-center">Matematicas</h2>
-                <img src="https://www.sancristobalsl.com/archivos/blog/2345/20180515075712.como_ayudar_a_aprender_matematicas_en_casa_colegio_san_cristobal_castellon-1370.jpg"
-                    alt="matematicas" class="imagen-talleres" style="height: 600px; width: 100%; ">
-                <h3 class="fundamentos">Fundamentos</h3>
-                <p class="descripcion">
-                    La resolucion de problemas es la parte mas esencial de las matematicas a nivel escolar puesto que da
-                    a
-                    los alumnos/as los fundamentos básicos de aplicacion de las operaciones estudiadas en esta etapa,
-                    ayuda
-                    a comprender el entorno que los rodea, da herramientas para conversirse en unso ciudadanos
-                    competentes...
-                </p>
-                <ul class="listado">Objetivos Generales:
-                    <li> Resolver situaciones de la vida cotidiana cuyo tratamiento requiera de una sola de las
-                        operaciones
-                        (o más en caso sencillos), seleccionando las adecuadas y aplicando los algoritmos
-                        correspondientes,
-                        mediante su expresión gráfica. Interpretando el resultado.
-                    </li>
-                    <li> Utilizar instrumentos de cálculo(Herramientas informaticas, calculadora), Haciendo buen uso de
-                        ellos y comprobando los resultados.
-                    </li>
-                    <li>Manifestar orden, claridad, atencion, reflexion, interes, creatividad, perseverancia y tendencia
-                        a
-                        explorar distintas alternativas en la busqueda de soluciones
-                    </li>
-                    <li>Disfrutar con el uso de las matematicas y descubrir el aspecto lúcido de las mismas.
-                    </li>
-                    <li>Adquirir autonomía en el que hacer matemático, solicitando ayuda en el caso de haber explorado,
-                        sin
-                        resultados positivos, distintas alternativas de solucion.
-                    </li>
-                </ul>
+            <hr class="featurette-divider my-0">
+
+            <section id="ajedrez" class="proyecto-section py-5 bg-light">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                            <div class="content-box">
+                                <h2 class="fw-bold text-dark mb-3"><i class="fas fa-chess-knight me-2"></i>Ajedrez</h2>
+
+                                <p class="text-muted">
+                                    Más que un juego, una gimnasia mental. El taller de ajedrez busca potenciar el
+                                    pensamiento lógico y la capacidad de análisis. A través del tablero, los estudiantes
+                                    aprenden a planificar estrategias, tomar decisiones bajo presión y anticipar las
+                                    consecuencias de sus actos, todo en un marco de respeto por el rival.
+                                </p>
+
+                                <h5 class="mt-4 fw-bold">Objetivos:</h5>
+                                <ul class="list-unstyled custom-list">
+                                    <li><i class="fas fa-brain text-dark me-2"></i>Estimular la memoria y la
+                                        concentración.</li>
+                                    <li><i class="fas fa-chess-board text-dark me-2"></i>Desarrollar el pensamiento
+                                        estratégico y lógico.</li>
+                                    <li><i class="fas fa-handshake text-dark me-2"></i>Fomentar la paciencia y el
+                                        respeto a las reglas.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 order-lg-1">
+                            <div class="img-wrapper shadow-lg rounded-4 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1586165368502-1bad197a6461?q=80&w=2658&auto=format&fit=crop"
+                                    alt="Clase de Ajedrez" class="img-fluid w-100 img-cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
+            <hr class="featurette-divider my-0">
 
-            <!-- Sección de Deporte y Salud -->
-            <section id="DeporteySalud" class="talleres">
-                <h2 class="titulo-seccion text-center">Deporte y Salud</h2>
-                <img src="https://scontent.ftuc1-1.fna.fbcdn.net/v/t39.30808-6/457496344_2864816793667464_8463174065001391275_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGcby0Ygx0Y2byyISuO-HaouSwIQbsWHYW5LAhBuxYdhR6VHq-xEGDJoBo4dbryKe6Nzp1iKW5ByqTPmv9fLdBV&_nc_ohc=5gXEL2v4fWcQ7kNvgGjQKan&_nc_zt=23&_nc_ht=scontent.ftuc1-1.fna&_nc_gid=AVn-ih31v0EC2hrWGa6HMWa&oh=00_AYByihB-QIPyDHoXfVGxhAP3SDXz3YzBrAktbIWROS5U0w&oe=67B88A2B"
-                    alt="deporte" class="imagen-proyecto" style="height: 500px; width: 100%;">
-                <h5 class="subtitulo">Son importantes para la salud de los niños, ya que les ayudan a desarrollar su
-                    cuerpo
-                    y su mente</h5>
-                <h3 class="fundamentos">Fundamentos</h3>
-                <p class="descripcion">El taller de Deporte y Salud surge coimo respuesta a la necesidad de promover
-                    hábitos de vida saludables y fomentar la práctica deportiva entre la comunidad. <br>Reconociendo la
-                    importancia del ejercicio fisico en la prevención de enfermedades y el bienestar general, este
-                    taller
-                    busca proporcionar herramientas y conocimientos para adoptar un estilo de vida activo y equilibrado.
-                    <br>El deporte es un medio educativo, rico en experiencias, que facilita el desarrollo integral de
-                    la
-                    persona. El VOLEIVOL es en la actualidad un deporte de alta complejidad, sin embargo es uno de los
-                    deportes ocn una buena aceptacion en los distintos niveles de la educacion formal. El mismo se
-                    define
-                    como un deporte de situacion porque es en el juego donde se presentan continuamente situaciones
-                    diversas
-                    que el alumno debe resolver en forma acorde a su capacidad utilizando los fundamentos y estrategias
-                    mas
-                    apropiadas. Esta caracteristica obliga al alumno a adaptarse a diferentes situaciones en tiempo y
-                    espacio reducidos.
-                </p>
-                <ul class="listado">Objetivos Generales:
-                    <li>Promover la consiencia sobre la importancia del deporte y la actividad fisica en la salud
-                        integral.
-                    </li>
-                    <li>Facilitar el acceso a informacion y recursos para la practica deportiva segura y efectiva.</li>
-                    <li>Educar a los estudiantes sobre su papel como agentes de cambio en la protección del medio
-                        ambiente,
-                        enfatizando la importancia de asumir responsabilidad por sus acciones y decisiones.</li>
-                    <li>Fomentar la adopcion de habitos de vida saludables en la comunidad</li>
-                    <li>Educar sobre los beneficios del ejercicio fisico en la prevencion de enfermedades crónicas.</li>
-                    <li>Proporcionar orientacion sobre la planificacion y ejecucion de programas de entrenamiento
-                        personalizados.</li>
-                    <li>Promover la importancia de la alimentacion equilibrada y la hidratacion en el rendimiento
-                        deportivo.
-                    </li>
-                </ul>
+            <section id="Matematicas" class="proyecto-section py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 order-lg-1 mb-4 mb-lg-0">
+                            <div class="content-box">
+                                <h2 class="fw-bold text-primary mb-3"><i class="fas fa-calculator me-2"></i>Matemáticas
+                                </h2>
+                                <p class="text-muted">
+                                    La resolución de problemas es esencial para comprender el entorno. Buscamos que los
+                                    alumnos adquieran autonomía, orden y claridad, disfrutando del aspecto lúdico de los
+                                    números.
+                                </p>
+                                <h5 class="mt-4 fw-bold">Objetivos:</h5>
+                                <ul class="list-unstyled custom-list">
+                                    <li><i class="fas fa-check-circle text-primary me-2"></i>Resolver situaciones de la
+                                        vida cotidiana.</li>
+                                    <li><i class="fas fa-check-circle text-primary me-2"></i>Uso correcto de
+                                        instrumentos de cálculo.</li>
+                                    <li><i class="fas fa-check-circle text-primary me-2"></i>Explorar distintas
+                                        alternativas de solución.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 order-lg-2">
+                            <div class="img-wrapper shadow-lg rounded-4 overflow-hidden">
+                                <img src="https://www.sancristobalsl.com/archivos/blog/2345/20180515075712.como_ayudar_a_aprender_matematicas_en_casa_colegio_san_cristobal_castellon-1370.jpg"
+                                    alt="Matemáticas" class="img-fluid w-100 img-cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Sección de Reciclado -->
-            <section id="Reciclado" class="talleres">
-                <h1 class="titulo-seccion text-center">Reciclado</h1>
-                <h3 class="titulo-seccion text-center">JUGUETERIA ECOLOGICA</h3>
-                <img src="https://scontent.ftuc1-1.fna.fbcdn.net/v/t39.30808-6/447616332_2793848050764339_6324092463033664397_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFDbBOwDEAyT7caGeoE-U-neNkYKdL9bJ142Rgp0v1snUzCqg0W3BXH7h0iseP-Fq7bMEdN27Nz0buN37o-TRuc&_nc_ohc=KHeJnPPZ0YcQ7kNvgGRYhNS&_nc_zt=23&_nc_ht=scontent.ftuc1-1.fna&_nc_gid=Ati4tTzgbQKr8oeXASNlkSo&oh=00_AYAlLzPtR5UuuD1Z1Bia3P1lY0XajZkM8x6LoFqoPcvERw&oe=67B89AF2"
-                    alt="medio-ambiente" class="imagen-proyecto" style="height: auto; width: 100%; max-height: 500px;">
+            <hr class="featurette-divider my-0">
 
-                <h3 class="fundamentos">Fundamentos</h3>
-                <p class="descripcion"> La reutilización de materiales es una decisión importante como método para
-                    cuidar el
-                    ambiente, dar un nuevo uso a los productos disminuye la cantidad de desechos que se pueden generar.
-                    Es
-                    relevante que se promueva desde edades tempranas en las escuelas, la importancia del reciclaje no
-                    solo
-                    como una practica amigable con el ambiente sino como una forma de emprendimiento innovadora, para lo
-                    cual es prioritario la motivacion y acompañamiento docente. <br> Por medio de este proyecto
-                    analizaremos
-                    con los niños mas en profundidad la importancia que tiene para el medio ambiente la reutilizacion de
-                    materiales, elaborando juntos juguetes que contribuyen al desarrollo infantil.
-                </p>
-                <ul class="listado">Propósitos:
-                    <li> Diseñar situaciones de enseñanza que posibiliten que los alumnos organicen, amplien y
-                        enriquezcan
-                        sus conocimientos acerca del ambiente social y natural.
-                    </li>
-                    <li> Favorecer la autonomia de los alumnos en cuanto a la resolucion de situaciones problematicas,
-                        la
-                        busqueda de informacion a través de variadas fuentes y la posibilida de arribar a conclusiones
-                        provisorias.
-                    </li>
-                    <li> Ofrecer el uso de materiales, tiempo y espacios diversos, para promover la creatividad, la
-                        expresión y la combinacion creativa de los mismos.
-                    </li>
-                </ul>
+            <section id="DeporteySalud" class="proyecto-section py-5 bg-light">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                            <div class="content-box">
+                                <h2 class="fw-bold text-success mb-2"><i class="fas fa-volleyball-ball me-2"></i>Deporte
+                                    y Salud</h2>
+                                <h6 class="text-uppercase text-success fw-bold mb-3 ls-2">Cuerpo sano, Mente sana</h6>
+                                <p class="text-muted">
+                                    El vóley y la actividad física facilitan el desarrollo integral, enseñando a
+                                    resolver situaciones en equipo. Promovemos hábitos para prevenir enfermedades y
+                                    mejorar el bienestar general.
+                                </p>
+                                <h5 class="mt-4 fw-bold">Objetivos:</h5>
+                                <ul class="list-unstyled custom-list">
+                                    <li><i class="fas fa-running text-success me-2"></i>Conciencia sobre salud integral.
+                                    </li>
+                                    <li><i class="fas fa-running text-success me-2"></i>Alimentación equilibrada e
+                                        hidratación.</li>
+                                    <li><i class="fas fa-running text-success me-2"></i>Planificación de entrenamiento.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 order-lg-1">
+                            <div class="img-wrapper shadow-lg rounded-4 overflow-hidden">
+                                <img src="/img/deporte.jpeg" class="img-fluid w-100" alt="Deporte">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Sección de Folklore -->
-            <section id="folklore" class="talleres">
-                <h2 class="titulo-seccion text-center">Nuestras Danzas Folkloricas</h2>
-                <img src="https://scontent.ftuc1-2.fna.fbcdn.net/v/t39.30808-6/448542451_2803870583095419_6778023428201768370_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeFU1UT1doJRudQ08thCV6OQznZZVi2zOa_OdllWLbM5ryU2nZoow95yGCLj7tc3s_cv2fKDM6oMRGLfg680Ofmk&_nc_ohc=0EaQ5h4mLZcQ7kNvgF4h6p3&_nc_zt=23&_nc_ht=scontent.ftuc1-2.fna&_nc_gid=A_ooYCQFz0CmEOvXeUEiSZt&oh=00_AYAD03ihvIwOY1loSZIj0UlEi8D6jDh85FHZ2mDrWc0EKA&oe=67B8BDDF"
-                    alt="medio-ambiente" class="imagen-proyecto" style="height: auto; width: 100%; max-height: 500px;">
-                <h3 class="fundamentos">Fundamentos</h3>
-                <p class="descripcion"> "Que es el folklore sino el nutriente de la raiz-pueblo que se percibe aun sin
-                    verlo, como el olor del pan de la madera o el cantar de un pájaro que escuchamos y no vemos. Una
-                    mirada
-                    que no nos abandona y recorre las distancias con la cercania que da la pertenencia" (Amado Olmos.
-                    Letras
-                    de Folklore, Pág. XI) <br> Nuestras danzas folkloricas llenas de gracia y colorido, alegraron la
-                    vida de
-                    nuestros paisanos desde los albores de la patria. <br> Gran parte de nuestra musica folklorica se
-                    origina como musica para bailar surgida de la simbiosis entre la geografia, sus habitantes,
-                    conquistadores, y sus culturas. <br> "Somos portadores de un nombre, de una herencia de una historia
-                    ubicada en la Historia de un pais, de una región, una civilizacion. Somos sus depositarios y sus
-                    trasmisores. Somos sus pasadores" (Jacques Hassoun. Los contrabandistas de la memoria. Ed. LaFior.
-                    Bs.
-                    As. 1996,) <br> este proyecto surge de las necesidades de transmitir y profundizar, en los alumnos
-                    el
-                    conocimiento de nuestro folklore a través de nuestras danzas.</p>
-                <ul class="listado">Objetivos:
-                    <li> Conformar un grupo de baile integrado por alumnos deseosos de disfrutar y vivenciar.</li>
-                    <li> Nuestro patrimonio cultural en forma grupal respetando reglas de convivencia e
-                        individualidades.</li>
-                    <li> Valorar el lenguaje artistico no verbal como canal especifico y alternativo de comunicacion.
-                    </li>
-                    <li> Expresión y significación de sus sentimientos, emociones y pensamiento.</li>
-                    <li> Organizar coreograficas para las danzas folkloricas.</li>
-                    <li> Expresarse musicalmente a través del cuerpo de forma grupal.</li>
-                </ul>
-            </section>
-        </section>
+            <hr class="featurette-divider my-0">
 
-        <div id="footer-container"></div>
-        <script type="module" src="/src/js/main.js"></script>
+            <section id="Reciclado" class="proyecto-section py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 order-lg-1 mb-4 mb-lg-0">
+                            <div class="content-box">
+                                <h2 class="fw-bold text-success mb-2"><i class="fas fa-recycle me-2"></i>Reciclado</h2>
+                                <h6 class="text-uppercase text-muted fw-bold mb-3">Juguetería Ecológica</h6>
+                                <p class="text-muted">
+                                    Reutilizar materiales es clave para cuidar el ambiente. En este taller elaboramos
+                                    juguetes ecológicos, fomentando la creatividad y el emprendimiento innovador desde
+                                    la escuela.
+                                </p>
+                                <h5 class="mt-4 fw-bold">Propósitos:</h5>
+                                <ul class="list-unstyled custom-list">
+                                    <li><i class="fas fa-leaf text-success me-2"></i>Organizar conocimientos sobre el
+                                        ambiente.</li>
+                                    <li><i class="fas fa-leaf text-success me-2"></i>Combinación creativa de materiales.
+                                    </li>
+                                    <li><i class="fas fa-leaf text-success me-2"></i>Resolución autónoma de problemas.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 order-lg-2">
+                            <div class="img-wrapper shadow-lg rounded-4 overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+         alt="Taller de Reciclado" 
+         class="img-fluid w-100 img-cover">
+</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="featurette-divider my-0">
+
+            <section id="folklore" class="proyecto-section py-5 bg-light">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                            <div class="content-box">
+                                <h2 class="fw-bold text-info mb-3"><i class="fas fa-guitar me-2"></i>Nuestras Danzas
+                                </h2>
+                                <blockquote class="blockquote custom-blockquote mt-3">
+                                    <p class="mb-0 fs-6 fst-italic">"Que es el folklore sino el nutriente de la
+                                        raíz-pueblo... una mirada que no nos abandona."</p>
+                                </blockquote>
+                                <p class="text-muted mt-3">
+                                    Nuestras danzas folklóricas, llenas de gracia y colorido, son patrimonio de nuestra
+                                    cultura. Somos "pasadores" de esta herencia, transmitiendo identidad y pertenencia a
+                                    través del baile.
+                                </p>
+                                <h5 class="mt-4 fw-bold">Objetivos:</h5>
+                                <ul class="list-unstyled custom-list">
+                                    <li><i class="fas fa-music text-info me-2"></i>Disfrutar y vivenciar el patrimonio
+                                        cultural.</li>
+                                    <li><i class="fas fa-music text-info me-2"></i>Expresión corporal y musical grupal.
+                                    </li>
+                                    <li><i class="fas fa-music text-info me-2"></i>Organizar coreografías respetando la
+                                        convivencia.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 order-lg-1">
+                            <div class="img-wrapper shadow-lg rounded-4 overflow-hidden">
+                                <img src="/img/talleres/Taller de Danza.jpeg" class="img-fluid w-100" alt="Danza">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="footer-container"></div>
+    <script type="module" src="/src/js/main.js"></script>
+
 </body>
 
 </html>

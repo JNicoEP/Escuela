@@ -28,8 +28,23 @@ import navbarHtml from '../components/navbar/navbar.html?raw';
 import modalsHtml from '../components/modal/modals.html?raw';
 import footerHtml from '../components/footer/footer.html?raw';
 import { setupSidebarToggle } from './components/sidebarToggle.js';
-import { initHistoriaGallery } from './pages/historia.js';
 
+
+function setupFavicon() {
+    // Verificamos si ya existe para no duplicarlo
+    let link = document.querySelector("link[rel~='icon']");
+    
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+    }
+    
+    // Configuramos la ruta y el tipo según tu petición
+    // IMPORTANTE: Asegúrate de que 'favicon.ico.png' esté en la carpeta /public de tu proyecto Vite
+    link.href = '/favicon.ico.png'; 
+    link.type = 'image/x-icon';
+}
 
 /**
  * Función para cargar la barra de navegación
@@ -92,6 +107,7 @@ function hideLoader() {
 async function bootstrapApp() {
 
     //  Inyectar el esqueleto HTML.
+    setupFavicon();
     loadNavbar();
     loadModals();
     loadFooter();
