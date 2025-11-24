@@ -169,14 +169,16 @@ async function poblarDropdownGrados(selectElementId) {
 async function cargarDatosEstudiante() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
+    // Helper para limpiar el 549 (definido aquí o globalmente)
+    const cleanPhone = (num) => num ? num.toString().replace(/^549/, '') : '';
+
     if (authError || !user) {
         console.error('Error al obtener el usuario:', authError);
-        alert('No se pudo verificar tu sesión. Serás redirigido.');
         window.location.href = '/index.html';
         return;
     }
 
-    // 3. CONSULTAR LA BASE DE DATOS (CON CAMPOS CUD)
+    // 3. CONSULTAR LA BASE DE DATOS (AGREGANDO tutor_email y tutor_telefono)
     const { data, error: dbError } = await supabase
         .from('usuarios')
         .select(`
@@ -193,6 +195,8 @@ async function cargarDatosEstudiante() {
                 tutor_nombre,       
                 tutor_educacion,    
                 tutor_trabajo,
+                tutor_email,      
+                tutor_telefono,    
                 tiene_cud,         
                 cud_diagnostico,   
                 cud_vencimiento,   
@@ -211,12 +215,6 @@ async function cargarDatosEstudiante() {
         return;
     }
 
-    if (!data) {
-        console.error('No se encontraron datos de perfil para el usuario:', user.id);
-        alert('No se encontró un perfil de alumno asociado a tu cuenta.');
-        return;
-    }
-
     datosUsuarioActual = data;
 
     // 4. POPULAR (RELLENAR) EL HTML
@@ -225,43 +223,49 @@ async function cargarDatosEstudiante() {
         const gradoInfo = alumnoInfo.grado || {};
         const nombreCompleto = `${data.nombre || ''} ${data.apellido || ''}`;
         const userNameDisplay = document.getElementById('user-name-display');
+        
         if (userNameDisplay) {
             userNameDisplay.textContent = nombreCompleto;
         }
 
-        fillData('stat-promedio-valor', 'N/A');
-        fillData('stat-asistencia-valor', 'N/A');
-        fillData('stat-cursos-valor', 'N/A');
-        fillData('stat-tareas-valor', 'N/A');
+        // Llenar datos básicos
         fillData('profile-name', nombreCompleto);
-        fillData('profile-matricula', 'Matrícula: N/A');
+        fillData('profile-matricula', 'Matrícula: ' + (data.dni || 'N/A'));
         fillData('profile-grado', gradoInfo.nombre_grado);
-        fillData('profile-seccion', 'N/A');
-        fillData('profile-promedio-card', 'N/A');
+        fillData('profile-seccion', 'A'); // Asumiendo sección A por ahora
+        fillData('profile-promedio-card', 'N/A'); // Se calcula luego
+
+        // Llenar tarjeta de información
         fillData('info-nombre', nombreCompleto);
         fillData('info-email', data.email);
         fillData('info-dni', data.dni);
         fillData('info-direccion', alumnoInfo.direccion);
-        fillData('info-telefono', alumnoInfo.telefono);
+        fillData('info-telefono', cleanPhone(alumnoInfo.telefono));
         fillData('info-fecha-nacimiento', alumnoInfo.fecha_nacimiento);
+        
+        // --- DATOS DEL TUTOR ---
         fillData('info-tutor-nombre', alumnoInfo.tutor_nombre);
         fillData('info-tutor-trabajo', alumnoInfo.tutor_trabajo);
         fillData('info-tutor-educacion', alumnoInfo.tutor_educacion);
-        fillData('print-title-alumno', nombreCompleto);
+        fillData('info-tutor-telefono', cleanPhone(alumnoInfo.tutor_telefono)); 
+        fillData('info-tutor-email', alumnoInfo.tutor_email);
 
 
-        // --- NUEVO CAMPO CUD ---
+        // Datos CUD
+        fillData('info-cud-estado', alumnoInfo.tiene_cud ? 'Sí' : 'No');
         fillData('info-cud-diagnostico', alumnoInfo.cud_diagnostico);
 
-        fillData('summary-promedio', 'N/A');
-        fillData('summary-mejor-materia-val', 'N/A');
-        fillData('summary-mejor-materia-label', 'N/A');
-        fillData('summary-materias', 'N/A');
+        // Inicializar N/A en las estadísticas antes de calcular
+        fillData('stat-promedio-valor', 'N/A');
+        fillData('stat-asistencia-valor', 'N/A');
+        fillData('stat-cursos-valor', 'N/A');
+        fillData('stat-tareas-valor', 'N/A');
+        
+        // Ejecutar cálculos de tarjetas
         cargarEstadisticasResumen();
 
     } catch (e) {
         console.error("Error al rellenar los datos en el DOM:", e);
-        alert('Ocurrió un error al mostrar tus datos.');
     }
 }
 
@@ -289,37 +293,62 @@ async function guardarCambiosPerfil(e) {
     }
     const userId = user.id;
 
-    // 2. Obtener valores de los inputs del modal
+    // 1. Referencias a elementos del DOM (Validamos que existan)
+    const elTelefono = document.getElementById('input-telefono-modal');
+    const elTutorTel = document.getElementById('input-tutor-telefono');
+    const elTutorEmail = document.getElementById('input-tutor-email');
+
+    // Si falta algún elemento en el HTML, avisamos para evitar el crash
+    if (!elTelefono || !elTutorTel || !elTutorEmail) {
+        console.error("Faltan elementos en el HTML. Verifica los IDs: input-telefono-modal, input-tutor-telefono, input-tutor-email");
+        alert("Error interno: Faltan campos en el formulario.");
+        return;
+    }
+
+    // 2. Función para formatear el teléfono (agregar 549)
+    const formatPhone = (val) => {
+        if (!val) return null;
+        const limpio = val.trim();
+        if (!limpio) return null;
+        return limpio.startsWith('549') ? limpio : `549${limpio}`;
+    };
+
+    // 3. Obtener valores
     const nuevoNombre = document.getElementById('input-nombre-modal').value;
     const nuevoApellido = document.getElementById('input-apellido-modal').value;
     const nuevoDNI = document.getElementById('input-dni-modal').value;
-    const nuevoTelefono = document.getElementById('input-telefono-modal').value;
     const nuevaDireccion = document.getElementById('input-direccion-modal').value;
+    
     const nuevoTutorNombre = document.getElementById('input-tutor-nombre-modal').value;
     const nuevoTutorEducacion = document.getElementById('input-tutor-educacion-modal').value;
     const nuevoTutorTrabajo = document.getElementById('input-tutor-trabajo-modal').value;
+
     const nuevaFechaRaw = document.getElementById('input-fecha-nacimiento-modal').value;
     const nuevoIdGradoRaw = document.getElementById('input-grado-modal').value;
-
-    // Convertir "" a null para la base de datos
+    
+    // Valores procesados
+    const nuevoTelefono = formatPhone(elTelefono.value);
+    const nuevoTutorTelefono = formatPhone(elTutorTel.value);
+    const nuevoTutorEmail = elTutorEmail.value;
+    
     const nuevaFecha = nuevaFechaRaw === "" ? null : nuevaFechaRaw;
     const nuevoIdGrado = nuevoIdGradoRaw === "" ? null : nuevoIdGradoRaw;
 
-    // --- NUEVOS VALORES CUD ---
+    // Datos CUD
     const nuevoCudTiene = document.getElementById('input-cud-tiene').value === 'true';
     const nuevoCudDiagnostico = document.getElementById('input-cud-diagnostico').value || null;
     const nuevoCudVencimientoRaw = document.getElementById('input-cud-vencimiento').value;
     const nuevoCudVencimiento = nuevoCudVencimientoRaw === "" ? null : nuevoCudVencimientoRaw;
 
     try {
-        // 3. Actualizar la tabla 'usuarios'
+        // 4. Actualizar tabla 'usuarios'
         const { error: userError } = await supabase
             .from('usuarios')
             .update({ nombre: nuevoNombre, apellido: nuevoApellido })
             .eq('id_usuario', userId);
         if (userError) throw userError;
 
-        // 4. Actualizar la tabla 'alumnos' (CON CAMPOS CUD)
+        // 5. Actualizar tabla 'alumnos'
         const { error: alumnoError } = await supabase
             .from('alumnos')
             .update({
@@ -332,19 +361,20 @@ async function guardarCambiosPerfil(e) {
                 id_grado: nuevoIdGrado,
                 tiene_cud: nuevoCudTiene,
                 cud_diagnostico: nuevoCudDiagnostico,
-                cud_vencimiento: nuevoCudVencimiento
+                cud_vencimiento: nuevoCudVencimiento,
+                tutor_telefono: nuevoTutorTelefono,
+                tutor_email: nuevoTutorEmail
             })
             .eq('id_alumno', userId);
+        
         if (alumnoError) throw alumnoError;
 
-        // 5. Éxito
         alert("¡Perfil actualizado con éxito!");
 
         const modalEl = document.getElementById('modalEditarPerfil');
         const modal = bootstrap.Modal.getInstance(modalEl);
         modal.hide();
 
-        // Recargar los datos del panel para mostrar los cambios
         cargarDatosEstudiante();
 
     } catch (error) {
@@ -802,6 +832,10 @@ async function cargarTareas() {
     try {
         if (!datosUsuarioActual || !datosUsuarioActual.alumnos) throw new Error("No se identificó al alumno.");
 
+        // Traemos también los datos del tutor para armar el mensaje
+        const telefonoTutor = datosUsuarioActual.alumnos.tutor_telefono;
+        const nombreAlumno = datosUsuarioActual.nombre;
+
         const { data: tareas, error } = await supabase
             .from('tareas')
             .select(`
@@ -820,40 +854,78 @@ async function cargarTareas() {
 
         let html = '';
 
-        // CAMBIO CLAVE: Usamos un bucle for...of para poder usar 'await' adentro
         for (const tarea of tareas) {
             const yaEntrego = tarea.entregas && tarea.entregas.length > 0;
+            const hoy = new Date();
+            const fechaEntrega = new Date(tarea.fecha_entrega);
+            // Resetear horas para comparar solo fechas
+            hoy.setHours(0,0,0,0);
+            const fechaEntregaSinHora = new Date(fechaEntrega);
+            fechaEntregaSinHora.setHours(0,0,0,0);
 
-            const btnEntrega = yaEntrego
-                ? `<button class="btn btn-success btn-sm" disabled><i class="fas fa-check"></i> Entregado</button>`
-                : `<button class="btn btn-primary btn-sm btn-subir-entrega" data-id="${tarea.id_tarea}">Subir Respuesta</button>`;
+            const estaVencida = !yaEntrego && (fechaEntregaSinHora < hoy);
+            
+            let botonAccion = '';
+            let estadoClase = '';
+            let mensajeVencido = '';
 
-            // --- GENERACIÓN DE URL SEGURA ---
+            if (yaEntrego) {
+                botonAccion = `<button class="btn btn-success btn-sm" disabled><i class="fas fa-check"></i> Entregado</button>`;
+            } else if (estaVencida) {
+                // TAREA VENCIDA
+                estadoClase = 'border-danger border-start border-4'; // Borde rojo
+                
+                // Lógica de WhatsApp
+                if (telefonoTutor) {
+                    const mensaje = `Hola, soy el sistema del Colegio. Informamos que el alumno ${nombreAlumno} tiene vencida la tarea "${tarea.titulo}" de ${tarea.materias?.nombre_materia}. Fecha límite fue: ${fechaEntrega.toLocaleDateString()}. Por favor regularizar.`;
+                    const linkWsp = `https://wa.me/${telefonoTutor}?text=${encodeURIComponent(mensaje)}`;
+                    
+                    mensajeVencido = `
+                        <div class="alert alert-danger d-flex align-items-center justify-content-between mt-2 py-2 mb-0">
+                            <small><i class="fas fa-exclamation-circle"></i> Tarea Vencida</small>
+                            <a href="${linkWsp}" target="_blank" class="btn btn-outline-danger btn-sm" style="font-size: 0.75rem;">
+                                <i class="fab fa-whatsapp"></i> Notificar Tutor
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    mensajeVencido = `<div class="text-danger small mt-2"><i class="fas fa-exclamation-circle"></i> Vencida (Cargue tel. tutor en perfil para notificar)</div>`;
+                }
+
+                // Aún permitimos subir, pero con advertencia
+                botonAccion = `<button class="btn btn-primary btn-sm btn-subir-entrega" data-id="${tarea.id_tarea}">Subir Atrasado</button>`;
+            
+            } else {
+                // Tarea normal
+                botonAccion = `<button class="btn btn-primary btn-sm btn-subir-entrega" data-id="${tarea.id_tarea}">Subir Respuesta</button>`;
+            }
+
+            // Descarga de material
             let btnDescarga = '';
             if (tarea.archivo_path) {
-                // createSignedUrl genera un link que expira en 1 hora (3600 segundos)
-                const { data: signedData, error: signedError } = await supabase.storage
-                    .from('materiales')
-                    .createSignedUrl(tarea.archivo_path, 3600);
-
-                if (!signedError && signedData) {
+                const { data: signedData } = await supabase.storage.from('materiales').createSignedUrl(tarea.archivo_path, 3600);
+                if (signedData) {
                     btnDescarga = `<a href="${signedData.signedUrl}" target="_blank" class="btn btn-outline-secondary btn-sm me-2"><i class="fas fa-download"></i> Material</a>`;
                 }
             }
-            // ---------------------------------
 
             html += `
-                <div class="list-group-item list-group-item-action">
+                <div class="list-group-item list-group-item-action mb-3 shadow-sm rounded ${estadoClase}">
                     <div class="d-flex w-100 justify-content-between">
                         <h6 class="mb-1 fw-bold">${tarea.titulo} <span class="badge bg-info text-dark">${tarea.materias?.nombre_materia || 'Materia'}</span></h6>
-                        <small class="text-muted">Vence: ${new Date(tarea.fecha_entrega).toLocaleDateString()}</small>
+                        <small class="${estaVencida ? 'text-danger fw-bold' : 'text-muted'}">
+                            Vence: ${new Date(tarea.fecha_entrega).toLocaleDateString()}
+                        </small>
                     </div>
                     <p class="mb-1 small">${tarea.descripcion || 'Sin descripción.'}</p>
-                    <div class="d-flex justify-content-between align-items-center mt-2">
+                    
+                    ${mensajeVencido}
+
+                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                         <span class="badge bg-light text-dark border">Pts: ${tarea.puntaje_maximo}</span>
                         <div>
                             ${btnDescarga}
-                            ${btnEntrega}
+                            ${botonAccion}
                         </div>
                     </div>
                 </div>
@@ -862,7 +934,7 @@ async function cargarTareas() {
 
         container.innerHTML = html;
 
-        // Reactivar los botones
+        // Listeners
         document.querySelectorAll('.btn-subir-entrega').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = e.target.dataset.id;
@@ -934,6 +1006,10 @@ async function handleSubirEntrega(e) {
  * Función principal que se ejecuta cuando el DOM está listo.
  */
 document.addEventListener('DOMContentLoaded', () => {
+    const cleanPhone = (num) => {
+        if (!num) return '';
+        return num.toString().replace(/^549/, '');
+    };
     // Iniciar la carga de datos generales
     cargarDatosEstudiante();
 
@@ -949,6 +1025,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabHorario = document.getElementById('horario-tab');
     const tabCalificaciones = document.getElementById('calificaciones-tab');
     const tabTareas = document.getElementById('tareas-tab');
+    
 
     // 2. Listeners Generales (Botones y Formularios)
     if (btnLogout) {
@@ -1028,9 +1105,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('input-fecha-nacimiento-modal').value = alumnoInfo.fecha_nacimiento || '';
                 document.getElementById('input-direccion-modal').value = alumnoInfo.direccion || '';
                 document.getElementById('input-tutor-nombre-modal').value = alumnoInfo.tutor_nombre || '';
+                document.getElementById('input-tutor-telefono').value = cleanPhone(alumnoInfo.tutor_telefono);
                 document.getElementById('input-tutor-educacion-modal').value = alumnoInfo.tutor_educacion || '';
                 document.getElementById('input-tutor-trabajo-modal').value = alumnoInfo.tutor_trabajo || '';
-
+                document.getElementById('input-tutor-email').value = alumnoInfo.tutor_email || '';
                 // Selecciona el grado actual del alumno
                 if (alumnoInfo.grado) {
                     document.getElementById('input-grado-modal').value = alumnoInfo.grado.id_grado;

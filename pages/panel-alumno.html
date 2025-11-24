@@ -184,87 +184,55 @@
                                     <h5>Información Personal</h5>
                                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#modalEditarPerfil">
-                                        <i class="fas fa-pencil-alt me-1"></i> Editar Informacion Personal
+                                        <i class="fas fa-pencil-alt me-1"></i> Editar Información
                                     </button>
                                 </div>
+                                
                                 <div class="row g-3">
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-user"></i><div><small class="text-muted">Nombre Completo</small><p class="fw-medium" id="info-nombre">--</p></div></div></div>
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-calendar"></i><div><small class="text-muted">Fecha de Nacimiento</small><p class="fw-medium" id="info-fecha-nacimiento">--</p></div></div></div>
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-envelope"></i><div><small class="text-muted">Email</small><p class="fw-medium" id="info-email">--</p></div></div></div>
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-id-card"></i><div><small class="text-muted">DNI</small><p class="fw-medium" id="info-dni">--</p></div></div></div>
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-phone"></i><div><small class="text-muted">Teléfono</small><p class="fw-medium" id="info-telefono">--</p></div></div></div>
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-map-marker-alt"></i><div><small class="text-muted">Dirección</small><p class="fw-medium" id="info-direccion">--</p></div></div></div>
+                                    
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-id-badge"></i><div><small class="text-muted">Certificado (CUD)</small><p class="fw-medium" id="info-cud-estado">--</p></div></div></div>
+                                    <div class="col-md-6"><div class="info-field"><i class="fas fa-notes-medical"></i><div><small class="text-muted">Tipo de CUD</small><p class="fw-medium" id="info-cud-diagnostico">--</p></div></div></div>
+                                    
+                                    <div class="col-12 mt-4"><h6 class="border-top pt-3 text-primary">Información del Tutor</h6></div>
+                                    
                                     <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-user"></i>
-                                            <div><small class="text-muted">Nombre Completo</small>
-                                                <p class="fw-medium" id="info-nombre">Cargando...</p>
+                                        <div class="info-field"><i class="fas fa-user-shield"></i>
+                                            <div><small class="text-muted">Nombre del Tutor</small>
+                                                <p class="fw-medium" id="info-tutor-nombre">--</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-calendar"></i>
-                                            <div><small class="text-muted">Fecha de Nacimiento</small>
-                                                <p class="fw-medium" id="info-fecha-nacimiento">Cargando...</p>
+                                        <div class="info-field"><i class="fab fa-whatsapp"></i>
+                                            <div><small class="text-muted">WhatsApp Tutor</small>
+                                                <p class="fw-medium" id="info-tutor-telefono">--</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="info-field"><i class="fas fa-envelope"></i>
-                                            <div><small class="text-muted">Email</small>
-                                                <p class="fw-medium" id="info-email">Cargando...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-id-card"></i>
-                                            <div><small class="text-muted">DNI</small>
-                                                <p class="fw-medium" id="info-dni">Cargando...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-phone"></i>
-                                            <div><small class="text-muted">Teléfono</small>
-                                                <p class="fw-medium" id="info-telefono">Cargando...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-map-marker-alt"></i>
-                                            <div><small class="text-muted">Dirección</small>
-                                                <p class="fw-medium" id="info-direccion">Cargando...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-id-badge"></i>
-                                            <div><small class="text-muted">Certificado (CUD)</small>
-                                                <p class="fw-medium" id="info-cud-estado">Cargando...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-notes-medical"></i>
-                                            <div><small class="text-muted">Tipo de CUD</small>
-                                                <p class="fw-medium" id="info-cud-diagnostico">Cargando...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 mt-4">
-                                        <h6 class="border-top pt-3">Información del Tutor</h6>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-field"><i class="fas fa-user-shield"></i>
-                                            <div><small class="text-muted">Nombre del Tutor</small>
-                                                <p class="fw-medium" id="info-tutor-nombre">Cargando...</p>
+                                            <div><small class="text-muted">Email Tutor</small>
+                                                <p class="fw-medium" id="info-tutor-email">--</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="info-field"><i class="fas fa-briefcase"></i>
-                                            <div><small class="text-muted">Trabajo del Tutor</small>
-                                                <p class="fw-medium" id="info-tutor-trabajo">Cargando...</p>
+                                            <div><small class="text-muted">Trabajo</small>
+                                                <p class="fw-medium" id="info-tutor-trabajo">--</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="info-field"><i class="fas fa-user-graduate"></i>
-                                            <div><small class="text-muted">Nivel de Educación (Tutor)</small>
-                                                <p class="fw-medium" id="info-tutor-educacion">Cargando...</p>
+                                            <div><small class="text-muted">Nivel de Educación</small>
+                                                <p class="fw-medium" id="info-tutor-educacion">--</p>
                                             </div>
                                         </div>
                                     </div>
@@ -384,81 +352,80 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfilLabel"
-        aria-hidden="true">
+<div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditarPerfilLabel">Editar Información Personal</h5>
+                    <h5 class="modal-title">Editar Información Personal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <form id="formEditarPerfil">
                     <div class="modal-body">
-                        <p class="small text-muted">Los cambios en Nombre y Apellido se reflejarán en su cuenta de
-                            usuario. Los demás datos son de su expediente de alumno.</p>
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6"><label class="form-label">Nombre</label><input type="text"
-                                    class="form-control" id="input-nombre-modal" required></div>
-                            <div class="col-md-6"><label class="form-label">Apellido</label><input type="text"
-                                    class="form-control" id="input-apellido-modal" required></div>
-                            <div class="col-md-6"><label class="form-label">DNI</label><input type="text"
-                                    class="form-control" id="input-dni-modal"></div>
-                            <div class="col-md-6"><label class="form-label">Teléfono</label><input type="tel"
-                                    class="form-control" id="input-telefono-modal"></div>
-                            <div class="col-md-6"><label class="form-label">Fecha de Nacimiento</label><input
-                                    type="date" class="form-control" id="input-fecha-nacimiento-modal"></div>
-                            <div class="col-md-6"><label class="form-label">Grado</label><select class="form-select"
-                                    id="input-grado-modal" required>
-                                    <option value="">Cargando grados...</option>
-                                </select></div>
-                            <div class="col-md-6"><label class="form-label">Dirección</label><input type="text"
-                                    class="form-control" id="input-direccion-modal"></div>
-
-                            <h6 class="mt-4 border-top pt-3">Información Adicional (CUD)</h6>
-                            <div class="col-md-6"><label class="form-label">¿Tiene CUD?</label><select
-                                    id="input-cud-tiene" class="form-select">
-                                    <option value="false" selected>No</option>
-                                    <option value="true">Sí</option>
-                                </select></div>
-                            <div class="col-12" id="cud-detalles-container" style="display: none;">
-                                <div class="row g-3 p-3 bg-light border rounded">
-                                    <div class="col-md-6"><label class="form-label">Tipo de CUD
-                                            (Diagnóstico)</label><select id="input-cud-diagnostico" class="form-select">
-                                            <option value="" selected>Seleccionar tipo...</option>
-                                            <option value="Motriz">Motriz</option>
-                                            <option value="Visceral">Visceral</option>
-                                            <option value="Auditivo">Auditivo</option>
-                                            <option value="Visual">Visual</option>
-                                            <option value="Intelectual">Intelectual / Mental</option>
-                                            <option value="Psicosocial">Psicosocial</option>
-                                            <option value="Otro">Otro</option>
-                                        </select></div>
-                                    <div class="col-md-6"><label class="form-label">Fecha de Vencimiento</label><input
-                                            type="date" class="form-control" id="input-cud-vencimiento"></div>
+                        <h6 class="text-primary"><i class="fas fa-user"></i> Datos del Alumno</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6"><label class="form-label">Nombre</label><input type="text" class="form-control" id="input-nombre-modal" required></div>
+                            <div class="col-md-6"><label class="form-label">Apellido</label><input type="text" class="form-control" id="input-apellido-modal" required></div>
+                            <div class="col-md-6"><label class="form-label">DNI</label><input type="text" class="form-control" id="input-dni-modal"></div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono Alumno</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted small">+54 9</span>
+                                    <input type="tel" class="form-control" id="input-telefono-modal">
                                 </div>
                             </div>
+                            <div class="col-md-6"><label class="form-label">Fecha Nacimiento</label><input type="date" class="form-control" id="input-fecha-nacimiento-modal"></div>
+                            <div class="col-md-6"><label class="form-label">Grado</label><select class="form-select" id="input-grado-modal" required><option value="">Cargando...</option></select></div>
+                            <div class="col-12"><label class="form-label">Dirección</label><input type="text" class="form-control" id="input-direccion-modal"></div>
+                        </div>
 
-                            <h6 class="mt-4 border-top pt-3">Información del Tutor</h6>
-                            <div class="col-md-12"><label class="form-label">Nombre del Tutor</label><input type="text"
-                                    class="form-control" id="input-tutor-nombre-modal"></div>
-                            <div class="col-md-6"><label class="form-label">Nivel Máx. Educación (Tutor)</label><select
-                                    id="input-tutor-educacion-modal" class="form-select">
+                        <h6 class="border-top pt-3 text-primary"><i class="fas fa-file-medical"></i> Certificado Único de Discapacidad</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6"><label class="form-label">¿Tiene CUD?</label><select id="input-cud-tiene" class="form-select"><option value="false">No</option><option value="true">Sí</option></select></div>
+                            <div class="col-12" id="cud-detalles-container" style="display: none;">
+                                <div class="row g-3 p-3 bg-light border rounded">
+                                    <div class="col-md-6"><label class="form-label">Diagnóstico</label><select id="input-cud-diagnostico" class="form-select">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Motriz">Motriz</option><option value="Visceral">Visceral</option><option value="Auditivo">Auditivo</option>
+                                        <option value="Visual">Visual</option><option value="Intelectual">Intelectual</option><option value="Psicosocial">Psicosocial</option>
+                                        <option value="Otro">Otro</option>
+                                    </select></div>
+                                    <div class="col-md-6"><label class="form-label">Vencimiento</label><input type="date" class="form-control" id="input-cud-vencimiento"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="border-top pt-3 text-primary"><i class="fas fa-user-shield"></i> Datos del Tutor</h6>
+                        <div class="row g-3">
+                            <div class="col-12"><label class="form-label">Nombre Completo</label><input type="text" class="form-control" id="input-tutor-nombre-modal"></div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Telefono del Tutor</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted small">+54 9</span>
+                                    <input type="tel" class="form-control" id="input-tutor-telefono" placeholder="381...">
+                                </div>
+                            </div>
+                            <div class="col-md-6"><label class="form-label">Email del Tutor</label><input type="email" class="form-control" id="input-tutor-email"></div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Nivel Máx. Educación (Tutor)</label>
+                                <select id="input-tutor-educacion-modal" class="form-select">
                                     <option value="" selected>Seleccionar...</option>
                                     <option value="Sin estudios">Sin estudios</option>
                                     <option value="Primaria incompleta">Primaria incompleta</option>
                                     <option value="Primaria completa">Primaria completa</option>
                                     <option value="Secundaria incompleta">Secundaria incompleta</option>
                                     <option value="Secundaria completa">Secundaria completa</option>
-                                    <option value="Terciario/Universitario incompleto">Terciario/Universitario
-                                        incompleto</option>
-                                    <option value="Terciario/Universitario completo">Terciario/Universitario completo
-                                    </option>
+                                    <option value="Terciario/Universitario incompleto">Terciario/Universitario incompleto</option>
+                                    <option value="Terciario/Universitario completo">Terciario/Universitario completo</option>
                                     <option value="Posgrado">Posgrado</option>
                                     <option value="No especifica">No especifica</option>
-                                </select></div>
-                            <div class="col-md-6"><label class="form-label">Trabajo/Ocupación (Tutor)</label><select
-                                    id="input-tutor-trabajo-modal" class="form-select">
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Trabajo/Ocupación (Tutor)</label>
+                                <select id="input-tutor-trabajo-modal" class="form-select">
                                     <option value="" selected>Seleccionar...</option>
                                     <option value="Desocupado">Desocupado</option>
                                     <option value="Plan social">Plan social</option>
@@ -469,7 +436,8 @@
                                     <option value="Profesional">Profesional</option>
                                     <option value="Empleado">Empleado</option>
                                     <option value="Otro">Otro</option>
-                                </select></div>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
