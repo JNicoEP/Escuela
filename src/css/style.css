@@ -120,6 +120,36 @@ footer a:hover {
     text-decoration: underline;
 }
 
+
+
+/* =========================================
+   CORRECCIÓN CARRUSEL PRINCIPAL (INDEX)
+   ========================================= */
+
+/* 1. Fijamos la altura del contenedor para que no "baile" */
+#galeriaDestacada .carousel-item {
+}
+
+/* 2. Obligamos a la imagen a llenar ese espacio */
+#galeriaDestacada .carousel-img {
+    width: 100%;
+    height: 100% !important; /* Fuerza la altura */
+    
+    /* 'cover' hace que la foto llene todo el cuadro.
+       Si la foto es muy chica, se recorta un poco los bordes 
+       para que no queden espacios vacíos. */
+    object-fit: cover; 
+    
+    object-position: center;
+}
+
+/* 3. Ajuste para Celulares (para que no sea tan alto) */
+@media (max-width: 768px) {
+    #galeriaDestacada .carousel-item {
+        height: 250px; /* Altura fija más pequeña para el celular */
+    }
+}
+
 /* ============================================== */
 /*          ESTILOS DEL CARRUSEL RESPONSIVO (CORREGIDO)         */
 /* ============================================== */
@@ -234,10 +264,6 @@ footer a:hover {
 /* =========================================
    CORRECCIÓN CARRUSEL DOCENTES (FOTOS VERTICALES)
    ========================================= */
-
-/* 1. Fijamos la altura del contenedor (Caja) */
-
-
 
 /* 3. Mejoramos el texto del nombre para que se lea bien sobre la foto */
 #carruselDocentes .carousel-caption {
