@@ -12,10 +12,10 @@ import { showMessage } from '../utils/notifications.js';
 
 // --- Referencias al DOM ---
 const welcomeAlert = document.getElementById('welcome-alert');
-let currentUser = null; 
+let currentUser = null;
 let currentDocenteFilter = 'pendiente';
 let allUsersData = [];
-let allRolesData = []; 
+let allRolesData = [];
 
 // Pestaña Auditoría
 const auditoriaTableBody = document.getElementById('auditoria-table-body');
@@ -101,18 +101,18 @@ function setupTabsAndFilters() {
             auditoriaFilterButtons.forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
             // El dataset.rol debe ser 'todos', 'docente' o 'alumno'
-            renderAuditoria(e.currentTarget.dataset.rol); 
+            renderAuditoria(e.currentTarget.dataset.rol);
         });
     });
     const btnGuardarRol = document.getElementById('modal-guardar-rol-btn');
     if (btnGuardarRol) {
         // Elimina cualquier listener anterior por si acaso (opcional pero seguro)
-        btnGuardarRol.removeEventListener('click', handleUpdateRole); 
+        btnGuardarRol.removeEventListener('click', handleUpdateRole);
         // Agrega el listener nuevo
         btnGuardarRol.addEventListener('click', handleUpdateRole);
     }
 
-   auditoriaTableBody.addEventListener('click', (e) => {
+    auditoriaTableBody.addEventListener('click', (e) => {
         // Botón Ver/Editar
         const editButton = e.target.closest('.edit-user-btn');
         if (editButton) {
@@ -197,7 +197,7 @@ async function renderAuditoria(filtroRol = 'todos') {
             )
         `)
         .order('fecha_creacion', { ascending: false });
-        // QUITE EL .eq('is_active', true) PARA QUE PUEDAS VER A LOS DESACTIVADOS TAMBIÉN
+    // QUITE EL .eq('is_active', true) PARA QUE PUEDAS VER A LOS DESACTIVADOS TAMBIÉN
 
     if (filtroRol !== 'todos') {
         query = query.eq('rol.nombre_rol', filtroRol);
@@ -223,12 +223,12 @@ async function renderAuditoria(filtroRol = 'todos') {
 
     usuarios.forEach(user => {
         const userRoleName = user.rol.nombre_rol;
-        
+
         // Estilos visuales
         let badgeClass = 'bg-secondary';
         if (userRoleName === 'docente') badgeClass = 'bg-primary text-white';
         if (userRoleName === 'alumno') badgeClass = 'bg-success text-white';
-        
+
         // Si está desactivado, ponemos la fila gris
         const rowClass = !user.is_active ? 'table-secondary text-muted' : '';
         const estadoTexto = !user.is_active ? '<span class="badge bg-danger ms-2">INACTIVO</span>' : '';
@@ -275,7 +275,7 @@ async function renderAuditoria(filtroRol = 'todos') {
             </tr>
         `;
     });
-    
+
     auditoriaTableBody.innerHTML = html;
 }
 
@@ -309,7 +309,7 @@ function populateRoleDropdown(currentRoleId) {
             selectEl.appendChild(option);
         }
     });
-    
+
     // Seleccionar el rol actual del usuario
     selectEl.value = currentRoleId;
 }
@@ -332,7 +332,7 @@ async function openUserDetailsModal(user) {
 
     // 2. Rellenar dropdown de rol
     const currentRoleId = user.rol ? user.rol.id_rol : null;
-    const currentRoleName = user.rol ? user.rol.nombre_rol : ''; 
+    const currentRoleName = user.rol ? user.rol.nombre_rol : '';
     populateRoleDropdown(currentRoleId); // Tu función auxiliar existente
 
     // 3. Referencias a las secciones ocultas
@@ -348,7 +348,7 @@ async function openUserDetailsModal(user) {
     // =========================================================
     if (currentRoleName === 'alumno') {
         divAlumno.style.display = 'block'; // Mostrar sección alumno
-        
+
         // Supabase suele devolver 'alumnos' como un array si es una relación 1:N
         // Intentamos obtener el primer elemento
         const alumnoData = Array.isArray(user.alumnos) ? user.alumnos[0] : user.alumnos;
@@ -377,7 +377,7 @@ async function openUserDetailsModal(user) {
     // =========================================================
     else if (currentRoleName === 'docente') {
         divDocente.style.display = 'block'; // Mostrar sección docente
-        
+
         const docenteData = Array.isArray(user.docentes) ? user.docentes[0] : user.docentes;
 
         if (docenteData) {
@@ -396,8 +396,8 @@ async function openUserDetailsModal(user) {
             const setupFileBtn = async (path, btnId) => {
                 const btn = document.getElementById(btnId);
                 // Resetear estilos
-                btn.className = 'badge text-decoration-none text-white'; 
-                
+                btn.className = 'badge text-decoration-none text-white';
+
                 if (path) {
                     // Generar URL firmada
                     const { data: urlData } = await supabase.storage
@@ -448,7 +448,7 @@ async function handleUpdateRole() {
 
     const btnGuardar = document.getElementById('modal-guardar-rol-btn');
     // Aseguramos que no sea submit por si se te olvidó cambiar el HTML
-    if (event) event.preventDefault(); 
+    if (event) event.preventDefault();
 
     if (btnGuardar) {
         btnGuardar.disabled = true;
@@ -462,9 +462,9 @@ async function handleUpdateRole() {
             .select('rol(nombre_rol)')
             .eq('id_usuario', userId)
             .single();
-        
+
         const oldRoleName = userData?.rol?.nombre_rol;
-        
+
         const selectedRoleObj = allRolesData.find(r => r.id_rol == newRoleId);
         const newRoleName = selectedRoleObj ? selectedRoleObj.nombre_rol : '';
 
@@ -475,17 +475,17 @@ async function handleUpdateRole() {
             .from('usuarios')
             .update({ id_rol: newRoleId })
             .eq('id_usuario', userId);
-        
+
         if (userError) throw userError;
         console.log("✅ Tabla 'usuarios' actualizada.");
 
         // 3. INTENTO DE LIMPIEZA (Con manejo de FK)
-        
+
         // CASO: Era Docente -> Ahora No
         if (oldRoleName === 'docente' && newRoleName !== 'docente') {
             console.log("🧹 Intentando borrar perfil de Docente...");
             const { error } = await supabase.from('docentes').delete().eq('id_docente', userId);
-            
+
             if (error) {
                 // Código 23503 es violación de llave foránea (tiene materias/tareas)
                 if (error.code === '23503') {
@@ -503,7 +503,7 @@ async function handleUpdateRole() {
         if (oldRoleName === 'alumno' && newRoleName !== 'alumno') {
             console.log("🧹 Intentando borrar perfil de Alumno...");
             const { error } = await supabase.from('alumnos').delete().eq('id_alumno', userId);
-            
+
             if (error) {
                 if (error.code === '23503') {
                     console.warn("⚠️ NO SE PUDO BORRAR EL PERFIL ALUMNO: Tiene inscripciones o notas.");
@@ -528,22 +528,22 @@ async function handleUpdateRole() {
             console.log("✨ Perfil alumno creado/verificado.");
         }
 
-       showMessage('Rol actualizado correctamente.', 'Éxito');
-        userDetailsModal.hide(); 
+        showMessage('Rol actualizado correctamente.', 'Éxito');
+        userDetailsModal.hide();
 
         // ============================================================
         // 5. RECARGAS VISUALES (CON PEQUEÑA PAUSA)
         // ============================================================
         console.log("⏳ Esperando confirmación de BD para recargar tablas...");
-        
+
         // Limpiamos visualmente antes para que se note que está cargando
         const auditoriaTableBody = document.getElementById('auditoria-table-body');
-        if(auditoriaTableBody) auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Actualizando vista...</td></tr>';
+        if (auditoriaTableBody) auditoriaTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Actualizando vista...</td></tr>';
 
         // Usamos setTimeout para dar 500ms (medio segundo) a la BD antes de leer
         setTimeout(async () => {
             console.log("🔄 Recargando tablas ahora...");
-            
+
             // Recargar Auditoría
             const activeBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
             const activeFilter = activeBtn ? activeBtn.dataset.rol : 'todos';
@@ -599,7 +599,7 @@ async function renderDocentes(filtroEstado) {
         docentesTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay docentes ${filtroEstado}s.</td></tr>`;
         return;
     }
-    
+
     let html = '';
     docentes.forEach(docente => {
         const usuario = docente.usuario;
@@ -639,7 +639,7 @@ async function renderDocentes(filtroEstado) {
             </tr>
         `;
     });
-    
+
     docentesTableBody.innerHTML = html;
     addDocenteActionListeners();
 }
@@ -653,7 +653,7 @@ function addDocenteActionListeners() {
         btn.addEventListener('click', async (e) => {
             const docenteId = e.currentTarget.closest('tr').dataset.id;
             const nuevaAccion = e.currentTarget.dataset.accion;
-            
+
             if (confirm(`¿Está seguro de que desea cambiar el estado a "${nuevaAccion}"?`)) {
                 await updateDocenteEstado([docenteId], nuevaAccion);
                 await renderDocentes(currentDocenteFilter);
@@ -762,8 +762,8 @@ function updateBulkActionsUI() {
  */
 async function handleBulkUpdate() {
     const selectedIds = Array.from(docentesTableBody.querySelectorAll('.docente-checkbox:checked'))
-                            .map(cb => cb.value);
-    
+        .map(cb => cb.value);
+
     const nuevoEstado = bulkActionSelect.value;
 
     if (selectedIds.length === 0) {
@@ -791,7 +791,7 @@ async function updateDocenteEstado(ids, estado) {
         .from('docentes')
         .update({ estado: estado })
         .in('id_docente', ids);
-    
+
     if (error) {
         showMessage('Error al actualizar docentes: ' + error.message, 'Error');
     } else {
@@ -816,7 +816,7 @@ async function renderDocumentos() {
     const filtroProfesorInput = document.getElementById('filtro-profesor');
 
     documentacionList.innerHTML = '<div class="text-center text-muted p-4"><span class="spinner-border spinner-border-sm"></span> Cargando documentación...</div>';
-    
+
     const gradoId = filtroGrado.value;
     const textoProfesor = filtroProfesorInput.value.toLowerCase().trim();
 
@@ -866,7 +866,7 @@ async function renderDocumentos() {
 
         // 4. Generar HTML
         let html = '';
-        
+
         for (const doc of documentosFiltrados) {
             const profesor = doc.docente?.usuario ? `${doc.docente.usuario.nombre} ${doc.docente.usuario.apellido}` : 'Desconocido';
             const materiaNombre = doc.materia?.nombre_materia || 'Sin materia';
@@ -876,7 +876,7 @@ async function renderDocumentos() {
 
             // Generar enlace de descarga seguro
             let botonDescarga = '<button class="btn btn-sm btn-outline-secondary disabled">Error</button>';
-            
+
             if (doc.archivo_path) {
                 const { data: urlData } = await supabase.storage
                     .from('materiales')
@@ -961,7 +961,7 @@ async function handleSoftDeleteUser(userId, userName, isActive) {
         if (error) throw error;
 
         showMessage(`Usuario ${isActive ? 'reactivado' : 'desactivado'} con éxito.`, 'Éxito');
-        
+
         // Recargar tabla manteniendo el filtro actual
         const activeBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
         const activeFilter = activeBtn ? activeBtn.dataset.rol : 'todos';
@@ -990,7 +990,7 @@ async function handleHardDeleteUser(userId, userName) {
         if (error) throw error;
 
         showMessage('Usuario eliminado permanentemente.', 'Éxito');
-        
+
         const activeBtn = document.querySelector('#auditoria-tab-pane .btn-success-soft.active');
         const activeFilter = activeBtn ? activeBtn.dataset.rol : 'todos';
         await renderAuditoria(activeFilter);
@@ -1131,13 +1131,213 @@ async function handleSendMensaje() {
     } else {
         showMessage('Mensaje enviado con éxito.', 'Éxito');
         formAdminNuevoMensaje.reset();
-        
+
         const modalEl = document.getElementById('adminNuevoMensajeModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) {
             modalInstance.hide();
         }
-        
+
         await renderMensajesAdmin(); // Recargar listas de mensajes
     }
 }
+// panel-admin.js
+
+// 1. Manejar el envío del formulario (CREAR)
+const formPublicar = document.getElementById('form-publicar-novedad');
+if(formPublicar){
+    formPublicar.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        // Deshabilitar botón para evitar doble envío
+        const btnSubmit = formPublicar.querySelector('button[type="submit"]');
+        const btnTextoOriginal = btnSubmit.innerHTML;
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Subiendo...';
+
+        try {
+            const titulo = document.getElementById('titulo-novedad').value;
+            const fecha = document.getElementById('fecha-novedad').value;
+            const descripcion = document.getElementById('desc-novedad').value;
+            
+            // --- LÓGICA DE IMAGEN ---
+            const fileInput = document.getElementById('file-novedad');
+            const urlInputStr = document.getElementById('img-novedad').value;
+            let imagenFinalUrl = urlInputStr; // Por defecto, usamos el link escrito
+
+            // Si el usuario seleccionó un archivo, LO SUBIMOS y esa será la URL final
+            if (fileInput.files.length > 0) {
+                imagenFinalUrl = await subirImagenASupabase(fileInput.files[0]);
+            }
+            // ------------------------
+
+            const { error } = await supabase
+                .from('novedades')
+                .insert([{ titulo, fecha, imagen_url: imagenFinalUrl, descripcion }]);
+
+            if (error) throw error;
+
+            alert('¡Novedad publicada con éxito!');
+            formPublicar.reset();
+            cargarPublicacionesAdmin(); 
+        } catch (error) {
+            console.error(error);
+            alert('Error al publicar: ' + error.message);
+        } finally {
+            // Restaurar botón
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = btnTextoOriginal;
+        }
+    });
+}
+
+// 2. Cargar lista para poder borrar y EDITAR
+async function cargarPublicacionesAdmin() {
+    const lista = document.getElementById('lista-publicaciones-admin');
+    if (!lista) return;
+
+    const { data, error } = await supabase
+        .from('novedades')
+        .select('*')
+        .order('fecha', { ascending: false });
+
+    if (data) {
+        lista.innerHTML = data.map(item => `
+            <tr>
+                <td>${item.fecha}</td>
+                <td>${item.titulo}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-warning me-2" onclick="abrirModalEdicion(${item.id})" title="Editar">
+                        <i class="fas fa-pen"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-danger" onclick="borrarNovedad(${item.id})" title="Borrar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+// Hacer la función global para que el onclick funcione
+window.borrarNovedad = async (id) => {
+    if (!confirm('¿Seguro que deseas eliminar esta noticia?')) return;
+
+    const { error } = await supabase.from('novedades').delete().eq('id', id);
+    if (!error) cargarPublicacionesAdmin();
+};
+
+// Función para ABRIR el modal (EDITAR) - ACTUALIZADA
+window.abrirModalEdicion = async (id) => {
+    const { data, error } = await supabase
+        .from('novedades')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) { alert('Error al cargar'); return; }
+
+
+        // Rellenar campos de texto
+        document.getElementById('edit-id').value = data.id;
+        document.getElementById('edit-titulo').value = data.titulo;
+        document.getElementById('edit-fecha').value = data.fecha;
+        document.getElementById('edit-descripcion').value = data.descripcion;
+
+        // --- LÓGICA DE IMÁGENES AL ABRIR ---
+        const currentImgUrl = data.imagen_url || '';
+        // 1. Guardamos la URL original en el input oculto (por seguridad)
+        document.getElementById('edit-img-anterior').value = currentImgUrl;
+        // 2. TAMBIÉN rellenamos el input visible de URL para que el usuario lo vea y pueda editarlo
+        document.getElementById('edit-img-url').value = currentImgUrl;
+        // 3. Limpiamos el input de archivo
+        document.getElementById('edit-file-novedad').value = '';
+        // -----------------------------------
+
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarNovedad'));
+        modal.show();
+};
+    
+
+// Función para GUARDAR los cambios (EDITAR) - ACTUALIZADA V2
+window.guardarEdicionNovedad = async () => {
+    const btnGuardar = document.querySelector('#modalEditarNovedad .modal-footer .btn-warning');
+    const btnTextoOriginal = btnGuardar.innerHTML;
+    btnGuardar.disabled = true;
+    btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Guardando...';
+
+    try {
+        const id = document.getElementById('edit-id').value;
+        const titulo = document.getElementById('edit-titulo').value;
+        const fecha = document.getElementById('edit-fecha').value;
+        const descripcion = document.getElementById('edit-descripcion').value;
+
+        // --- NUEVA LÓGICA DE IMAGEN EN EDICIÓN ---
+        const fileInput = document.getElementById('edit-file-novedad');
+        const urlInputStr = document.getElementById('edit-img-url').value; // El valor del campo de texto URL
+        
+        let imagenFinalUrl;
+
+        // Prioridad 1: ¿Eligió un archivo nuevo?
+        if (fileInput.files.length > 0) {
+            // Si, subimos el archivo y usamos esa nueva URL
+            imagenFinalUrl = await subirImagenASupabase(fileInput.files[0]);
+        } else {
+            // No, entonces usamos lo que haya en el campo de texto URL (sea el viejo o uno nuevo editado)
+            imagenFinalUrl = urlInputStr;
+        }
+        // -----------------------------------
+
+        const { error } = await supabase
+            .from('novedades')
+            .update({ titulo, fecha, imagen_url: imagenFinalUrl, descripcion })
+            .eq('id', id);
+
+        if (error) throw error;
+
+        alert('¡Publicación actualizada correctamente!');
+        const modalElement = document.getElementById('modalEditarNovedad');
+        bootstrap.Modal.getInstance(modalElement).hide();
+        cargarPublicacionesAdmin();
+
+    } catch (error) {
+        console.error('Error al guardar edición:', error);
+        alert('Error al actualizar: ' + error.message);
+    } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.innerHTML = btnTextoOriginal;
+    }
+};
+// --- FUNCIÓN AUXILIAR PARA SUBIR IMÁGENES A SUPABASE STORAGE ---
+async function subirImagenASupabase(archivo) {
+    if (!archivo) return null;
+
+    // 1. Crear un nombre de archivo único (usando la fecha actual + nombre original)
+    // Esto evita que dos imágenes con el mismo nombre se sobrescriban.
+    const timestamp = Date.now();
+    const nombreArchivo = `${timestamp}-${archivo.name.replace(/\s/g, '_')}`; // Reemplaza espacios con guiones bajos
+
+    // 2. Subir el archivo al bucket 'imagenes-novedades'
+    const { data, error } = await supabase
+        .storage
+        .from('imagenes-novedades') // Asegúrate que este nombre sea IGUAL al que creaste en Supabase
+        .upload(nombreArchivo, archivo, {
+            cacheControl: '3600',
+            upsert: false
+        });
+
+    if (error) {
+        console.error('Error subiendo imagen:', error);
+        throw new Error('Falló la subida de la imagen');
+    }
+
+    // 3. Obtener la URL pública del archivo subido
+    const { data: publicUrlData } = supabase
+        .storage
+        .from('imagenes-novedades')
+        .getPublicUrl(nombreArchivo);
+
+    return publicUrlData.publicUrl;
+}
+// Cargar al iniciar
+cargarPublicacionesAdmin();

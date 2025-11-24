@@ -69,6 +69,12 @@
                             <i class="fas fa-envelope me-2"></i> Mensajería
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="publicaciones-tab" data-bs-toggle="tab"
+                            data-bs-target="#publicaciones-tab-pane" type="button" role="tab">
+                            <i class="fas fa-bullhorn me-2"></i> Publicaciones
+                        </button>
+                    </li>
                 </ul>
             </div>
 
@@ -216,6 +222,78 @@
                                     <!-- JS insertará mensajes enviados -->
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pestaña 5: Eventos -->
+                <div class="tab-pane fade" id="publicaciones-tab-pane" role="tabpanel">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">Publicar Novedad o Evento</h5>
+
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                <form id="form-publicar-novedad">
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <label for="titulo-novedad"
+                                                class="form-label fw-bold small text-muted">Título</label>
+                                            <input type="text" class="form-control" id="titulo-novedad"
+                                                placeholder="Ej: Acto del 25 de Mayo" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="fecha-novedad" class="form-label fw-bold small text-muted">Fecha
+                                                del Evento</label>
+                                            <input type="date" class="form-control" id="fecha-novedad" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-bold small text-muted">Imagen de la
+                                                publicación</label>
+
+                                            <div class="input-group mb-2">
+                                                <label class="input-group-text" for="file-novedad"><i
+                                                        class="fas fa-upload"></i></label>
+                                                <input type="file" class="form-control" id="file-novedad"
+                                                    accept="image/*">
+                                            </div>
+                                            <div class="form-text small text-muted mb-2">Opción A: Sube una imagen desde
+                                                tu computadora (Recomendado).</div>
+
+                                            <input type="url" class="form-control" id="img-novedad"
+                                                placeholder="O pega un link externo (https://...)">
+                                            <div class="form-text small text-muted">Opción B: Si no subes archivo, se
+                                                usará este link.</div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="desc-novedad"
+                                                class="form-label fw-bold small text-muted">Descripción</label>
+                                            <textarea class="form-control" id="desc-novedad" rows="3"
+                                                placeholder="Detalles del evento..." required></textarea>
+                                        </div>
+                                        <div class="col-12 text-end">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-paper-plane me-2"></i> Publicar en Web
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h6 class="mb-3 text-muted">Publicaciones Activas</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Título</th>
+                                        <th class="text-end">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lista-publicaciones-admin">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -626,6 +704,57 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalEditarNovedad" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-warning-subtle">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fas fa-edit me-2"></i>Editar Publicación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editar-novedad">
+                        <input type="hidden" id="edit-id">
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Título</label>
+                            <input type="text" class="form-control" id="edit-titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Fecha</label>
+                            <input type="date" class="form-control" id="edit-fecha" required>
+                        </div>
+                        <div class="mb-3 card bg-light border-0 p-3">
+    <label class="form-label small fw-bold text-dark mb-2">Imagen de la publicación</label>
+
+    <input type="hidden" id="edit-img-anterior">
+
+    <div class="mb-2">
+        <label class="form-label small text-muted mb-1"><i class="fas fa-upload"></i> Opción A: Subir archivo</label>
+        <input type="file" class="form-control form-control-sm" id="edit-file-novedad" accept="image/*">
+    </div>
+
+    <div>
+        <label class="form-label small text-muted mb-1"><i class="fas fa-link"></i> Opción B: O pegar enlace</label>
+        <input type="url" class="form-control form-control-sm" id="edit-img-url" placeholder="https://...">
+    </div>
+</div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Descripción</label>
+                            <textarea class="form-control" id="edit-descripcion" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning fw-bold" onclick="guardarEdicionNovedad()">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
             </div>
         </div>
     </div>

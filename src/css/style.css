@@ -170,33 +170,119 @@ footer a:hover {
     display: block;
     /* Aseguramos que sea un bloque */
 }
+@media (max-width: 768px) {
+    /* 1. Reducimos la altura del contenedor en celular para que no sea tan gigante */
+    .carousel-item {
+        height: 300px !important; /* Puedes cambiar a 250px si lo quieres más bajito */
+        min-height: 300px !important;
+    }
 
-/* 5. Estilo de los botones (flechas)  */
-#galeriaDestacada .carousel-control-prev-icon,
-#galeriaDestacada .carousel-control-next-icon,
-#carruselAutoridades .carousel-control-prev-icon,
-#carruselAutoridades .carousel-control-next-icon,
+    /* 2. OBLIGAMOS a la imagen a llenar el 100% de esa altura */
+    .carousel-item img,
+    .carousel-item .carousel-img {
+        width: 100% !important;
+        height: 100% !important; /* Esto es lo que falta para quitar el espacio azul */
+        object-fit: cover !important; /* Recorta los lados para que no se deforme */
+        display: block !important;
+    }
+}
+
+/* Estilo específico para las flechas del carrusel de Docentes */
+
+/* 1. Hacemos visible el icono (la flecha) */
 #carruselDocentes .carousel-control-prev-icon,
 #carruselDocentes .carousel-control-next-icon {
-    background-color: rgba(25, 67, 108, 0.7);
-    border-radius: 50%;
-    padding: 20px;
-    background-size: 50%;
+    background-color: #5b96ed; /* Fondo Azul (Color de la escuela) */
+    border-radius: 50%;        /* Lo hace redondo */
+    width: 50px;               /* Ancho del círculo */
+    height: 50px;              /* Alto del círculo */
+    background-size: 50%;      /* Tamaño de la flechita interna */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Una pequeña sombra para que resalte */
 }
 
-#galeriaDestacada .carousel-control-prev-icon:hover,
-#galeriaDestacada .carousel-control-next-icon:hover,
-#carruselAutoridades .carousel-control-prev-icon:hover,
-#carruselAutoridades .carousel-control-next-icon:hover,
-#carruselDocentes .carousel-control-prev-icon:hover,
-#carruselDocentes .carousel-control-next-icon:hover {
-    background-color: rgba(25, 67, 108, 1.0);
+/* 2. Efecto al pasar el mouse (se pone más oscuro) */
+#carruselDocentes .carousel-control-prev:hover .carousel-control-prev-icon,
+#carruselDocentes .carousel-control-next:hover .carousel-control-next-icon {
+    background-color: #2e67c3; /* Azul más oscuro */
+    transform: scale(1.1);     /* Crece un poquito */
+    transition: all 0.2s ease;
 }
 
-/* 6. Quitamos fondo de los controles */
-.carousel-control-prev,
-.carousel-control-next {
-    background: none !important;
+/* 3. Posicionamiento CENTRADO VERTICALMENTE (Corrección) */
+#carruselDocentes .carousel-control-prev,
+#carruselDocentes .carousel-control-next {
+    opacity: 1; /* Totalmente visible */
+    width: 60px; /* Ancho fijo para el área de clic */
+    height: 60px; /* Alto fijo (importante para que no se estire) */
+    
+    /* Truco para centrar verticalmente */
+    top: 50%; 
+    transform: translateY(-50%);
+    
+    bottom: auto; /* Evita que llegue hasta abajo */
+    z-index: 10; /* Asegura que quede encima de la foto */
+}
+
+/* Ajuste de posición horizontal (opcional, para separarlos del borde) */
+#carruselDocentes .carousel-control-prev {
+    left: 10px;
+}
+
+#carruselDocentes .carousel-control-next {
+    right: 10px;
+}
+/* =========================================
+   CORRECCIÓN CARRUSEL DOCENTES (FOTOS VERTICALES)
+   ========================================= */
+
+/* 1. Fijamos la altura del contenedor (Caja) */
+
+
+
+/* 3. Mejoramos el texto del nombre para que se lea bien sobre la foto */
+#carruselDocentes .carousel-caption {
+    background: rgba(0, 0, 0, 0.7); /* Fondo negro semitransparente */
+    border-radius: 50px; /* Bordes redondeados */
+    padding: 5px 20px;
+    bottom: 30px; /* Lo subimos un poco */
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content; /* El fondo solo ocupa lo que mide el texto */
+    max-width: 90%;
+}
+
+/* =========================================
+   AJUSTE ESPECÍFICO PARA MÓVIL (Ver foto entera)
+   ========================================= */
+
+@media (max-width: 768px) {
+    /* 1. Ajustamos la altura del contenedor en celular */
+    #carruselDocentes .carousel-item {
+        height: 450px !important; /* Altura ideal para ver retratos en el cel */
+        background: #e9ecef; /* Color de fondo suave para los espacios vacíos */
+        /* Opcional: Si prefieres oscuro usa: background: #222; */
+    }
+
+    /* 2. Obligamos a la imagen a verse COMPLETA */
+    #carruselDocentes .carousel-img {
+        width: 100% !important;
+        height: 100% !important;
+        
+        /* ESTA ES LA CLAVE: */
+        object-fit: contain !important; /* Muestra toda la foto sin recortar nada */
+        
+        object-position: center center;
+    }
+
+    /* 3. Ajustamos el texto para que no tape la cara */
+    #carruselDocentes .carousel-caption {
+        bottom: 10px; /* Más abajo */
+        padding: 5px 10px;
+    }
+    
+    #carruselDocentes .carousel-caption h5 {
+        font-size: 0.9rem; /* Texto un poco más chico */
+    }
 }
 
 .carousel-caption {
