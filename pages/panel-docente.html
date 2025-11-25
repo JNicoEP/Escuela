@@ -299,7 +299,7 @@
                                 <label for="califMateriaMasiva" class="form-label fw-bold">Materia</label>
                                 <select id="califMateriaMasiva" class="form-select bg-white" required>
                                     <option value="">Seleccione materia...</option>
-                                </select>
+                                    </select>
                             </div>
                             <div class="col-md-3">
                                 <label for="califPeriodoMasiva" class="form-label fw-bold">Periodo</label>
@@ -308,10 +308,11 @@
                                     <option value="1er Trimestre">1er Trimestre</option>
                                     <option value="2do Trimestre">2do Trimestre</option>
                                     <option value="3er Trimestre">3er Trimestre</option>
+                                    <option value="Examen Final">Examen Final</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="califTipoMasiva" class="form-label fw-bold">Evaluación</label>
+                                <label for="califTipoMasiva" class="form-label fw-bold">Tipo de Evaluación</label>
                                 <input type="text" class="form-control bg-white" id="califTipoMasiva" placeholder="Ej: Parcial 1" required>
                             </div>
                             <div class="col-md-2">
@@ -328,14 +329,15 @@
                             <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
                                 <div id="lista-alumnos-calificar">
                                     <div class="p-4 text-center text-muted small">
-                                        <i class="bi bi-arrow-up text-primary"></i> Seleccione una materia para cargar la lista.
+                                        <i class="bi bi-arrow-up-circle text-primary fa-2x mb-2"></i><br>
+                                        Seleccione una materia arriba para cargar la lista de alumnos.
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="text-end mt-3">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary px-4">
                                 <i class="bi bi-save me-1"></i> Guardar Notas
                             </button>
                         </div>
@@ -343,21 +345,24 @@
                 </div>
             </div>
 
+            <hr class="my-5 border-secondary opacity-25">
+
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial de Calificaciones</h5>
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-dark"><i class="bi bi-clock-history me-2"></i> Historial de Calificaciones</h5>
                 </div>
                 <div class="card-body">
+                    
                     <div class="row g-3 mb-4">
                         <div class="col-md-5">
                             <label class="form-label small text-muted">Filtrar por Materia</label>
                             <select id="historialCalifMateria" class="form-select">
                                 <option value="">Todas las materias</option>
-                            </select>
+                                </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-muted">Filtrar por Fecha</label>
-                            <input type="text" class="form-control bg-white" id="historialCalifFecha"  placeholder="Seleccionar fecha...">
+                            <input type="text" id="historialCalifFecha" class="form-control bg-white" placeholder="Seleccionar fecha...">
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
                             <button class="btn btn-secondary w-100" id="btn-buscar-calif">
@@ -367,7 +372,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Fecha</th>
@@ -379,10 +384,13 @@
                                 </tr>
                             </thead>
                             <tbody id="historial-calificaciones-body">
-                                <tr><td colspan="6" class="text-center py-4 text-muted">Utilice el botón buscar.</td></tr>
+                                <tr><td colspan="6" class="text-center py-4 text-muted">Utilice el botón buscar o seleccione una fecha.</td></tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+                <div class="card-footer bg-white text-center border-top-0">
+                    <small class="text-muted">Se muestran las últimas 50 calificaciones registradas.</small>
                 </div>
             </div>
         </section>
@@ -416,8 +424,6 @@
                                         class="bi bi-check-circle"></i></button>
                                 <button type="button" class="btn btn-outline-danger" id="btn-marcar-ausente"><i
                                         class="bi bi-x-circle"></i></button>
-                                <button type="button" class="btn btn-outline-warning" id="btn-marcar-tarde"><i
-                                        class="bi bi-clock"></i></button>
                             </div>
                         </div>
                     </div>

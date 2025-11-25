@@ -413,26 +413,47 @@ window.gestionarCertificado = async (idCertificado, nuevoEstado) => {
  * Carga los datos de resumen del Dashboard.
  */
 async function loadDashboardData() {
-    // 1. Conteo de Materias (Mis Cursos)
-    const { count: materiasCount } = await supabase
-        .from('materias')
-        .select('*', { count: 'exact', head: true })
-        .eq('id_docente', currentDocenteId);
-    document.getElementById('summary-cursos').textContent = materiasCount || 0;
+    try {
+        // 1. Conteo de Materias (Mis Cursos)
+        const { count: materiasCount, data: misMaterias, error: errMat } = await supabase
+            .from('materias')
+            .select('id_grado', { count: 'exact' })
+            .eq('id_docente', currentDocenteId);
+        
+        if (errMat) throw errMat;
 
-    // 2. Conteo de Estudiantes (total de inscripciones únicas)
-    // Esto es más complejo, podría requerir una función RPC en Supabase
-    // Por ahora, lo dejamos en 0
-    document.getElementById('summary-estudiantes').textContent = '...';
+        document.getElementById('summary-cursos').textContent = materiasCount || 0;
 
-    // 3. Conteo de Tareas Activas
-    // ! Depende de la tabla 'tareas' que no existe
-    document.getElementById('summary-tareas').textContent = '...';
+        // 2. Conteo de Estudiantes (NUEVA LÓGICA)
+        let estudiantesCount = 0;
 
-    // 4. Conteo por Calificar
-    // ! Depende de una lógica de entregas que no está en el schema
-    document.getElementById('summary-calificar').textContent = '...';
+        if (misMaterias && misMaterias.length > 0) {
+            // Obtenemos los IDs de los grados donde enseña el docente (eliminando duplicados)
+            const gradosIds = [...new Set(misMaterias.map(m => m.id_grado))];
 
+            if (gradosIds.length > 0) {
+                // Contamos alumnos que pertenezcan a esos grados
+                const { count, error: errAlum } = await supabase
+                    .from('alumnos')
+                    .select('*', { count: 'exact', head: true })
+                    .in('id_grado', gradosIds);
+                
+                if (!errAlum) {
+                    estudiantesCount = count;
+                }
+            }
+        }
+
+   // Actualizamos el número en la tarjeta azul
+        document.getElementById('summary-estudiantes').textContent = estudiantesCount;
+
+        // 3. Conteo de Tareas Activas
+        const { count: tareasCount } = await supabase
+            .from('tareas')
+            .select('*', { count: 'exact', head: true })
+            .eq('id_docente', currentDocenteId);
+        
+        document.getElementById('summary-tareas').textContent = tareasCount || 0;
     // 5. Actividad Reciente (ejemplo)
     const { data: ultimasCalificaciones } = await supabase
         .from('calificaciones')
@@ -441,6 +462,7 @@ async function loadDashboardData() {
         .order('fecha', { ascending: false }); // Faltaría filtrar por docente
     await loadDocenteProfileInfo();
     await loadActividadReciente();
+    
 
     const container = document.getElementById('actividad-reciente-container');
     container.innerHTML = '';
@@ -459,8 +481,12 @@ async function loadDashboardData() {
     } else {
         container.innerHTML = '<div class="list-group-item text-muted">No hay actividad reciente.</div>';
     }
+    } catch (error) {
+        console.error("Error cargando datos del dashboard:", error);
+    }
 }
-// ==========================================
+
+// =========================================
 // === LÓGICA DE PERFIL DOCENTE (DASHBOARD) ===
 // ==========================================
 
@@ -617,7 +643,7 @@ async function loadAllSelects() {
 
     if (materias) {
         // AGREGAMOS '#historialCalifMateria' A LA LISTA
-       const selects = document.querySelectorAll('#tareaMateria, #califMateria, #asistenciaMateria, #califSelectMateriaVer, #historialCalifMateria, #historialMateria');
+       const selects = document.querySelectorAll('#califMateriaMasiva,#tareaMateria, #califMateria, #asistenciaMateria, #califSelectMateriaVer, #historialCalifMateria, #historialMateria');
         
         selects.forEach(select => {
             select.innerHTML = '<option value="">Seleccione una Materia</option>';
