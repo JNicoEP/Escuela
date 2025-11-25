@@ -100,68 +100,163 @@ function setupEventListeners() {
     console.log("Configurando Event Listeners...");
 
     // --- Helper para agregar eventos de forma segura ---
-    // Esto evita el error "Cannot read properties of null"
     const safeAddListener = (id, eventType, handler) => {
         const element = document.getElementById(id);
         if (element) {
             element.addEventListener(eventType, handler);
-        } else {
-            // Opcional: Comentar esto si molesta en la consola, pero ayuda a saber qué falta
-            console.warn(`Elemento HTML no encontrado: '${id}'. Verifica que el ID exista en el HTML.`);
         }
     };
 
-    // 1. Botones Generales
+    // ==========================================
+    // 1. GENERAL Y PERFIL
+    // ==========================================
     safeAddListener('btn-logout', 'click', handleLogout);
-
-    // NUEVO: Botón para revisar certificados (si lo agregaste en el paso anterior)
-    safeAddListener('btn-ver-certificados', 'click', abrirModalCertificados);
-
-    // 2. Formularios de Edición y Búsqueda
-    safeAddListener('form-editar-tarea', 'submit', handleGuardarEdicion);
-    safeAddListener('btn-buscar-historial', 'click', buscarHistorialAsistencia);
-
-    // 3. Formulario Editar Perfil Docente
     safeAddListener('form-editar-perfil-docente', 'submit', handleGuardarPerfilDocente);
 
-    // 4. Formulario: Agregar Materia
+    // ==========================================
+    // 2. MATERIAS Y CURSOS
+    // ==========================================
     safeAddListener('form-agregar-materia', 'submit', handleAgregarMateria);
 
-    // 5. Formulario: Crear Tarea
+    // ==========================================
+    // 3. TAREAS Y EVALUACIÓN RÁPIDA
+    // ==========================================
+    // Crear tarea nueva
     safeAddListener('form-crear-tarea', 'submit', handleCrearTarea);
+    // Editar tarea existente
+    safeAddListener('form-editar-tarea', 'submit', handleGuardarEdicion);
 
-    // 6. Formulario: Registrar Calificación
-    safeAddListener('form-registrar-calificacion', 'submit', handleRegistrarCalificacion);
+    // NUEVO: Guardar nota desde el modal pequeño (botón "Evaluar" en lista de entregas)
+    safeAddListener('form-calificar-tarea', 'submit', handleGuardarEvaluacionRapida);
 
-    // 7. Formulario: Guardar Asistencia
-    safeAddListener('form-control-asistencia', 'submit', handleGuardarAsistencia);
+    // ==========================================
+    // 4. CALIFICACIONES (PLANILLA MASIVA)
+    // ==========================================
+    // Guardar la planilla completa
+    safeAddListener('form-registrar-calificacion-masiva', 'submit', handleGuardarCalificacionesMasivas);
 
-    // 8. Formulario: Enviar Mensaje
-    safeAddListener('form-redactar-mensaje', 'submit', handleEnviarMensaje);
-
-    // 9. Selects dinámicos (Logica de carga)
-    const califMateria = document.getElementById('califMateria');
-    if (califMateria) {
-        califMateria.addEventListener('change', (e) => loadEstudiantesParaSelect(e.target.value, 'califInscripcion'));
+    // Cargar lista de alumnos al cambiar la materia en la planilla
+    const califMateriaMasiva = document.getElementById('califMateriaMasiva');
+    if (califMateriaMasiva) {
+        califMateriaMasiva.addEventListener('change', loadAlumnosParaCalificar);
+    }
+    const btnActualizarHistorial = document.querySelector('button[onclick="loadHistorialCalificaciones()"]');
+    if (btnActualizarHistorial) {
+        // Quitamos el onclick del HTML y lo manejamos aquí
+        btnActualizarHistorial.removeAttribute('onclick');
+        btnActualizarHistorial.addEventListener('click', loadHistorialCalificaciones);
+    }
+    window.loadHistorialCalificaciones = loadHistorialCalificaciones;
+    const btnHistorial = document.getElementById('btn-actualizar-historial');
+    if (btnHistorial) {
+        // Quitamos el onclick del HTML para evitar errores y usamos este listener
+        btnHistorial.addEventListener('click', loadHistorialCalificaciones);
     }
 
+    // Botón Buscar en Historial de Calificaciones
+    const btnBuscarCalif = document.getElementById('btn-buscar-calif');
+    if (btnBuscarCalif) {
+        btnBuscarCalif.addEventListener('click', loadHistorialCalificaciones);
+    }
+    
+    // (Opcional) Si quieres que cargue todo al entrar a la pestaña sin filtrar:
+    const tabCalif = document.querySelector('button[data-target="#calificaciones"]');
+    if (tabCalif) {
+        tabCalif.addEventListener('shown.bs.tab', () => {
+             // Limpiar filtros al entrar
+             document.getElementById('historialCalifMateria').value = "";
+             document.getElementById('historialCalifFecha').value = "";
+             loadHistorialCalificaciones();
+        });
+    }
+    // A. Listener para el botón "Buscar" (Manual)
+    const btnBuscarHistorial = document.getElementById('btn-buscar-historial');
+    if (btnBuscarHistorial) {
+        btnBuscarHistorial.addEventListener('click', buscarHistorialAsistencia);
+    }
+
+    // B. Listener para el Select de Materia (Automático al cambiar)
+    const filtroMateriaHistorial = document.getElementById('historialMateria');
+    if (filtroMateriaHistorial) {
+        filtroMateriaHistorial.addEventListener('change', async (e) => {
+            const idMateria = e.target.value;
+            
+            // 1. Buscar en la tabla
+            buscarHistorialAsistencia();
+
+            // 2. Limpiar fecha vieja para evitar confusión
+            document.getElementById('historialFecha').value = '';
+
+            // 3. RECARGAR CALENDARIO (Para que pinte solo días de esta materia)
+            await inicializarCalendarioAsistencia(idMateria);
+        });
+    }
+
+    // C. Listener para el Filtro de Fecha (Automático al cambiar)
+    const filtroFechaHistorial = document.getElementById('historialFecha');
+    if (filtroFechaHistorial) {
+        filtroFechaHistorial.addEventListener('change', buscarHistorialAsistencia);
+    }
+
+    // Listener para el Filtro de MATERIA en Historial
+    const historialMateriaSelect = document.getElementById('historialCalifMateria');
+    if (historialMateriaSelect) {
+        historialMateriaSelect.addEventListener('change', async (e) => {
+            const idMateria = e.target.value;
+            
+            // 1. Recargar la tabla de abajo
+            loadHistorialCalificaciones();
+            
+            // 2. RECARGAR EL CALENDARIO (Pintar solo días de esta materia)
+            // Limpiamos el input de fecha para evitar confusiones
+            document.getElementById('historialCalifFecha').value = '';
+            
+            await inicializarCalendarioNotas(idMateria);
+        });
+    }
+    
+    // ... resto de listeners ...
+    
+
+    // ==========================================
+    // 5. ASISTENCIA (CORRECCIÓN)
+    // ==========================================
+    // Listener de formulario
+    safeAddListener('form-control-asistencia', 'submit', handleGuardarAsistencia);
+    safeAddListener('btn-ver-certificados', 'click', abrirModalCertificados);
+    safeAddListener('btn-buscar-historial', 'click', buscarHistorialAsistencia);
+
+    // Detectar cambios en los selectores de asistencia (ESTO ES LO QUE FALTABA)
+    const asistenciaMateria = document.getElementById('asistenciaMateria');
+    const asistenciaFecha = document.getElementById('asistenciaFecha');
+    
+    if (asistenciaMateria && asistenciaFecha) {
+        // Creamos una función wrapper para llamar a loadEstudiantesParaAsistencia con los valores actuales
+        const recargarListaAsistencia = () => {
+            loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value);
+        };
+
+        asistenciaMateria.addEventListener('change', recargarListaAsistencia);
+        asistenciaFecha.addEventListener('change', recargarListaAsistencia);
+    }
+
+    // Botones de acción masiva
+    safeAddListener('btn-marcar-presente', 'click', () => marcarTodosAsistencia('presente'));
+    safeAddListener('btn-marcar-ausente', 'click', () => marcarTodosAsistencia('ausente'));
+
+    // ==========================================
+    // 6. MENSAJERÍA
+    // ==========================================
+    safeAddListener('form-redactar-mensaje', 'submit', handleEnviarMensaje);
+
+    // ==========================================
+    // 7. TABLAS DE VISUALIZACIÓN (HISTORIALES)
+    // ==========================================
+    // Si aún usas el select para ver calificaciones individuales (opcional)
     const califSelectMateriaVer = document.getElementById('califSelectMateriaVer');
     if (califSelectMateriaVer) {
         califSelectMateriaVer.addEventListener('change', (e) => loadCalificaciones(e.target.value));
     }
-
-    // 10. Lógica de Asistencia (Materia y Fecha)
-    const asistenciaMateria = document.getElementById('asistenciaMateria');
-    const asistenciaFecha = document.getElementById('asistenciaFecha');
-
-    if (asistenciaMateria && asistenciaFecha) {
-        asistenciaMateria.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
-        asistenciaFecha.addEventListener('change', () => loadEstudiantesParaAsistencia(asistenciaMateria.value, asistenciaFecha.value));
-    }
-
-    // 11. Botones "Marcar Todos" en Asistencia
-    safeAddListener('btn-marcar-presente', 'click', () => marcarTodosAsistencia('presente'));
-    safeAddListener('btn-marcar-ausente', 'click', () => marcarTodosAsistencia('ausente'));
 }
 
 // --- CARGA DE DATOS INICIAL ---
@@ -176,6 +271,7 @@ async function loadAllData() {
     // loadCalificaciones() se llama al cambiar el select
     loadMensajes(); // Cargar mensajes recibidos y enviados
     loadAllSelects(); // Cargar opciones de todos los dropdowns
+    await inicializarCalendarioNotas();
 }
 /**
  * Abre el modal y carga los certificados pendientes
@@ -520,16 +616,22 @@ async function loadAllSelects() {
         .eq('id_docente', currentDocenteId);
 
     if (materias) {
-        // Agregamos 'historialMateria' a la lista de selects a rellenar
-        const selects = document.querySelectorAll('#tareaMateria, #califMateria, #asistenciaMateria, #califSelectMateriaVer, #historialMateria'); // <-- AÑADIDO #historialMateria
-
+        // AGREGAMOS '#historialCalifMateria' A LA LISTA
+       const selects = document.querySelectorAll('#tareaMateria, #califMateria, #asistenciaMateria, #califSelectMateriaVer, #historialCalifMateria, #historialMateria');
+        
         selects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccione una materia</option>';
+            select.innerHTML = '<option value="">Seleccione una Materia</option>';
             materias.forEach(materia => {
                 select.innerHTML += `<option value="${materia.id_materia}">${materia.nombre_materia} (${materia.grado.nombre_grado})</option>`;
             });
         });
+        
+        // Ajuste visual para el filtro de historial (opcional)
+        const filtroHist = document.getElementById('historialCalifMateria');
+        if(filtroHist) filtroHist.innerHTML = '' + filtroHist.innerHTML;
     }
+    
+    
 
     // 3. Cargar Destinatarios (Padres) para Mensajes
     // Asumimos que los padres tienen un rol específico (ej: id_rol = 3)
@@ -615,6 +717,80 @@ async function loadEstudiantesParaSelect(id_materia, selectId) {
         showMessage('Error cargando estudiantes: ' + error.message, 'Error');
     }
 }
+/**
+ * Inicializa el calendario y pinta los días, filtrando opcionalmente por materia
+ */
+async function inicializarCalendarioNotas(idMateriaFiltro = null) {
+    const inputFecha = document.getElementById('historialCalifFecha');
+    if (!inputFecha) return;
+
+    // 1. Limpiar instancia previa si existe (para repintar)
+    if (inputFecha._flatpickr) {
+        inputFecha._flatpickr.destroy();
+    }
+
+    try {
+        // 2. Construir consulta base
+        let query = supabase
+            .from('calificaciones')
+            .select(`
+                fecha,
+                inscripciones!inner (
+                    id_materia,
+                    materias!inner ( id_docente )
+                )
+            `)
+            .eq('inscripciones.materias.id_docente', currentDocenteId);
+
+        // --- FILTRO CLAVE: Si elegimos una materia, filtramos las fechas ---
+        if (idMateriaFiltro) {
+            query = query.eq('inscripciones.id_materia', idMateriaFiltro);
+        }
+
+        const { data: fechasData, error } = await query;
+
+        if (error) throw error;
+
+        // 3. Crear Set de fechas disponibles
+        const fechasConNotas = new Set();
+        if (fechasData) {
+            fechasData.forEach(item => {
+                // Cortamos la fecha YYYY-MM-DD
+                const fechaStr = new Date(item.fecha).toISOString().split('T')[0];
+                fechasConNotas.add(fechaStr);
+            });
+        }
+
+        // 4. Inicializar Flatpickr con los nuevos datos
+        flatpickr("#historialCalifFecha", {
+            locale: "es",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "j F, Y",
+            allowInput: true,
+            disableMobile: "true",
+            // Pintar los días
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const fechaCalendario = dayElem.dateObj.toISOString().split('T')[0];
+                if (fechasConNotas.has(fechaCalendario)) {
+                    dayElem.classList.add("tiene-notas");
+                    // Estilos directos por si el CSS falla
+                    dayElem.style.backgroundColor = "#198754";
+                    dayElem.style.borderColor = "#198754";
+                    dayElem.style.color = "white";
+                    dayElem.title = "Hay notas cargadas";
+                }
+            },
+            // Al hacer clic en una fecha
+            onChange: function(selectedDates, dateStr) {
+                loadHistorialCalificaciones();
+            }
+        });
+
+    } catch (error) {
+        console.error("Error configurando calendario:", error);
+    }
+}
 // ==========================================
 // === NUEVA LÓGICA: HISTORIAL DE ASISTENCIA ===
 // ==========================================
@@ -631,11 +807,10 @@ async function buscarHistorialAsistencia() {
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Buscando registros...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted p-4"><span class="spinner-border spinner-border-sm"></span> Buscando registros...</td></tr>';
     resumenDiv.classList.add('d-none');
 
     try {
-        // Construir la consulta
         let query = supabase
             .from('asistencias')
             .select(`
@@ -649,9 +824,8 @@ async function buscarHistorialAsistencia() {
                 )
             `)
             .eq('inscripciones.id_materia', idMateria)
-            .order('fecha', { ascending: false }); // Más reciente primero
+            .order('fecha', { ascending: false });
 
-        // Si seleccionó fecha, filtramos por esa fecha específica
         if (fecha) {
             query = query.eq('fecha', fecha);
         }
@@ -661,46 +835,63 @@ async function buscarHistorialAsistencia() {
         if (error) throw error;
 
         if (!registros || registros.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No se encontraron registros de asistencia con esos filtros.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted p-4">No se encontraron registros.</td></tr>';
             return;
         }
 
-        // Renderizar tabla y calcular totales
         let html = '';
         let presentes = 0, ausentes = 0, tardes = 0;
 
         registros.forEach(reg => {
             const alumno = reg.inscripciones.alumnos.usuarios;
             const nombreCompleto = `${alumno.nombre} ${alumno.apellido}`;
-            const estado = reg.estado;
+            const estado = reg.estado.toLowerCase();
             const fechaFmt = new Date(reg.fecha).toLocaleDateString();
 
-            // Contadores
             if (estado === 'presente') presentes++;
             if (estado === 'ausente') ausentes++;
             if (estado === 'tarde') tardes++;
 
-            // Estilos de badge
-            let badgeClass = 'bg-secondary';
-            if (estado === 'presente') badgeClass = 'bg-success';
-            if (estado === 'ausente') badgeClass = 'bg-danger';
-            if (estado === 'tarde') badgeClass = 'bg-warning text-dark';
+            // Badges con diseño moderno
+            let badgeHtml = '';
+            switch (estado) {
+                case 'presente':
+                    badgeHtml = '<span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Presente</span>';
+                    break;
+                case 'ausente':
+                    badgeHtml = '<span class="badge bg-danger-subtle text-danger border border-danger px-3 py-2 rounded-pill"><i class="bi bi-x-circle-fill me-1"></i> Ausente</span>';
+                    break;
+                case 'tarde':
+                    badgeHtml = '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning px-3 py-2 rounded-pill"><i class="bi bi-clock-fill me-1"></i> Tarde</span>';
+                    break;
+                case 'justificado':
+                    badgeHtml = '<span class="badge bg-info-subtle text-info-emphasis border border-info px-3 py-2 rounded-pill"><i class="bi bi-file-medical-fill me-1"></i> Justificado</span>';
+                    break;
+                default:
+                    badgeHtml = `<span class="badge bg-secondary">${estado}</span>`;
+            }
 
             html += `
                 <tr>
-                    <td>
-                        <div class="fw-bold">${nombreCompleto}</div>
-                        <small class="text-muted">DNI: ${alumno.dni || 'N/A'}</small>
+                    <td class="align-middle py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-initials bg-light text-primary rounded-circle me-3 fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                ${alumno.nombre[0]}${alumno.apellido[0]}
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark">${nombreCompleto}</div>
+                                <small class="text-muted">DNI: ${alumno.dni || '-'}</small>
+                            </div>
+                        </div>
                     </td>
-                    <td><span class="badge ${badgeClass}">${estado.toUpperCase()}</span></td>
-                    <td>${fechaFmt}</td>
+                    <td class="align-middle text-center">${badgeHtml}</td>
+                    <td class="align-middle text-end fw-medium text-secondary">${fechaFmt}</td>
                 </tr>
             `;
         });
 
         tbody.innerHTML = html;
 
-        // Actualizar resumen
         document.getElementById('count-presentes').textContent = presentes;
         document.getElementById('count-ausentes').textContent = ausentes;
         document.getElementById('count-tardes').textContent = tardes;
@@ -720,6 +911,78 @@ async function poblarSelectHistorial() {
 
     // Lo más fácil: Copiar las opciones del select de "Tomar Asistencia" cuando carguen
     // Usamos un MutationObserver o simplemente lo llamamos dentro de loadAllSelects
+}
+/**
+ * Inicializa el calendario de ASISTENCIA y pinta los días trabajados.
+ * @param {string} idMateriaFiltro - (Opcional) ID de la materia para filtrar fechas.
+ */
+async function inicializarCalendarioAsistencia(idMateriaFiltro = null) {
+    const inputFecha = document.getElementById('historialFecha');
+    if (!inputFecha) return;
+
+    // 1. Limpiar instancia previa para refrescar los colores
+    if (inputFecha._flatpickr) {
+        inputFecha._flatpickr.destroy();
+    }
+
+    try {
+        // 2. Consulta a la tabla ASISTENCIAS
+        let query = supabase
+            .from('asistencias')
+            .select(`
+                fecha,
+                inscripciones!inner (
+                    id_materia,
+                    materias!inner ( id_docente )
+                )
+            `)
+            .eq('inscripciones.materias.id_docente', currentDocenteId);
+
+        // Si hay filtro de materia, ajustamos la consulta
+        if (idMateriaFiltro) {
+            query = query.eq('inscripciones.id_materia', idMateriaFiltro);
+        }
+
+        const { data: fechasData, error } = await query;
+
+        if (error) throw error;
+
+        // 3. Crear Set de fechas únicas
+        const fechasConAsistencia = new Set();
+        if (fechasData) {
+            fechasData.forEach(item => {
+                const fechaStr = new Date(item.fecha).toISOString().split('T')[0];
+                fechasConAsistencia.add(fechaStr);
+            });
+        }
+
+        // 4. Inicializar Flatpickr
+        flatpickr("#historialFecha", {
+            locale: "es",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "j F, Y",
+            allowInput: true,
+            disableMobile: "true",
+            
+            // PINTAR LOS DÍAS
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const fechaCalendario = dayElem.dateObj.toISOString().split('T')[0];
+                if (fechasConAsistencia.has(fechaCalendario)) {
+                    dayElem.classList.add("tiene-asistencia"); // Clase CSS azul
+                    dayElem.title = "Asistencia tomada";
+                }
+            },
+            
+            // AL SELECCIONAR, BUSCAR
+            onChange: function(selectedDates, dateStr) {
+                buscarHistorialAsistencia();
+            }
+        });
+
+    } catch (error) {
+        console.error("Error configurando calendario asistencia:", error);
+    }
 }
 
 // --- PESTAÑA 2: MIS CURSOS ---
@@ -927,82 +1190,283 @@ async function loadTareas() {
     }
 }
 
-// Función para ver las entregas (VERSIÓN SEGURA)
 async function verEntregas(idTarea, tituloTarea) {
+    // 1. Referencias DOM
     const modalEl = document.getElementById('modalVerEntregas');
     const modalTitle = modalEl.querySelector('.modal-title');
-    const tbody = document.getElementById('lista-entregas-body');
-    const loading = document.getElementById('entregas-loading');
-    const empty = document.getElementById('entregas-empty');
 
-    modalTitle.textContent = `Entregas: ${tituloTarea}`;
-    tbody.innerHTML = '';
+    const tbodyEntregas = document.getElementById('lista-entregas-body');
+    const tbodyPendientes = document.getElementById('lista-pendientes-body');
+
+    const loading = document.getElementById('entregas-loading');
+    const emptyEntregas = document.getElementById('entregas-empty');
+    const emptyPendientes = document.getElementById('pendientes-empty');
+
+    // 2. Reset UI
+    modalTitle.textContent = `Tarea: ${tituloTarea}`;
+    tbodyEntregas.innerHTML = '';
+    tbodyPendientes.innerHTML = '';
     loading.classList.remove('d-none');
-    empty.classList.add('d-none');
+    emptyEntregas.classList.add('d-none');
+    emptyPendientes.classList.add('d-none');
 
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
 
     try {
-        const { data: entregas, error } = await supabase
-            .from('entregas')
-            .select(`
-                fecha_entrega,
-                archivo_path,
-                alumno:usuarios (nombre, apellido, email)
-            `)
+        // A. Datos Tarea
+        const { data: tareaData, error: errTarea } = await supabase
+            .from('tareas')
+            .select('id_materia, fecha_entrega, materias(id_grado, nombre_materia)')
             .eq('id_tarea', idTarea)
-            .order('fecha_entrega', { ascending: false });
+            .single();
+
+        if (errTarea) throw errTarea;
+
+        const idGrado = tareaData.materias.id_grado;
+        const idMateria = tareaData.id_materia;
+        const nombreMateria = tareaData.materias.nombre_materia;
+        const fechaLimite = new Date(tareaData.fecha_entrega);
+
+        // B. Alumnos del Grado
+        const { data: alumnosDelGrado, error: errAlumnos } = await supabase
+            .from('alumnos')
+            .select('id_alumno, tutor_nombre, tutor_telefono, usuarios(nombre, apellido, email)')
+            .eq('id_grado', idGrado);
+
+        if (errAlumnos) throw errAlumnos;
+
+        // C. Entregas
+        const { data: entregas, error: errEntregas } = await supabase
+            .from('entregas')
+            .select('id_alumno, fecha_entrega, archivo_path')
+            .eq('id_tarea', idTarea);
+
+        if (errEntregas) throw errEntregas;
+
+        // D. Calificaciones existentes (para saber si ya evaluamos)
+        // Nota: Usamos el "tipo_evaluacion" como filtro rápido para matchear la tarea
+        const { data: calificaciones } = await supabase
+            .from('calificaciones')
+            .select('nota, inscripciones!inner(id_alumno)')
+            .eq('tipo_evaluacion', `Tarea: ${tituloTarea}`)
+            .eq('inscripciones.id_materia', idMateria);
+
+        const notasMap = {};
+        if (calificaciones) {
+            calificaciones.forEach(c => notasMap[c.inscripciones.id_alumno] = c.nota);
+        }
 
         loading.classList.add('d-none');
 
-        if (error) throw error;
+        // --- RENDERIZADO ENTREGADOS ---
+        const entregaronIds = new Set();
 
         if (!entregas || entregas.length === 0) {
-            empty.classList.remove('d-none');
+            emptyEntregas.classList.remove('d-none');
         } else {
-            // CAMBIO: Usamos for...of para esperar la generación de URLs firmadas
             for (const entrega of entregas) {
-                let linkDescarga = '<span class="text-muted">Sin archivo</span>';
+                entregaronIds.add(entrega.id_alumno);
 
+                // Buscar datos alumno
+                const alumno = alumnosDelGrado.find(a => a.id_alumno === entrega.id_alumno);
+                if (!alumno) continue;
+
+                const nombre = `${alumno.usuarios.nombre} ${alumno.usuarios.apellido}`;
+
+                // Botón Ver Archivo
+                let btnVer = '<button class="btn btn-sm btn-light border disabled" title="No hay archivo"><i class="bi bi-file-earmark-x"></i></button>';
                 if (entrega.archivo_path) {
-                    // Generar URL firmada (válida por 1 hora)
-                    const { data: signedData } = await supabase.storage
-                        .from('materiales')
-                        .createSignedUrl(entrega.archivo_path, 3600);
-
-                    if (signedData) {
-                        linkDescarga = `
-                            <a href="${signedData.signedUrl}" target="_blank" class="btn btn-sm btn-primary">
-                                <i class="bi bi-download"></i> Descargar
-                            </a>
-                        `;
+                    const { data: urlData } = await supabase.storage.from('materiales').createSignedUrl(entrega.archivo_path, 3600);
+                    if (urlData) {
+                        btnVer = `<a href="${urlData.signedUrl}" target="_blank" class="btn btn-sm btn-outline-primary" title="Ver Archivo"><i class="bi bi-eye"></i></a>`;
                     }
                 }
 
-                const nombreAlumno = entrega.alumno ?
-                    `${entrega.alumno.nombre} ${entrega.alumno.apellido}` : 'Alumno desconocido';
+                // Fecha
+                const fechaEnt = new Date(entrega.fecha_entrega);
+                const esTarde = fechaEnt > fechaLimite;
+                const badgeFecha = esTarde
+                    ? `<span class="badge bg-warning text-dark">Tarde: ${fechaEnt.toLocaleDateString()}</span>`
+                    : `<span class="text-success small"><i class="bi bi-check-circle"></i> ${fechaEnt.toLocaleDateString()}</span>`;
 
-                tbody.innerHTML += `
+                // Botón Evaluar o Badge Nota
+                let accionEvaluar = '';
+                const notaExistente = notasMap[entrega.id_alumno];
+
+                if (notaExistente !== undefined) {
+                    accionEvaluar = `<span class="badge bg-secondary p-2">Nota: ${notaExistente}</span>`;
+                } else {
+                    accionEvaluar = `
+                        <button class="btn btn-sm btn-success btn-evaluar" 
+                            data-id-alumno="${entrega.id_alumno}"
+                            data-nombre="${nombre}"
+                            data-id-materia="${idMateria}"
+                            data-nombre-tarea="${tituloTarea}">
+                            Evaluar
+                        </button>`;
+                }
+
+                tbodyEntregas.innerHTML += `
                     <tr>
                         <td>
-                            <div class="fw-bold">${nombreAlumno}</div>
-                            <div class="small text-muted">${entrega.alumno?.email || ''}</div>
+                            <div class="fw-bold text-dark">${nombre}</div>
+                            <div class="small text-muted">${alumno.usuarios.email}</div>
                         </td>
-                        <td>${new Date(entrega.fecha_entrega).toLocaleString()}</td>
-                        <td>${linkDescarga}</td>
+                        <td>${badgeFecha}</td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                ${btnVer}
+                                ${accionEvaluar}
+                            </div>
+                        </td>
                     </tr>
                 `;
             }
         }
 
+        // --- RENDERIZADO PENDIENTES ---
+        const pendientes = alumnosDelGrado.filter(a => !entregaronIds.has(a.id_alumno));
+
+        if (pendientes.length === 0) {
+            document.getElementById('pendientes-empty').classList.remove('d-none');
+        } else {
+            pendientes.forEach(p => {
+                const nombre = `${p.usuarios.nombre} ${p.usuarios.apellido}`;
+                const tutor = p.tutor_nombre || 'No registrado';
+                const tel = p.tutor_telefono;
+
+                // Botón WhatsApp
+                let btnWsp = '';
+                if (tel) {
+                    const msg = `Hola, el alumno ${nombre} debe la tarea "${tituloTarea}" de ${nombreMateria}.`;
+                    btnWsp = `<a href="https://wa.me/${tel}?text=${encodeURIComponent(msg)}" target="_blank" class="btn btn-sm btn-outline-success" title="Avisar por WhatsApp"><i class="bi bi-whatsapp"></i></a>`;
+                } else {
+                    btnWsp = `<button class="btn btn-sm btn-light border disabled" title="Sin teléfono"><i class="bi bi-telephone-x"></i></button>`;
+                }
+
+                // Botón Evaluar (aunque no entregó, para poner 1 por ejemplo)
+                let accionEvaluar = '';
+                const notaExistente = notasMap[p.id_alumno];
+
+                if (notaExistente !== undefined) {
+                    accionEvaluar = `<span class="badge bg-secondary p-2">Nota: ${notaExistente}</span>`;
+                } else {
+                    accionEvaluar = `
+                        <button class="btn btn-sm btn-outline-secondary btn-evaluar" 
+                            data-id-alumno="${p.id_alumno}"
+                            data-nombre="${nombre}"
+                            data-id-materia="${idMateria}"
+                            data-nombre-tarea="${tituloTarea}">
+                            Nota
+                        </button>`;
+                }
+
+                tbodyPendientes.innerHTML += `
+                    <tr>
+                        <td>
+                            <span class="fw-bold text-danger">${nombre}</span>
+                        </td>
+                        <td>
+                            <div class="small text-dark">${tutor}</div>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                ${btnWsp}
+                                ${accionEvaluar}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Listeners para botones de evaluar
+        document.querySelectorAll('.btn-evaluar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const d = e.currentTarget.dataset;
+                // abrirModalCalificar es la función pequeña que ya tienes
+                abrirModalCalificar(d.idAlumno, d.nombre, d.idMateria, d.nombreTarea);
+            });
+        });
+
     } catch (error) {
         console.error(error);
         loading.classList.add('d-none');
-        tbody.innerHTML = `<tr><td colspan="3" class="text-danger">Error al cargar entregas: ${error.message}</td></tr>`;
+        tbodyEntregas.innerHTML = `<tr><td colspan="3" class="text-danger">Error: ${error.message}</td></tr>`;
     }
 }
 
+// Abrir el modal pequeño de calificación
+function abrirModalCalificar(idAlumno, nombreAlumno, idMateria, nombreTarea) {
+    document.getElementById('eval-id-alumno').value = idAlumno;
+    document.getElementById('eval-id-materia').value = idMateria;
+    document.getElementById('eval-nombre-tarea').value = nombreTarea;
+
+    document.getElementById('eval-nombre-alumno').textContent = nombreAlumno;
+    document.getElementById('eval-nota').value = '';
+    document.getElementById('eval-obs').value = '';
+
+    // Abrir modal
+    const modal = new bootstrap.Modal(document.getElementById('modalCalificarTarea'));
+    modal.show();
+}
+
+// Guardar la nota en la base de datos
+async function handleGuardarEvaluacionRapida(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = "Guardando...";
+
+    const idAlumno = document.getElementById('eval-id-alumno').value;
+    const idMateria = document.getElementById('eval-id-materia').value;
+    const nombreTarea = document.getElementById('eval-nombre-tarea').value;
+    const nota = document.getElementById('eval-nota').value;
+    const obs = document.getElementById('eval-obs').value;
+
+    try {
+        // 1. Asegurar inscripción (truco para evitar errores de FK si no estaba inscripto)
+        let { data: inscripcion } = await supabase.from('inscripciones')
+            .select('id_inscripcion').eq('id_alumno', idAlumno).eq('id_materia', idMateria).maybeSingle();
+
+        let idInscripcion = inscripcion?.id_inscripcion;
+
+        if (!idInscripcion) {
+            const { data: nueva } = await supabase.from('inscripciones')
+                .insert({ id_alumno: idAlumno, id_materia: idMateria }).select().single();
+            idInscripcion = nueva.id_inscripcion;
+        }
+
+        // 2. Insertar calificación
+        const { error } = await supabase.from('calificaciones').insert({
+            id_inscripcion: idInscripcion,
+            nota: nota,
+            tipo_evaluacion: `Tarea: ${nombreTarea}`,
+            observaciones: obs,
+            fecha: new Date()
+        });
+
+        if (error) throw error;
+
+        showMessage(`Nota guardada correctamente.`, 'Éxito');
+
+        // Cerrar modal pequeño
+        const modalEl = document.getElementById('modalCalificarTarea');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        modalInstance.hide();
+
+    } catch (error) {
+        console.error(error);
+        alert('Error al guardar nota: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Guardar Nota";
+    }
+}
+
+// REGISTRAR EL LISTENER DEL FORMULARIO (Agregar en setupEventListeners)
+// document.getElementById('form-calificar-tarea').addEventListener('submit', handleGuardarEvaluacionRapida);
 // --- FUNCIONES DE EDICIÓN Y BORRADO ---
 
 // 1. Eliminar Tarea
@@ -1095,6 +1559,329 @@ async function handleGuardarEdicion(e) {
     }
 }
 // --- PESTAÑA 4: CALIFICACIONES ---
+
+/**
+ * Carga la lista de alumnos para calificar masivamente
+ */
+async function loadAlumnosParaCalificar() {
+    const idMateria = document.getElementById('califMateriaMasiva').value;
+    const container = document.getElementById('lista-alumnos-calificar');
+    const conteoSpan = document.getElementById('calif-conteo-alumnos');
+
+    if (!idMateria) {
+        container.innerHTML = '<div class="p-5 text-center text-muted">Seleccione una materia.</div>';
+        conteoSpan.textContent = '0 estudiantes';
+        return;
+    }
+
+    container.innerHTML = '<div class="p-5 text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando planilla...</div>';
+
+    try {
+        // 1. Obtener grado de la materia
+        const { data: materia, error: errMat } = await supabase.from('materias').select('id_grado').eq('id_materia', idMateria).single();
+        if (errMat) throw errMat;
+
+        // 2. Obtener alumnos
+        const { data: alumnos, error: errAlum } = await supabase
+            .from('alumnos')
+            .select('id_alumno, usuarios(nombre, apellido, dni)')
+            .eq('id_grado', materia.id_grado)
+            .order('id_alumno'); // Orden estable
+
+        if (errAlum) throw errAlum;
+
+        if (!alumnos || alumnos.length === 0) {
+            container.innerHTML = '<div class="p-5 text-center text-info">No hay estudiantes en este grado.</div>';
+            return;
+        }
+
+        // 3. Renderizar Lista (Tabla simple)
+        let html = `
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th style="width: 50%;" class="ps-4">Alumno</th>
+                        <th style="width: 20%;">DNI</th>
+                        <th style="width: 30%;">Calificación (0-10)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        alumnos.forEach(alum => {
+            const nombre = alum.usuarios ? `${alum.usuarios.nombre} ${alum.usuarios.apellido}` : 'Desconocido';
+            const dni = alum.usuarios?.dni || '-';
+
+            html += `
+                <tr class="fila-alumno-calif" data-id="${alum.id_alumno}">
+                    <td class="ps-4 fw-bold">${nombre}</td>
+                    <td class="text-muted">${dni}</td>
+                    <td>
+                        <input type="number" class="form-control input-nota fw-bold text-center" 
+                               min="1" max="10" step="0.5" placeholder="-" 
+                               style="max-width: 100px;">
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+        conteoSpan.textContent = `${alumnos.length} estudiantes`;
+
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = `<div class="p-3 alert alert-danger">Error: ${error.message}</div>`;
+    }
+
+}
+/**
+ * Guarda las calificaciones masivas
+ */
+async function handleGuardarCalificacionesMasivas(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+
+    const idMateria = document.getElementById('califMateriaMasiva').value;
+    const periodo = document.getElementById('califPeriodoMasiva').value;
+    const tipoEval = document.getElementById('califTipoMasiva').value;
+    const fecha = document.getElementById('califFechaMasiva').value;
+
+    if (!idMateria || !periodo || !tipoEval || !fecha) {
+        showMessage('Por favor complete todos los datos de la evaluación.', 'Error');
+        return;
+    }
+
+    const filas = document.querySelectorAll('.fila-alumno-calif');
+    let notasParaGuardar = [];
+
+    // Recolectar datos
+    filas.forEach(fila => {
+        const input = fila.querySelector('.input-nota');
+        const notaVal = input.value;
+
+        if (notaVal !== '' && notaVal !== null) {
+            notasParaGuardar.push({
+                id_alumno: fila.dataset.id,
+                nota: parseFloat(notaVal)
+            });
+        }
+    });
+
+    if (notasParaGuardar.length === 0) {
+        showMessage('No has ingresado ninguna nota.', 'Aviso');
+        return;
+    }
+
+    // Confirmación
+    if (!confirm(`Vas a guardar ${notasParaGuardar.length} calificaciones. ¿Continuar?`)) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
+
+    try {
+        let guardados = 0;
+
+        // Procesar uno por uno (para asegurar inscripción)
+        for (const item of notasParaGuardar) {
+            // 1. Buscar/Crear Inscripción
+            let { data: inscripcion } = await supabase
+                .from('inscripciones')
+                .select('id_inscripcion')
+                .eq('id_alumno', item.id_alumno)
+                .eq('id_materia', idMateria)
+                .maybeSingle();
+
+            let idInscripcion = inscripcion?.id_inscripcion;
+
+            if (!idInscripcion) {
+                const { data: nueva } = await supabase
+                    .from('inscripciones')
+                    .insert({ id_alumno: item.id_alumno, id_materia: idMateria })
+                    .select('id_inscripcion')
+                    .single();
+                idInscripcion = nueva.id_inscripcion;
+            }
+
+            // 2. Insertar Calificación
+            const { error } = await supabase.from('calificaciones').insert({
+                id_inscripcion: idInscripcion,
+                nota: item.nota,
+                tipo_evaluacion: tipoEval,
+                periodo: periodo,
+                fecha: fecha,
+                observaciones: '' // Opcional
+            });
+
+            if (!error) guardados++;
+        }
+
+        showMessage(`Se guardaron ${guardados} notas correctamente.`, 'Éxito');
+
+        // Limpiar inputs de notas pero dejar el encabezado para seguir cargando si quiere
+        document.querySelectorAll('.input-nota').forEach(i => i.value = '');
+
+    } catch (error) {
+        console.error(error);
+        showMessage('Error al guardar: ' + error.message, 'Error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-save me-2"></i> Guardar Notas';
+    }
+
+}
+/**
+ * Carga el historial de calificaciones aplicando filtros
+ */
+async function loadHistorialCalificaciones() {
+    const tbody = document.getElementById('historial-calificaciones-body');
+    const idMateria = document.getElementById('historialCalifMateria').value;
+    const fecha = document.getElementById('historialCalifFecha').value;
+
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Buscando...</td></tr>';
+
+    try {
+        // Consulta base
+        let query = supabase
+            .from('calificaciones')
+            .select(`
+                id_calificacion,
+                nota,
+                tipo_evaluacion,
+                periodo,
+                fecha,
+                inscripciones!inner (
+                    id_materia,
+                    alumnos ( usuarios (nombre, apellido, dni) ),
+                    materias ( nombre_materia, id_docente )
+                )
+            `)
+            .eq('inscripciones.materias.id_docente', currentDocenteId) // Solo mis materias
+            .order('fecha', { ascending: false });
+
+        // --- APLICAR FILTROS ---
+        if (idMateria) {
+            query = query.eq('inscripciones.id_materia', idMateria);
+        }
+        if (fecha) {
+            query = query.eq('fecha', fecha);
+        }
+
+        const { data: notas, error } = await query;
+
+        if (error) throw error;
+
+        if (!notas || notas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No se encontraron calificaciones con esos filtros.</td></tr>';
+            return;
+        }
+
+        let html = '';
+
+        notas.forEach(n => {
+            const alumno = n.inscripciones.alumnos.usuarios;
+            const materia = n.inscripciones.materias.nombre_materia;
+            const nombreAlumno = `${alumno.nombre} ${alumno.apellido}`;
+            const badgeColor = n.nota >= 6 ? 'bg-success-subtle text-success border-success' : 'bg-danger-subtle text-danger border-danger';
+            
+            // Fecha segura
+            const fechaFmt = n.fecha ? new Date(n.fecha + 'T00:00:00').toLocaleDateString() : '-';
+
+            html += `
+                <tr>
+                    <td class="text-muted small">${fechaFmt}</td>
+                    <td class="fw-bold text-primary small">${materia}</td>
+                    <td>
+                        <div class="fw-medium text-dark">${nombreAlumno}</div>
+                    </td>
+                    <td>
+                        <div class="small fw-bold">${n.tipo_evaluacion}</div>
+                        <div class="small text-muted" style="font-size: 0.7rem">${n.periodo || '-'}</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge ${badgeColor} border fs-6" style="min-width: 40px;">${n.nota}</span>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger border-0" onclick="borrarCalificacion(${n.id_calificacion})" title="Eliminar nota">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+
+    } catch (error) {
+        console.error(error);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+    }
+}
+
+// Función GLOBAL para poder usarla en el onclick del HTML
+window.borrarCalificacion = async (idCalificacion) => {
+    if (!confirm("¿Estás seguro de eliminar esta calificación?")) return;
+
+    try {
+        const { error } = await supabase
+            .from('calificaciones')
+            .delete()
+            .eq('id_calificacion', idCalificacion);
+
+        if (error) throw error;
+
+        showMessage("Calificación eliminada.", "Éxito");
+        loadHistorialCalificaciones(); // Recargar tabla
+
+    } catch (e) {
+        console.error(e);
+        showMessage("No se pudo eliminar: " + e.message, "Error");
+    }
+};
+
+// Función GLOBAL para poder usarla en el onclick del HTML
+window.borrarCalificacion = async (idCalificacion) => {
+    if (!confirm("¿Estás seguro de eliminar esta calificación?")) return;
+
+    try {
+        const { error } = await supabase
+            .from('calificaciones')
+            .delete()
+            .eq('id_calificacion', idCalificacion);
+
+        if (error) throw error;
+
+        showMessage("Calificación eliminada.", "Éxito");
+        loadHistorialCalificaciones(); // Recargar tabla
+
+    } catch (e) {
+        console.error(e);
+        showMessage("No se pudo eliminar: " + e.message, "Error");
+    }
+};
+
+// Función para borrar una calificación (Hacerla global para el onclick)
+window.borrarCalificacion = async (idCalificacion) => {
+    if (!confirm("¿Estás seguro de eliminar esta calificación?")) return;
+
+    try {
+        const { error } = await supabase
+            .from('calificaciones')
+            .delete()
+            .eq('id_calificacion', idCalificacion);
+
+        if (error) throw error;
+
+        showMessage("Calificación eliminada.", "Éxito");
+        loadHistorialCalificaciones(); // Recargar tabla
+
+    } catch (e) {
+        console.error(e);
+        showMessage("No se pudo eliminar: " + e.message, "Error");
+    }
+};
 
 async function handleRegistrarCalificacion(e) {
     e.preventDefault();
@@ -1250,37 +2037,42 @@ async function loadCalificaciones(id_materia) {
 
 // --- PESTAÑA 5: ASISTENCIA ---
 
+
 /**
- * VERSIÓN ASISTENCIA: Detecta certificados médicos activos
+ * VERSIÓN ASISTENCIA: Detecta certificados y marca PRESENTE por defecto
  */
 async function loadEstudiantesParaAsistencia(id_materia, fecha) {
     const container = document.getElementById('asistencia-lista-alumnos');
+    const conteoSpan = document.getElementById('asistencia-conteo-alumnos');
+
     if (!id_materia || !fecha) {
-        container.innerHTML = '<div class="p-3 text-center text-muted">Seleccione una materia y fecha.</div>';
-        document.getElementById('asistencia-conteo-alumnos').textContent = '0 estudiantes';
+        container.innerHTML = '<div class="p-5 text-center text-muted"><i class="bi bi-calendar-event fa-2x mb-2"></i><br>Seleccione una materia y fecha.</div>';
+        conteoSpan.textContent = '0 estudiantes';
         return;
     }
 
-    container.innerHTML = '<div class="p-3 text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando estudiantes y verificando certificados...</div>';
+    container.innerHTML = '<div class="p-5 text-center text-muted"><span class="spinner-border spinner-border-sm"></span> Cargando estudiantes...</div>';
 
     try {
         // 1. Obtener grado
-        const { data: materia } = await supabase.from('materias').select('id_grado').eq('id_materia', id_materia).single();
-        if (!materia) throw new Error("Materia no encontrada");
+        const { data: materia, error: errMat } = await supabase.from('materias').select('id_grado').eq('id_materia', id_materia).single();
+        if (errMat) throw errMat;
 
         // 2. Obtener alumnos
-        const { data: alumnos } = await supabase
+        const { data: alumnos, error: errAlum } = await supabase
             .from('alumnos')
-            .select('id_alumno, usuarios(nombre, apellido)')
+            .select('id_alumno, usuarios(nombre, apellido, dni)')
             .eq('id_grado', materia.id_grado)
-            .order('id_alumno'); // Orden constante
+            .order('id_alumno');
+
+        if (errAlum) throw errAlum;
 
         if (!alumnos || alumnos.length === 0) {
-            container.innerHTML = '<div class="p-3 alert alert-info">No hay estudiantes en este grado.</div>';
+            container.innerHTML = '<div class="p-5 text-center text-info"><i class="bi bi-info-circle fa-2x mb-2"></i><br>No hay estudiantes en este grado.</div>';
             return;
         }
 
-        // 3. Obtener asistencias ya registradas
+        // 3. Obtener asistencias ya registradas (para respetar si se está editando una fecha pasada)
         const { data: asistencias } = await supabase
             .from('asistencias')
             .select('estado, inscripciones(id_alumno)')
@@ -1292,61 +2084,65 @@ async function loadEstudiantesParaAsistencia(id_materia, fecha) {
             asistencias.forEach(a => { if (a.inscripciones) mapaAsistencias.set(a.inscripciones.id_alumno, a.estado); });
         }
 
-        // 4. NUEVO: Buscar Certificados Médicos Válidos para esa fecha
-        // Buscamos certificados aprobados donde la fecha seleccionada esté dentro del rango
+        // 4. Buscar Certificados Médicos
         const { data: certificados } = await supabase
             .from('certificados_medicos')
             .select('id_alumno')
-            .eq('estado', 'aprobado') // Solo los aprobados cuentan para justificar
-            .lte('fecha_inicio', fecha) // Inicio <= fecha
-            .gte('fecha_fin', fecha);   // Fin >= fecha
+            .eq('estado', 'aprobado')
+            .lte('fecha_inicio', fecha)
+            .gte('fecha_fin', fecha);
 
-        const setCertificados = new Set();
-        if (certificados) {
-            certificados.forEach(c => setCertificados.add(c.id_alumno));
-        }
+        const setCertificados = new Set(certificados?.map(c => c.id_alumno) || []);
 
-        // 5. Renderizar
+        // 5. Renderizar lista
         container.innerHTML = '';
-        document.getElementById('asistencia-conteo-alumnos').textContent = `${alumnos.length} estudiantes`;
+        conteoSpan.textContent = `${alumnos.length} estudiantes`;
 
         alumnos.forEach(alum => {
             const id = alum.id_alumno;
             const nombre = alum.usuarios ? `${alum.usuarios.nombre} ${alum.usuarios.apellido}` : 'Desconocido';
+            const dni = alum.usuarios?.dni || '';
 
-            // Estado previo de la BD
-            let estado = mapaAsistencias.get(id);
+            // --- LÓGICA DE ESTADO POR DEFECTO ---
+            let estado = mapaAsistencias.get(id); // 1. Buscamos si ya existe en la BD
+            const tieneCertificado = setCertificados.has(id);
 
-            // Si no hay estado guardado, pero tiene certificado médico, sugerimos "Justificado"
-            let tieneCertificado = setCertificados.has(id);
-            if (!estado && tieneCertificado) {
-                estado = 'justificado';
+            if (!estado) { 
+                // Si NO existe registro previo (es una asistencia nueva):
+                if (tieneCertificado) {
+                    estado = 'justificado'; // Prioridad al certificado
+                } else {
+                    estado = 'presente';    // DEFAULT: Todo el mundo presente
+                }
             }
+            // ------------------------------------
 
             // Badge visual de certificado
-            const badgeCertificado = tieneCertificado
-                ? `<span class="badge bg-info text-white ms-2" title="Certificado Médico Activo"><i class="bi bi-file-medical"></i> Con Certificado</span>`
+            const iconCert = tieneCertificado 
+                ? `<i class="bi bi-file-medical text-info ms-2" title="Certificado Médico Activo"></i>` 
                 : '';
 
             container.innerHTML += `
-                <div class="student-attendance-row border-bottom py-2" data-id-alumno="${id}">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="fw-bold">
-                            ${nombre} ${badgeCertificado}
-                        </div>
+                <div class="student-attendance-row" data-id-alumno="${id}">
+                    <div class="student-name-box">
+                        <div class="fw-bold text-dark mb-0">${nombre} ${iconCert}</div>
+                        <small class="text-muted" style="font-size: 0.75rem;">DNI: ${dni}</small>
                     </div>
-                    <div class="btn-group w-100" role="group">
+
+                    <div class="attendance-btn-group" role="group">
+                        
                         <input type="radio" class="btn-check" name="status-${id}" id="status-p-${id}" value="presente" ${estado === 'presente' ? 'checked' : ''}>
-                        <label class="btn btn-outline-success btn-sm" for="status-p-${id}">Presente</label>
+                        <label class="btn btn-outline-success" for="status-p-${id}" title="Presente">Presente</label>
 
                         <input type="radio" class="btn-check" name="status-${id}" id="status-a-${id}" value="ausente" ${estado === 'ausente' ? 'checked' : ''}>
-                        <label class="btn btn-outline-danger btn-sm" for="status-a-${id}">Ausente</label>
+                        <label class="btn btn-outline-danger" for="status-a-${id}" title="Ausente">Ausente</label>
 
                         <input type="radio" class="btn-check" name="status-${id}" id="status-t-${id}" value="tarde" ${estado === 'tarde' ? 'checked' : ''}>
-                        <label class="btn btn-outline-warning btn-sm" for="status-t-${id}">Tarde</label>
+                        <label class="btn btn-outline-warning" for="status-t-${id}" title="Tarde">Tarde</label>
 
                         <input type="radio" class="btn-check" name="status-${id}" id="status-j-${id}" value="justificado" ${estado === 'justificado' ? 'checked' : ''}>
-                        <label class="btn btn-outline-info btn-sm" for="status-j-${id}">Justif.</label>
+                        <label class="btn btn-outline-info" for="status-j-${id}" title="Justificado">Justif.</label>
+                    
                     </div>
                 </div>
             `;

@@ -166,40 +166,47 @@ body {
 .icon-tareas { background-color: #e3f2fd; color: var(--color-azul); }
 .icon-calificar { background-color: #f3e5f5; color: var(--color-purpura); }
 
-/* Asistencia */
-.attendance-actions .btn {
-    margin-right: 0.5rem;
-}
-.student-attendance-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-}
-.student-attendance-row:not(:last-child) {
-    border-bottom: 1px solid var(--color-borde);
-}
-.attendance-status-buttons .btn-check + .btn {
-    border-color: var(--color-borde);
-    color: #6c757d;
-}
-.attendance-status-buttons .btn-check:checked + .btn-outline-success {
-    background-color: var(--color-verde);
-    color: white;
-}
-.attendance-status-buttons .btn-check:checked + .btn-outline-danger {
-    background-color: var(--color-rojo);
-    color: white;
-}
-.attendance-status-buttons .btn-check:checked + .btn-outline-warning {
-    background-color: var(--color-naranja);
-    color: var(--color-texto);
-}
-.attendance-status-buttons .btn-check:checked + .btn-outline-info {
-    background-color: #0dcaf0;
-    color: white;
+/* Estilo para días con calificaciones */
+.flatpickr-day.tiene-notas {
+    background-color: #198754 !important;
+    color: white !important;
+    border-color: #198754 !important;
+    font-weight: bold;
 }
 
+/* Opcional: Un punto indicador debajo del número */
+.flatpickr-day.tiene-notas::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+/* Días con Asistencia Registrada */
+.flatpickr-day.tiene-asistencia {
+    background-color: #0d6efd !important; /* Azul Bootstrap */
+    color: white !important;
+    border-color: #0d6efd !important;
+    font-weight: bold;
+}
+
+/* Opcional: Indicador visual diferente para asistencia */
+.flatpickr-day.tiene-asistencia::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: white;
+    border-radius: 50%;
+}
 /* Mensajería */
 .message-list .list-group-item {
     display: block; /* Sobrescribir flex */
@@ -227,139 +234,209 @@ body {
     margin-top: 0.5rem;
 }
 
+/* =========================================
+   LISTADO DE ALUMNOS (ASISTENCIA)
+   ========================================= */
+
+/* Contenedor de la lista con altura fija y scroll bonito */
+#asistencia-lista-alumnos {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+    background-color: #fff;
+}
+
+/* Fila de cada alumno */
+.student-attendance-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Nombre a la izq, botones a la der */
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eaecf4;
+    transition: background-color 0.2s;
+}
+
+.student-attendance-row:last-child {
+    border-bottom: none;
+}
+
+.student-attendance-row:hover {
+    background-color: #f8f9fc;
+}
+
+/* Nombre del alumno */
+.student-name-box {
+    flex: 1; /* Ocupa el espacio restante a la izquierda */
+    min-width: 200px;
+}
+
+/* Grupo de botones de asistencia */
+.attendance-btn-group {
+    display: flex;
+    gap: 5px; /* Espacio entre botones */
+    flex-shrink: 0; /* No se encogen */
+}
+
+/* Botones individuales más estilizados */
+.attendance-btn-group .btn-check + .btn {
+    border-radius: 50px; /* Bordes redondeados */
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid #d1d3e2;
+    color: #858796;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+/* Estados activos (Checked) - Colores sólidos */
+.attendance-btn-group .btn-check:checked + .btn-outline-success {
+    background-color: #1cc88a;
+    color: white;
+    border-color: #1cc88a;
+    box-shadow: 0 2px 4px rgba(28, 200, 138, 0.3);
+}
+
+.attendance-btn-group .btn-check:checked + .btn-outline-danger {
+    background-color: #e74a3b;
+    color: white;
+    border-color: #e74a3b;
+    box-shadow: 0 2px 4px rgba(231, 74, 59, 0.3);
+}
+
+.attendance-btn-group .btn-check:checked + .btn-outline-warning {
+    background-color: #f6c23e;
+    color: white;
+    border-color: #f6c23e;
+    box-shadow: 0 2px 4px rgba(246, 194, 62, 0.3);
+}
+
+.attendance-btn-group .btn-check:checked + .btn-outline-info {
+    background-color: #36b9cc;
+    color: white;
+    border-color: #36b9cc;
+    box-shadow: 0 2px 4px rgba(54, 185, 204, 0.3);
+}
+
+/* Hover suave en los botones no seleccionados */
+.attendance-btn-group .btn:hover {
+    background-color: #eaecf4;
+}
+
+/* Avatar de iniciales */
+.avatar-initials {
+    font-size: 0.9rem;
+    border: 1px solid #e3e6f0;
+}
+
+/* Badges mejorados (Sutiles y elegantes) */
+.bg-success-subtle { background-color: #d1e7dd !important; color: #0f5132 !important; }
+.bg-danger-subtle { background-color: #f8d7da !important; color: #842029 !important; }
+.bg-warning-subtle { background-color: #fff3cd !important; color: #664d03 !important; }
+.bg-info-subtle { background-color: #cff4fc !important; color: #055160 !important; }
+
 /* ================================================= */
 /* == REGLAS DE IMPRESIÓN (Historial Docente) == */
 /* ================================================= */
 
+/* ================================================= */
+/* == REGLAS DE IMPRESIÓN (Historial Docente) == */
+/* ================================================= */
+/* ================================================= */
+/* == REGLAS DE IMPRESIÓN (Horario Alumno) == */
+/* ================================================= */
+/* ================================================= */
+/* == REGLAS DE IMPRESIÓN (Historial Docente) == */
+/* ================================================= */
 @media print {
-
     /* 1. Configuración de página */
     @page {
-        size: portrait; /* Vertical suele ser mejor para listas largas */
-        margin: 1cm;
+        margin: 1.5cm;
+        size: portrait;
     }
 
-    /* 2. Ocultar elementos generales de la interfaz */
-    body > header, 
-    body > nav, 
-    .sidebar, 
-    footer, 
-    .modal,
-    .btn, /* Ocultar TODOS los botones por defecto */
-    #btn-notificaciones {
-        display: none !important;
+    /* 2. Ocultar interfaz general */
+    body * {
+        visibility: hidden;
     }
 
-    /* 3. Ocultar otras pestañas y el formulario de "Tomar Asistencia" */
-    .tab-pane:not(#asistencia) {
-        display: none !important;
-    }
-    #form-control-asistencia {
-        display: none !important;
+    /* 3. Hacer visible SOLO el contenido de Asistencia */
+    #asistencia, #asistencia * {
+        visibility: visible;
     }
 
-    /* 4. Resetear contenedores principales */
-    html, body, main, #mainTabsContent, #asistencia, .card, .card-body {
-        visibility: visible !important;
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background-color: #fff !important;
-        box-shadow: none !important;
-        border: none !important;
-        height: auto !important;
-        overflow: visible !important;
+    /* 4. Posicionamiento absoluto para ocupar la hoja */
+    #asistencia {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: white;
     }
 
-    /* 5. TITULO DEL REPORTE (Los filtros) */
-    /* Hacemos visible el contenedor de los filtros pero ocultamos el botón de buscar */
-    #asistencia .card-body .row.g-3.mb-4 {
-        display: flex !important;
-        border-bottom: 2px solid #000;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
+    /* 5. ELEMENTOS A OCULTAR ESPECÍFICAMENTE */
+    /* Ocultar formulario de registro de arriba */
+    #form-control-asistencia { display: none !important; }
+    /* Ocultar cabecera de tarjeta (botón imprimir) */
+    .card-header { display: none !important; }
+    /* Ocultar la fila de filtros (inputs y selectores) */
+    .row.g-3.mb-4 { display: none !important; } 
+
+    /* 6. ELEMENTOS A MOSTRAR (EL NUEVO TÍTULO) */
+    #print-header-container {
+        display: block !important; /* Forzamos que se vea */
+        margin-bottom: 20px;
+    }
+    #print-header-container h1 {
+        font-size: 28pt;
+        text-align: center;
+        color: black;
+        margin-bottom: 5px;
+    }
+    #print-header-container p {
+        font-size: 14pt;
+        text-align: center;
+        color: #555;
     }
 
-    /* Ocultar etiquetas (labels) para que quede más limpio */
-    #asistencia .card-body .row.g-3.mb-4 label {
-        display: none !important;
-    }
-
-    /* Ocultar la columna del botón "Buscar" */
-    #asistencia .card-body .row.g-3.mb-4 .col-md-3 {
-        display: none !important;
-    }
-
-    /* Estilizar el SELECT de Materia para que parezca un Título */
-    #historialMateria {
-        display: block !important;
-        border: none !important;
-        background: transparent !important;
-        font-size: 1.5rem !important; /* Grande como título */
-        font-weight: bold !important;
-        color: #000 !important;
-        padding: 0 !important;
-        -webkit-appearance: none; /* Quitar flechita del select */
-        appearance: none;
-    }
-
-    /* Estilizar el INPUT de Fecha para que parezca texto */
-    #historialFecha {
-        display: block !important;
-        border: none !important;
-        background: transparent !important;
-        font-size: 1.2rem !important;
-        color: #333 !important;
-        padding: 0 !important;
-        text-align: right;
-    }
-
-    /* Ajustar anchos de columnas de los filtros */
-    #asistencia .card-body .row.g-3.mb-4 .col-md-5 { width: 60% !important; }
-    #asistencia .card-body .row.g-3.mb-4 .col-md-4 { width: 40% !important; text-align: right; }
-
-
-    /* 6. LA TABLA (#tabla-historial-asistencia) */
+    /* 7. ESTILO DE TABLA LIMPIA */
     #tabla-historial-asistencia {
-        display: table !important;
         width: 100% !important;
-        border-collapse: collapse;
+        border-collapse: collapse !important;
+        font-size: 12pt;
         margin-top: 20px;
     }
 
     #tabla-historial-asistencia th,
     #tabla-historial-asistencia td {
-        border: 1px solid #000 !important;
-        padding: 8px;
+        border: 1px solid #000 !important; /* Bordes negros sólidos */
+        padding: 10px !important;
+        text-align: left;
         color: #000 !important;
     }
 
-    #tabla-historial-asistencia thead {
-        background-color: #f0f0f0 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+    /* Quitar estilos decorativos de los badges para impresión */
+    .badge {
+        border: 1px solid #000 !important;
+        background: transparent !important;
+        color: #000 !important;
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 4px;
     }
-
-    /* 7. EL RESUMEN (#resumen-estadistico) */
+    
+    /* Resumen estadístico al pie */
     #resumen-estadistico {
         display: flex !important;
-        visibility: visible !important;
         justify-content: space-between;
         margin-top: 30px;
-        border-top: 1px solid #ccc;
+        border-top: 2px solid #000;
         padding-top: 20px;
     }
     
-    #resumen-estadistico .col-4 {
-        width: 30% !important; /* Forzar ancho para que queden en línea */
-        flex: 0 0 30% !important;
-    }
-
-    /* 8. Forzar impresión de colores de fondo (Badges) */
-    .badge, .bg-success-subtle, .bg-danger-subtle, .bg-warning-subtle {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        border: 1px solid #000 !important; /* Añadir borde por si la impresora es ByN */
-    }
+    /* Quitar bordes de la tarjeta contenedora */
+    .card { border: none !important; box-shadow: none !important; }
 }

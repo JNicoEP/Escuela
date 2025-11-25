@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Docente - Escuela Mariano Ariza</title>
     <link rel="icon" href="/favicon.ico.png" type="image/x-icon">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="/src/css/paneles/panel-docente.css">
 </head>
 
@@ -283,69 +283,107 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="h4 mb-0">Gestión de Calificaciones</h2>
-                    <p class="text-muted mb-0">Registra las calificaciones de tus estudiantes.</p>
+                    <p class="text-muted mb-0">Carga y revisa las notas de tus cursos.</p>
                 </div>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseRegistrarCalificacion">
-                    <i class="bi bi-plus-lg me-1"></i> Nueva Calificación
-                </button>
             </div>
 
-            <div class="collapse" id="collapseRegistrarCalificacion">
-                <div class="card card-body mb-4">
-                    <h3 class="h5 mb-3">Registrar Calificación</h3>
-                    <form id="form-registrar-calificacion">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="califMateria" class="form-label">Materia</label>
-                                <select id="califMateria" class="form-select" required>
-                                    <option value="">Cargando materias...</option>
+            <div class="card border-primary border-opacity-25 shadow-sm mb-5" style="background-color: #f8fbff;">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3 border-bottom pb-2">
+                        <i class="bi bi-pencil-square me-2"></i> Registrar Nueva Evaluación
+                    </h5>
+                    
+                    <form id="form-registrar-calificacion-masiva">
+                        <div class="row g-3 align-items-end mb-3">
+                            <div class="col-md-4">
+                                <label for="califMateriaMasiva" class="form-label fw-bold">Materia</label>
+                                <select id="califMateriaMasiva" class="form-select bg-white" required>
+                                    <option value="">Seleccione materia...</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="califInscripcion" class="form-label">Estudiante</label>
-                                <select id="califInscripcion" class="form-select" required disabled>
-                                    <option value="">Seleccione una materia primero</option>
+                            <div class="col-md-3">
+                                <label for="califPeriodoMasiva" class="form-label fw-bold">Periodo</label>
+                                <select id="califPeriodoMasiva" class="form-select bg-white" required>
+                                    <option value="" selected disabled>Seleccionar...</option>
+                                    <option value="1er Trimestre">1er Trimestre</option>
+                                    <option value="2do Trimestre">2do Trimestre</option>
+                                    <option value="3er Trimestre">3er Trimestre</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="califTipo" class="form-label">Tipo de Evaluación</label>
-                                <input type="text" class="form-control" id="califTipo"
-                                    placeholder="Ej: Examen Parcial, Tarea 1..." required>
-                            </div>
                             <div class="col-md-3">
-                                <label for="califPeriodo" class="form-label">Período</label>
-                                <input type="text" class="form-control" id="califPeriodo"
-                                    placeholder="Ej: Primer Período" required>
+                                <label for="califTipoMasiva" class="form-label fw-bold">Evaluación</label>
+                                <input type="text" class="form-control bg-white" id="califTipoMasiva" placeholder="Ej: Parcial 1" required>
                             </div>
-                            <div class="col-md-3">
-                                <label for="califNota" class="form-label">Calificación (0-100)</label>
-                                <input type="number" class="form-control" id="califNota" min="0" max="100" required>
+                            <div class="col-md-2">
+                                <label for="califFechaMasiva" class="form-label fw-bold">Fecha</label>
+                                <input type="date" class="form-control bg-white" id="califFechaMasiva" required>
                             </div>
-                            <div class="col-12">
-                                <label for="califObservaciones" class="form-label">Comentarios</label>
-                                <textarea class="form-control" id="califObservaciones" rows="3"></textarea>
+                        </div>
+
+                        <div class="card border">
+                            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                <span class="small fw-bold text-uppercase text-muted">Planilla de Notas</span>
+                                <span id="calif-conteo-alumnos" class="badge bg-secondary">0 alumnos</span>
                             </div>
-                            <div class="col-12 text-end">
-                                <button type="button" class="btn btn-outline-secondary me-2" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseRegistrarCalificacion">Cancelar</button>
-                                <button type="submit" class="btn btn-primary">Guardar Calificación</button>
+                            <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                                <div id="lista-alumnos-calificar">
+                                    <div class="p-4 text-center text-muted small">
+                                        <i class="bi bi-arrow-up text-primary"></i> Seleccione una materia para cargar la lista.
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i> Guardar Notas
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="califSelectMateriaVer" class="form-label fw-bold">Seleccionar Materia:</label>
-                    <select id="califSelectMateriaVer" class="form-select">
-                        <option value="">Cargando materias...</option>
-                    </select>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial de Calificaciones</h5>
                 </div>
-            </div>
-            <div id="calificaciones-container">
-                <div class="text-center text-muted">Seleccione una materia para ver las calificaciones.</div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-5">
+                            <label class="form-label small text-muted">Filtrar por Materia</label>
+                            <select id="historialCalifMateria" class="form-select">
+                                <option value="">Todas las materias</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted">Filtrar por Fecha</label>
+                            <input type="text" class="form-control bg-white" id="historialCalifFecha"  placeholder="Seleccionar fecha...">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-secondary w-100" id="btn-buscar-calif">
+                                <i class="bi bi-search me-1"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Materia</th>
+                                    <th>Alumno</th>
+                                    <th>Evaluación</th>
+                                    <th class="text-center">Nota</th>
+                                    <th class="text-end">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historial-calificaciones-body">
+                                <tr><td colspan="6" class="text-center py-4 text-muted">Utilice el botón buscar.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -426,7 +464,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Filtrar por Fecha</label>
-                        <input type="date" id="historialFecha" class="form-control">
+                        <input type="text" id="historialFecha" class="form-control bg-white" placeholder="Seleccionar fecha...">
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <button class="btn btn-secondary w-100" id="btn-buscar-historial">
@@ -548,8 +586,7 @@
 
     </main>
 
-    <div class="modal fade" id="modalAgregarMateria" tabindex="-1" aria-labelledby="modalAgregarMateriaLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalAgregarMateria" tabindex="-1" aria-labelledby="modalAgregarMateriaLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -583,32 +620,67 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalVerEntregas" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="modalVerEntregas" tabindex="-1" >
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Entregas de la Tarea</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Gestión de Entregas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Alumno</th>
-                                    <th>Fecha</th>
-                                    <th>Archivo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="lista-entregas-body">
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="entregas-loading" class="text-center py-3 d-none">
-                        <div class="spinner-border text-primary" role="status"></div>
-                    </div>
-                    <div id="entregas-empty" class="text-center py-3 text-muted d-none">
-                        No hay entregas para esta tarea aún.
+                <div class="modal-body bg-white">
+                    <ul class="nav nav-tabs nav-fill mb-3" id="entregasTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-entregados" data-bs-toggle="tab"
+                                data-bs-target="#pane-entregados" type="button">
+                                <i class="bi bi-check-circle text-success me-2"></i> Entregados
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-pendientes" data-bs-toggle="tab"
+                                data-bs-target="#pane-pendientes" type="button">
+                                <i class="bi bi-clock text-warning me-2"></i> Pendientes
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="pane-entregados" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 40%;">Alumno</th>
+                                            <th style="width: 30%;">Fecha</th>
+                                            <th style="width: 30%;" class="text-end">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lista-entregas-body"></tbody>
+                                </table>
+                            </div>
+                            <div id="entregas-loading" class="text-center py-3 d-none">
+                                <div class="spinner-border text-primary"></div>
+                            </div>
+                            <div id="entregas-empty" class="text-center py-3 text-muted d-none">No hay entregas aún.
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pane-pendientes" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 40%;">Alumno</th>
+                                            <th style="width: 30%;">Tutor</th>
+                                            <th style="width: 30%;" class="text-end">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lista-pendientes-body"></tbody>
+                                </table>
+                            </div>
+                            <div id="pendientes-empty" class="text-center py-3 text-muted d-none">¡Todos han entregado!
+                                🎉</div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -617,7 +689,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalEditarTarea" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalEditarTarea" tabindex="-1" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -658,7 +730,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -674,7 +746,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalEditarPerfilDocente" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalEditarPerfilDocente" tabindex="-1" >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
@@ -736,7 +808,44 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalRevisarCertificados" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalCalificarTarea" tabindex="-1" >
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h6 class="modal-title">Evaluar Tarea</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-calificar-tarea">
+                    <div class="modal-body">
+                        <input type="hidden" id="eval-id-alumno">
+                        <input type="hidden" id="eval-id-materia">
+                        <input type="hidden" id="eval-nombre-tarea">
+
+                        <div class="mb-3 text-center">
+                            <label class="form-label text-muted small">Alumno</label>
+                            <div id="eval-nombre-alumno" class="fw-bold text-dark">--</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eval-nota" class="form-label fw-bold text-success">Nota (0-10)</label>
+                            <input type="number" class="form-control form-control-lg text-center fw-bold border-success"
+                                id="eval-nota" min="0" max="100" required>
+                        </div>
+
+                        <div class="mb-0">
+                            <label for="eval-obs" class="form-label small">Observación (Opcional)</label>
+                            <textarea class="form-control form-control-sm" id="eval-obs" rows="2"
+                                placeholder="Ej: Muy buen trabajo..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-2">
+                        <button type="submit" class="btn btn-success w-100">Guardar Nota</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalRevisarCertificados" tabindex="-1" >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-info text-white">
@@ -777,6 +886,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script type="module" src="/src/js/pages/panel-docente.js"></script>
+    <!--LIBRERIA PARA CALENDARIO-->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
 </body>
 
 </html>
