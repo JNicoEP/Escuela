@@ -1,0 +1,23 @@
+name: Keep Supabase Alive & Website Warm
+
+on:
+  schedule:
+    # Se ejecuta lunes y jueves a las 00:00 UTC
+    - cron: '0 0 * * 1,4'
+  workflow_dispatch:
+
+jobs:
+  ping-everything:
+    runs-on: ubuntu-latest
+    steps:
+      # PASO 1: Consulta directa a la Base de Datos (Anti-pausa Supabase)
+      - name: 1. Ping Supabase DB
+        run: |
+          curl -X GET '${{ secrets.SUPABASE_URL }}/rest/v1/materias?select=*&limit=1' \
+          -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}"
+
+      # PASO 2: Visita a tu página web (Generar tráfico web)
+      - name: 2. Ping Website
+        # REEMPLAZA ABAJO CON TU URL REAL DE VERCEL
+        run: curl -I https://escuela-mariano-ariza-rust.vercel.app/
