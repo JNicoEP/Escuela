@@ -94,6 +94,66 @@ export function initLogin() {
             }
         });
     }
+    // 6. Lógica de "Olvidé mi contraseña"
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Ocultar el modal de login principal
+            hideModal('authModal'); 
+            
+            // Mostrar el modal de recuperación de contraseña
+            const resetModalEl = document.getElementById('resetPasswordModal');
+            if (resetModalEl) {
+                const resetModal = new bootstrap.Modal(resetModalEl);
+                resetModal.show();
+            }
+        });
+    }
+
+    // 7. Manejar el envío del formulario de recuperación
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    if (resetPasswordForm) {
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('resetEmail');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showMessage('Por favor, ingresa tu correo electrónico.', 'Error');
+                return;
+            }
+
+            // Cambiar el texto del botón mientras carga (opcional pero recomendado)
+            const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Enviando...';
+            submitBtn.disabled = true;
+
+            try {
+                // Llamada al servicio que acabamos de crear
+                const { error } = await AuthService.resetPassword(email);
+
+                if (error) {
+                    throw error;
+                }
+
+                showMessage('¡Listo! Revisa tu bandeja de entrada o SPAM para restablecer tu contraseña.', 'Éxito');
+                resetPasswordForm.reset();
+                hideModal('resetPasswordModal');
+
+            } catch (error) {
+                console.error('Error al solicitar recuperación:', error);
+                showMessage(`Error al procesar la solicitud: ${error.message}`, 'Error');
+            } finally {
+                // Restaurar el botón
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
 }
 
 // --- FUNCIONES LÓGICAS (CONTROLADORES) ---

@@ -1,4 +1,5 @@
-<!-- Modal de Selección de Rol --><div class="modal fade" id="roleChooserModal" tabindex="-1" aria-labelledby="roleChooserModalLabel" >
+<!-- Modal de Selección de Rol -->
+<div class="modal fade" id="roleChooserModal" tabindex="-1" aria-labelledby="roleChooserModalLabel">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -8,7 +9,8 @@
             <div class="modal-body">
                 <p class="text-center">Selecciona el panel al que deseas dirigirte:</p>
                 <div class="row g-3 justify-content-center">
-                    <!-- Data-role="alumno" --><div class="col-6 col-md-3">
+                    <!-- Data-role="alumno" -->
+                    <div class="col-6 col-md-3">
                         <a href="#" class="card text-center text-decoration-none h-100 role-select-btn"
                             data-bs-toggle="modal" data-bs-target="#authModal" data-role="alumno">
                             <div class="card-body">
@@ -17,7 +19,8 @@
                             </div>
                         </a>
                     </div>
-                    <!-- Data-role="docente" --><div class="col-6 col-md-3">
+                    <!-- Data-role="docente" -->
+                    <div class="col-6 col-md-3">
                         <a href="#" class="card text-center text-decoration-none h-100 role-select-btn"
                             data-bs-toggle="modal" data-bs-target="#authModal" data-role="docente">
                             <div class="card-body">
@@ -26,7 +29,8 @@
                             </div>
                         </a>
                     </div>
-                    <!-- Admin - CORREGIDO: Añadido role-select-btn y text-danger --><div class="col-6 col-md-3">
+                    <!-- Admin - CORREGIDO: Añadido role-select-btn y text-danger -->
+                    <div class="col-6 col-md-3">
                         <a href="#" class="card text-center text-decoration-none h-100 role-select-btn"
                             data-bs-toggle="modal" data-bs-target="#adminModal">
                             <div class="card-body">
@@ -41,7 +45,8 @@
     </div>
 </div>
 
-<!-- Modal de Autenticación (Login/Registro) --><div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" >
+<!-- Modal de Autenticación (Login/Registro) -->
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -69,7 +74,8 @@
 
                 <div class="tab-content" id="authTabsContent">
 
-                    <!-- Pestaña Iniciar Sesión (CORREGIDO) --><div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel"
+                    <!-- Pestaña Iniciar Sesión (CORREGIDO) -->
+                    <div class="tab-pane fade show active" id="login-tab-pane" role="tabpanel"
                         aria-labelledby="login-tab" tabindex="0">
                         <form id="loginForm">
                             <div class="form-floating mb-3">
@@ -78,7 +84,8 @@
                                 <label for="loginEmail">Correo Electrónico</label>
                             </div>
 
-                            <!-- ESTE BLOQUE YA ESTABA BIEN EN TU VERSIÓN --><div class="form-floating mb-3 password-toggle-container">
+                            <!-- ESTE BLOQUE YA ESTABA BIEN EN TU VERSIÓN -->
+                            <div class="form-floating mb-3 password-toggle-container">
                                 <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña"
                                     required>
                                 <label for="loginPassword">Contraseña</label>
@@ -86,14 +93,18 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-
+                            <div class="mb-3 text-end">
+                                <a href="#" id="forgotPasswordLink" class="text-decoration-none small">¿Olvidaste tu
+                                    contraseña?</a>
+                            </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Pestaña Registrarse (CORREGIDO) --><div class="tab-pane fade" id="register-tab-pane" role="tabpanel" aria-labelledby="register-tab"
+                    <!-- Pestaña Registrarse (CORREGIDO) -->
+                    <div class="tab-pane fade" id="register-tab-pane" role="tabpanel" aria-labelledby="register-tab"
                         tabindex="0">
                         <form id="registerForm">
 
@@ -142,8 +153,10 @@
     </div>
 </div>
 
-<!-- Modal Admin (CORREGIDO) --><div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" >
-    <div class="modal-dialog modal-dialog-centered"> <!-- Añadido modal-dialog-centered aquí también --><div class="modal-content">
+<!-- Modal Admin (CORREGIDO) -->
+<div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel">
+    <div class="modal-dialog modal-dialog-centered"> <!-- Añadido modal-dialog-centered aquí también -->
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="adminModalLabel">Inicio de sesión de Administrador</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -156,7 +169,8 @@
                         <label for="adminEmail">Correo electrónico</label>
                     </div>
 
-                    <!-- ESTE BLOQUE ESTÁ CORREGIDO --><div class="form-floating mb-3 password-toggle-container">
+                    <!-- ESTE BLOQUE ESTÁ CORREGIDO -->
+                    <div class="form-floating mb-3 password-toggle-container">
                         <input type="password" class="form-control" id="adminPassword" placeholder="Contraseña"
                             required>
                         <label for="adminPassword">Contraseña</label>
@@ -172,7 +186,8 @@
     </div>
 </div>
 
-<!-- Modal de Mensajes (REQUERIDO por auth.js) --><div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" >
+<!-- Modal de Mensajes (REQUERIDO por auth.js) -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -180,9 +195,33 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="messageModalBody">
-                <!-- El texto del mensaje se insertará aquí --></div>
+                <!-- El texto del mensaje se insertará aquí -->
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //recuperar contraseña -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetPasswordModalLabel">Recuperar Contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-4">Ingresa tu correo electrónico y te enviaremos un enlace para establecer una nueva contraseña.</p>
+                <form id="resetPasswordForm">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="resetEmail" placeholder="tu@email.com" required>
+                        <label for="resetEmail">Correo Electrónico</label>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Enviar enlace de recuperación</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
