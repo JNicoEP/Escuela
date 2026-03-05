@@ -1,7 +1,7 @@
 import { AuthService } from '../services/auth.service.js';
 // Asegúrate de tener showMessage en utils o config
 import { showMessage } from '../utils/notifications.js'; 
-
+import * as bootstrap from 'bootstrap';
 // --- VARIABLES GLOBALES ---
 let currentSelectedRole = 'alumno';
 
