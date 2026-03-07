@@ -95,7 +95,7 @@ export const AuthService = {
         const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
             // Esta es la página a la que Supabase redirigirá al usuario
             // Asegúrate de crear este archivo html luego
-            redirectTo: `${baseUrl}/pages/restablecer-contrasena.html`, 
+            redirectTo: `${baseUrl}/pages/restablecer-contrasena.html`,
         });
         
         return { data, error };
