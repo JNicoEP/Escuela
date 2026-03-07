@@ -26,7 +26,8 @@ export default defineConfig({
         autoridades: resolve(__dirname, 'pages/autoridades.html'),
         profesores: resolve(__dirname, 'pages/profesores.html'),
         proyecto_e: resolve(__dirname, 'pages/proyecto-e.html'),
-        talleres: resolve(__dirname, 'pages/talleres.html')
+        talleres: resolve(__dirname, 'pages/talleres.html'),
+        restablecerContrasena: resolve(__dirname, 'pages/restablecer-contrasena.html')
       }
     }
   }
