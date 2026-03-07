@@ -89,15 +89,11 @@ export const AuthService = {
     },
     // 5. Recuperar Contraseña
     async resetPassword(email) {
-        // Obtenemos la URL base (ej: http://localhost:5500 o tu dominio real)
         const baseUrl = window.location.origin;
-        
         const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-            // Esta es la página a la que Supabase redirigirá al usuario
-            // Asegúrate de crear este archivo html luego
-            redirectTo: `${baseUrl}/pages/restablecer-contrasena.html`,
+            // ¡ATENCIÓN! Le quitamos el .html al final
+            redirectTo: `${baseUrl}/pages/restablecer-contrasena`, 
         });
-        
         return { data, error };
     }
 };
