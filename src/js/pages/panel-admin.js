@@ -1009,62 +1009,69 @@ async function handleHardDeleteUser(userId, userName) {
  * Renderiza las listas de Mensajería
  */
 async function renderMensajesAdmin() {
-    adminRecibidosLista.innerHTML = '<p class="text-center text-muted p-3">Cargando...</p>';
-    adminEnviadosLista.innerHTML = '<p class="text-center text-muted p-3">Cargando...</p>';
+    adminRecibidosLista.innerHTML = '<p class="text-center text-muted p-3"><span class="spinner-border spinner-border-sm"></span> Cargando...</p>';
+    adminEnviadosLista.innerHTML = '<p class="text-center text-muted p-3"><span class="spinner-border spinner-border-sm"></span> Cargando...</p>';
 
-    // Mensajes Recibidos
+    // --- 1. Mensajes Recibidos ---
+    // Le indicamos explícitamente a Supabase que use la clave foránea de sender_id
     const { data: recibidos, error: errRecibidos } = await supabase
         .from('mensajes')
         .select(`
             id, asunto, contenido, created_at, is_read,
-            sender:usuarios (nombre, apellido, rol:rol(nombre_rol))
+            sender:usuarios!mensajes_sender_id_fkey (nombre, apellido, rol:rol(nombre_rol))
         `)
         .eq('receiver_id', currentUser.id)
         .order('created_at', { ascending: false });
 
     if (errRecibidos) {
-        adminRecibidosLista.innerHTML = '<p class="text-center text-danger p-3">Error al cargar mensajes.</p>';
+        console.error('Error al cargar recibidos:', errRecibidos);
+        adminRecibidosLista.innerHTML = `<p class="text-center text-danger p-3">Error: ${errRecibidos.message}</p>`;
     } else {
         let recibidosHtml = '';
         recibidos.forEach(msg => {
-            const remitente = msg.sender ? `${msg.sender.nombre} ${msg.sender.apellido} (${msg.sender.rol ? msg.sender.rol.nombre_rol : '...'})` : 'Usuario Eliminado';
+            const rolNombre = msg.sender?.rol?.nombre_rol || 'Usuario';
+            const remitente = msg.sender ? `${msg.sender.nombre} ${msg.sender.apellido} (${rolNombre})` : 'Usuario Eliminado';
             recibidosHtml += `
                 <div class="list-group-item list-group-item-action mensaje-item ${!msg.is_read ? 'fw-bold' : ''}">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1 remitente">${remitente}</h6>
+                        <h6 class="mb-1 remitente text-primary"><i class="fas fa-user me-1"></i> De: ${remitente}</h6>
                         <small class="text-muted">${new Date(msg.created_at).toLocaleDateString()}</small>
                     </div>
-                    <p class="mb-1 extracto">${msg.asunto || '(Sin Asunto)'}</p>
-                    <small class="text-muted extracto">${msg.contenido.substring(0, 50)}...</small>
+                    <p class="mb-1 fw-bold">${msg.asunto || '(Sin Asunto)'}</p>
+                    <small class="text-muted">${msg.contenido}</small>
                 </div>
             `;
         });
         adminRecibidosLista.innerHTML = recibidosHtml || '<p class="text-center text-muted p-3">No hay mensajes recibidos.</p>';
     }
 
-    // Mensajes Enviados
+    // --- 2. Mensajes Enviados ---
+    // Le indicamos explícitamente a Supabase que use la clave foránea de receiver_id
     const { data: enviados, error: errEnviados } = await supabase
         .from('mensajes')
         .select(`
             id, asunto, contenido, created_at,
-            receiver:usuarios (nombre, apellido, rol:rol(nombre_rol))
+            receiver:usuarios!mensajes_receiver_id_fkey (nombre, apellido, rol:rol(nombre_rol))
         `)
         .eq('sender_id', currentUser.id)
         .order('created_at', { ascending: false });
 
     if (errEnviados) {
-        adminEnviadosLista.innerHTML = '<p class="text-center text-danger p-3">Error al cargar mensajes.</p>';
+        console.error('Error al cargar enviados:', errEnviados);
+        adminEnviadosLista.innerHTML = `<p class="text-center text-danger p-3">Error: ${errEnviados.message}</p>`;
     } else {
         let enviadosHtml = '';
         enviados.forEach(msg => {
-            const destinatario = msg.receiver ? `${msg.receiver.nombre} ${msg.receiver.apellido} (${msg.receiver.rol ? msg.receiver.rol.nombre_rol : '...'})` : 'Usuario Eliminado';
+            const rolNombre = msg.receiver?.rol?.nombre_rol || 'Usuario';
+            const destinatario = msg.receiver ? `${msg.receiver.nombre} ${msg.receiver.apellido} (${rolNombre})` : 'Usuario Eliminado';
             enviadosHtml += `
-                <div class="list-group-item mensaje-item">
+                <div class="list-group-item mensaje-item bg-light">
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1 remitente">Para: ${destinatario}</h6>
+                        <h6 class="mb-1 remitente text-success"><i class="fas fa-paper-plane me-1"></i> Para: ${destinatario}</h6>
                         <small class="text-muted">${new Date(msg.created_at).toLocaleDateString()}</small>
                     </div>
-                    <p class="mb-1 extracto">${msg.asunto || '(Sin Asunto)'}</p>
+                    <p class="mb-1 fw-bold">${msg.asunto || '(Sin Asunto)'}</p>
+                    <small class="text-muted">${msg.contenido}</small>
                 </div>
             `;
         });
